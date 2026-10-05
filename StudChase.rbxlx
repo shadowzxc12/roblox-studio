@@ -16053,13 +16053,13 @@ local function buildMainMenu()
 	local logoHolder = make("Frame", {
 		BackgroundTransparency = 1,
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 40),
-		Size = UDim2.fromOffset(760, 150),
+		Position = UDim2.new(0.5, 0, 0, 62),
+		Size = UDim2.fromOffset(620, 140),
 		ZIndex = 2,
 	}, menuFade)
-	logo = UIKit.text(logoHolder, Config.GameName, 112, C.Gold, { Size = UDim2.new(1, 0, 0, 120), ZIndex = 3 })
+	logo = UIKit.text(logoHolder, Config.GameName, 92, C.Gold, { Size = UDim2.new(1, 0, 0, 100), ZIndex = 3 })
 	logo:FindFirstChildOfClass("UIStroke").Thickness = 9
-	UIKit.text(logoHolder, "RUN  •  CATCH  •  INFECT", 28, C.White, { Position = UDim2.fromOffset(0, 118), Size = UDim2.new(1, 0, 0, 34) })
+	UIKit.text(logoHolder, "RUN  •  CATCH  •  INFECT", 28, C.White, { Position = UDim2.fromOffset(0, 100), Size = UDim2.new(1, 0, 0, 34) })
 	addEntrance(logoHolder)
 
 	-- mode buttons
@@ -16114,9 +16114,9 @@ local function buildMainMenu()
 	for i, info in { { "SHOP", "cart", "Shop", C.Pink }, { "SETTINGS", "gear", "Settings", C.Blue }, { "CREDITS", "book", "Credits", C.Purple } } do
 		local btn = UIKit.button(row, {
 			Text = info[1],
-			TextSize = 20,
+			TextSize = 17,
 			Icon = info[2],
-			IconSize = 34,
+			IconSize = 30,
 			Size = UDim2.fromOffset(133, 60),
 			Color = info[4],
 			ColorDark = info[4]:Lerp(C.Ink, 0.35),
