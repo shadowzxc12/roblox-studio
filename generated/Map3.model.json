@@ -1,0 +1,8212 @@
+{
+ "ClassName": "Model",
+ "Children": [
+  {
+   "Name": "Ground",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     130,
+     4,
+     130
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       -2,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.3608,
+     0.7647,
+     0.2902
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     16,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -12,
+       4.0,
+       482
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     16,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       12,
+       4.0,
+       482
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     16,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -12,
+       4.0,
+       518
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     16,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       12,
+       4.0,
+       518
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     8,
+     12
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -18,
+       4.0,
+       490
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     8,
+     12
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -18,
+       4.0,
+       510
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     8,
+     12
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       18,
+       4.0,
+       490
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     8,
+     12
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       18,
+       4.0,
+       510
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     18,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -38,
+       4.0,
+       462
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     18,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       38,
+       4.0,
+       462
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     18,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -38,
+       4.0,
+       538
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     18,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       38,
+       4.0,
+       538
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     8,
+     22
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -38,
+       4.0,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     8,
+     22
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       38,
+       4.0,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     22,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       4.0,
+       460
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Hedge",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     22,
+     8,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       4.0,
+       540
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "FountainBase",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     12,
+     1.5,
+     12
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       0.75,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.7882,
+     0.8118,
+     0.8784
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "FountainWater",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     10,
+     0.3,
+     10
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       1.55,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.298,
+     0.7137,
+     1.0
+    ],
+    "Material": "SmoothPlastic",
+    "TopSurface": "Smooth",
+    "BottomSurface": "Inlet",
+    "Transparency": 0.2,
+    "CanCollide": false
+   }
+  },
+  {
+   "Name": "FountainPillar",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     2,
+     5,
+     2
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       3,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.7882,
+     0.8118,
+     0.8784
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "FountainTop",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     5,
+     1,
+     5
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       5.5,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.7882,
+     0.8118,
+     0.8784
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "Path",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     4,
+     0.2,
+     100
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       0.1,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.851,
+     0.698,
+     0.4784
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet",
+    "CanCollide": false
+   }
+  },
+  {
+   "Name": "Path",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     100,
+     0.2,
+     4
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       0.1,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.851,
+     0.698,
+     0.4784
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet",
+    "CanCollide": false
+   }
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         7.188,
+         0.7,
+         516.034
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         7.188,
+         1.6,
+         516.034
+        ],
+        "orientation": [
+         [
+          0.6699,
+          0.0,
+          0.74245
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.74245,
+          0.0,
+          0.6699
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         7.478,
+         0.7,
+         516.628
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         7.478,
+         1.6,
+         516.628
+        ],
+        "orientation": [
+         [
+          0.14836,
+          0.0,
+          0.98893
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.98893,
+          0.0,
+          0.14836
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         9.975,
+         0.7,
+         512.678
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         9.975,
+         1.6,
+         512.678
+        ],
+        "orientation": [
+         [
+          0.47205,
+          0.0,
+          0.88157
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.88157,
+          0.0,
+          0.47205
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         7.2,
+         0.7,
+         512.445
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         7.2,
+         1.6,
+         512.445
+        ],
+        "orientation": [
+         [
+          0.49147,
+          0.0,
+          0.87089
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.87089,
+          0.0,
+          0.49147
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         4.739,
+         0.7,
+         513.235
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         4.739,
+         1.6,
+         513.235
+        ],
+        "orientation": [
+         [
+          0.68656,
+          0.0,
+          0.72708
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.72708,
+          0.0,
+          0.68656
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         43.372,
+         0.7,
+         523.964
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         43.372,
+         1.6,
+         523.964
+        ],
+        "orientation": [
+         [
+          0.87671,
+          0.0,
+          0.48101
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.48101,
+          0.0,
+          0.87671
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         43.07,
+         0.7,
+         523.755
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         43.07,
+         1.6,
+         523.755
+        ],
+        "orientation": [
+         [
+          0.21113,
+          0.0,
+          0.97746
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.97746,
+          0.0,
+          0.21113
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         40.397,
+         0.7,
+         527.607
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         40.397,
+         1.6,
+         527.607
+        ],
+        "orientation": [
+         [
+          0.00752,
+          0.0,
+          0.99997
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.99997,
+          0.0,
+          0.00752
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         44.424,
+         0.7,
+         522.678
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         44.424,
+         1.6,
+         522.678
+        ],
+        "orientation": [
+         [
+          0.83937,
+          0.0,
+          0.54356
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.54356,
+          0.0,
+          0.83937
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         42.402,
+         0.7,
+         526.898
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         42.402,
+         1.6,
+         526.898
+        ],
+        "orientation": [
+         [
+          0.69275,
+          0.0,
+          0.72117
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.72117,
+          0.0,
+          0.69275
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -18.379,
+         0.7,
+         484.137
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -18.379,
+         1.6,
+         484.137
+        ],
+        "orientation": [
+         [
+          0.47152,
+          0.0,
+          0.88186
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.88186,
+          0.0,
+          0.47152
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -16.434,
+         0.7,
+         483.99
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -16.434,
+         1.6,
+         483.99
+        ],
+        "orientation": [
+         [
+          0.55242,
+          0.0,
+          0.83357
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.83357,
+          0.0,
+          0.55242
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -17.611,
+         0.7,
+         486.915
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -17.611,
+         1.6,
+         486.915
+        ],
+        "orientation": [
+         [
+          0.99506,
+          0.0,
+          0.0993
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.0993,
+          0.0,
+          0.99506
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -21.149,
+         0.7,
+         486.652
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -21.149,
+         1.6,
+         486.652
+        ],
+        "orientation": [
+         [
+          0.99999,
+          0.0,
+          0.00477
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.00477,
+          0.0,
+          0.99999
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -19.249,
+         0.7,
+         483.892
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -19.249,
+         1.6,
+         483.892
+        ],
+        "orientation": [
+         [
+          0.20728,
+          0.0,
+          0.97828
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.97828,
+          0.0,
+          0.20728
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         18.227,
+         0.7,
+         487.557
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         18.227,
+         1.6,
+         487.557
+        ],
+        "orientation": [
+         [
+          0.66247,
+          0.0,
+          0.74909
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.74909,
+          0.0,
+          0.66247
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         20.097,
+         0.7,
+         487.257
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         20.097,
+         1.6,
+         487.257
+        ],
+        "orientation": [
+         [
+          0.99392,
+          0.0,
+          0.11009
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.11009,
+          0.0,
+          0.99392
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         18.273,
+         0.7,
+         487.684
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         18.273,
+         1.6,
+         487.684
+        ],
+        "orientation": [
+         [
+          0.33799,
+          0.0,
+          0.94115
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.94115,
+          0.0,
+          0.33799
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         16.052,
+         0.7,
+         490.645
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         16.052,
+         1.6,
+         490.645
+        ],
+        "orientation": [
+         [
+          0.99973,
+          0.0,
+          0.02329
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.02329,
+          0.0,
+          0.99973
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         18.639,
+         0.7,
+         488.071
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         18.639,
+         1.6,
+         488.071
+        ],
+        "orientation": [
+         [
+          0.87982,
+          0.0,
+          0.47531
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.47531,
+          0.0,
+          0.87982
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         42.905,
+         0.7,
+         522.395
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         42.905,
+         1.6,
+         522.395
+        ],
+        "orientation": [
+         [
+          0.72531,
+          0.0,
+          0.68843
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.68843,
+          0.0,
+          0.72531
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         41.591,
+         0.7,
+         523.332
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         41.591,
+         1.6,
+         523.332
+        ],
+        "orientation": [
+         [
+          0.10934,
+          0.0,
+          0.994
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.994,
+          0.0,
+          0.10934
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         39.136,
+         0.7,
+         519.697
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         39.136,
+         1.6,
+         519.697
+        ],
+        "orientation": [
+         [
+          0.08344,
+          0.0,
+          0.99651
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.99651,
+          0.0,
+          0.08344
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         39.884,
+         0.7,
+         520.854
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         39.884,
+         1.6,
+         520.854
+        ],
+        "orientation": [
+         [
+          0.55928,
+          0.0,
+          0.82898
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.82898,
+          0.0,
+          0.55928
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         41.991,
+         0.7,
+         520.345
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         41.991,
+         1.6,
+         520.345
+        ],
+        "orientation": [
+         [
+          0.36952,
+          0.0,
+          0.92922
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.92922,
+          0.0,
+          0.36952
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -21.334,
+         0.7,
+         545.642
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -21.334,
+         1.6,
+         545.642
+        ],
+        "orientation": [
+         [
+          0.43757,
+          0.0,
+          0.89918
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.89918,
+          0.0,
+          0.43757
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -18.235,
+         0.7,
+         546.248
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -18.235,
+         1.6,
+         546.248
+        ],
+        "orientation": [
+         [
+          0.55743,
+          0.0,
+          0.83022
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.83022,
+          0.0,
+          0.55743
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -17.403,
+         0.7,
+         550.327
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -17.403,
+         1.6,
+         550.327
+        ],
+        "orientation": [
+         [
+          0.2619,
+          0.0,
+          0.96509
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.96509,
+          0.0,
+          0.2619
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -19.363,
+         0.7,
+         549.388
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -19.363,
+         1.6,
+         549.388
+        ],
+        "orientation": [
+         [
+          0.1169,
+          0.0,
+          0.99314
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.99314,
+          0.0,
+          0.1169
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -16.753,
+         0.7,
+         549.033
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -16.753,
+         1.6,
+         549.033
+        ],
+        "orientation": [
+         [
+          0.60463,
+          0.0,
+          0.79651
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.79651,
+          0.0,
+          0.60463
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -0.442,
+         0.7,
+         533.981
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -0.442,
+         1.6,
+         533.981
+        ],
+        "orientation": [
+         [
+          0.91117,
+          0.0,
+          0.41202
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.41202,
+          0.0,
+          0.91117
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         1.691,
+         0.7,
+         536.865
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         1.691,
+         1.6,
+         536.865
+        ],
+        "orientation": [
+         [
+          0.95172,
+          0.0,
+          0.30697
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.30697,
+          0.0,
+          0.95172
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -0.678,
+         0.7,
+         539.128
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -0.678,
+         1.6,
+         539.128
+        ],
+        "orientation": [
+         [
+          0.9937,
+          0.0,
+          0.11208
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.11208,
+          0.0,
+          0.9937
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         3.749,
+         0.7,
+         538.06
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         3.749,
+         1.6,
+         538.06
+        ],
+        "orientation": [
+         [
+          0.62074,
+          0.0,
+          0.78401
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.78401,
+          0.0,
+          0.62074
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         4.164,
+         0.7,
+         537.506
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         4.164,
+         1.6,
+         537.506
+        ],
+        "orientation": [
+         [
+          0.99994,
+          0.0,
+          0.01065
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.01065,
+          0.0,
+          0.99994
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         47.55,
+         0.7,
+         488.824
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         47.55,
+         1.6,
+         488.824
+        ],
+        "orientation": [
+         [
+          0.99806,
+          0.0,
+          0.0623
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.0623,
+          0.0,
+          0.99806
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         42.792,
+         0.7,
+         492.679
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         42.792,
+         1.6,
+         492.679
+        ],
+        "orientation": [
+         [
+          0.32178,
+          0.0,
+          0.94681
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.94681,
+          0.0,
+          0.32178
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         44.035,
+         0.7,
+         488.672
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         44.035,
+         1.6,
+         488.672
+        ],
+        "orientation": [
+         [
+          0.83882,
+          0.0,
+          0.54441
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.54441,
+          0.0,
+          0.83882
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         47.463,
+         0.7,
+         492.44
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         47.463,
+         1.6,
+         492.44
+        ],
+        "orientation": [
+         [
+          0.20728,
+          0.0,
+          0.97828
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.97828,
+          0.0,
+          0.20728
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         48.476,
+         0.7,
+         492.523
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         48.476,
+         1.6,
+         492.523
+        ],
+        "orientation": [
+         [
+          0.25537,
+          0.0,
+          0.96684
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.96684,
+          0.0,
+          0.25537
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -49.585,
+         0.7,
+         447.633
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -49.585,
+         1.6,
+         447.633
+        ],
+        "orientation": [
+         [
+          0.97979,
+          0.0,
+          0.20003
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.20003,
+          0.0,
+          0.97979
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -51.302,
+         0.7,
+         447.707
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -51.302,
+         1.6,
+         447.707
+        ],
+        "orientation": [
+         [
+          0.71185,
+          0.0,
+          0.70234
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.70234,
+          0.0,
+          0.71185
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50.598,
+         0.7,
+         446.886
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50.598,
+         1.6,
+         446.886
+        ],
+        "orientation": [
+         [
+          0.99171,
+          0.0,
+          0.12853
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.12853,
+          0.0,
+          0.99171
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -52.079,
+         0.7,
+         446.442
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -52.079,
+         1.6,
+         446.442
+        ],
+        "orientation": [
+         [
+          0.98763,
+          0.0,
+          0.1568
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.1568,
+          0.0,
+          0.98763
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50.81,
+         0.7,
+         446.453
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50.81,
+         1.6,
+         446.453
+        ],
+        "orientation": [
+         [
+          0.30898,
+          0.0,
+          0.95107
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.95107,
+          0.0,
+          0.30898
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.4784,
+       0.7137
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         1.698,
+         0.7,
+         492.991
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         1.698,
+         1.6,
+         492.991
+        ],
+        "orientation": [
+         [
+          0.97268,
+          0.0,
+          0.23217
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.23217,
+          0.0,
+          0.97268
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         2.772,
+         0.7,
+         497.266
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         2.772,
+         1.6,
+         497.266
+        ],
+        "orientation": [
+         [
+          0.93124,
+          0.0,
+          0.3644
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.3644,
+          0.0,
+          0.93124
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         5.34,
+         0.7,
+         497.742
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         5.34,
+         1.6,
+         497.742
+        ],
+        "orientation": [
+         [
+          0.71177,
+          0.0,
+          0.70241
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.70241,
+          0.0,
+          0.71177
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         5.25,
+         0.7,
+         496.285
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         5.25,
+         1.6,
+         496.285
+        ],
+        "orientation": [
+         [
+          0.06669,
+          0.0,
+          0.99777
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.99777,
+          0.0,
+          0.06669
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         3.27,
+         0.7,
+         497.423
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         3.27,
+         1.6,
+         497.423
+        ],
+        "orientation": [
+         [
+          0.90081,
+          0.0,
+          0.4342
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.4342,
+          0.0,
+          0.90081
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.8235,
+       0.2471
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -13.343,
+         0.7,
+         453.629
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -13.343,
+         1.6,
+         453.629
+        ],
+        "orientation": [
+         [
+          0.52917,
+          0.0,
+          0.84852
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.84852,
+          0.0,
+          0.52917
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -8.306,
+         0.7,
+         449.792
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -8.306,
+         1.6,
+         449.792
+        ],
+        "orientation": [
+         [
+          0.29409,
+          0.0,
+          0.95578
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.95578,
+          0.0,
+          0.29409
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -13.797,
+         0.7,
+         449.229
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -13.797,
+         1.6,
+         449.229
+        ],
+        "orientation": [
+         [
+          0.31699,
+          0.0,
+          0.94843
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.94843,
+          0.0,
+          0.31699
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -10.949,
+         0.7,
+         452.54
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -10.949,
+         1.6,
+         452.54
+        ],
+        "orientation": [
+         [
+          0.82187,
+          0.0,
+          0.56968
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.56968,
+          0.0,
+          0.82187
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -8.787,
+         0.7,
+         448.269
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -8.787,
+         1.6,
+         448.269
+        ],
+        "orientation": [
+         [
+          0.55753,
+          0.0,
+          0.83016
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.83016,
+          0.0,
+          0.55753
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Flowers",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -30.243,
+         0.7,
+         469.99
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -30.243,
+         1.6,
+         469.99
+        ],
+        "orientation": [
+         [
+          0.9036,
+          0.0,
+          0.42837
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.42837,
+          0.0,
+          0.9036
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -33.08,
+         0.7,
+         467.608
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -33.08,
+         1.6,
+         467.608
+        ],
+        "orientation": [
+         [
+          0.7755,
+          0.0,
+          0.63134
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.63134,
+          0.0,
+          0.7755
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -31.863,
+         0.7,
+         469.981
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -31.863,
+         1.6,
+         469.981
+        ],
+        "orientation": [
+         [
+          0.82834,
+          0.0,
+          0.56023
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.56023,
+          0.0,
+          0.82834
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -32.664,
+         0.7,
+         469.571
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -32.664,
+         1.6,
+         469.571
+        ],
+        "orientation": [
+         [
+          0.0557,
+          0.0,
+          0.99845
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.99845,
+          0.0,
+          0.0557
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Stem",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       0.4,
+       1.4,
+       0.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -33.175,
+         0.7,
+         468.385
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.1647,
+       0.6157,
+       0.2941
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    },
+    {
+     "Name": "Petals",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       1.4,
+       0.6,
+       1.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -33.175,
+         1.6,
+         468.385
+        ],
+        "orientation": [
+         [
+          0.90495,
+          0.0,
+          0.42551
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          -0.42551,
+          0.0,
+          0.90495
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.7255,
+       0.549,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "CanCollide": false
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Tree",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Trunk",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       2.4,
+       9.476,
+       2.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50,
+         4.738,
+         450
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.5451,
+       0.3529,
+       0.1686
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet"
+     }
+    },
+    {
+     "Name": "Leaves",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       10.311,
+       10.311,
+       10.311
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50,
+         12.053,
+         450
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.2471,
+       0.749,
+       0.3098
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Shape": "Ball"
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Tree",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Trunk",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       2.4,
+       8.151,
+       2.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         50,
+         4.076,
+         450
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.5451,
+       0.3529,
+       0.1686
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet"
+     }
+    },
+    {
+     "Name": "Leaves",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       11.43,
+       11.43,
+       11.43
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         50,
+         11.009,
+         450
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.2471,
+       0.749,
+       0.3098
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Shape": "Ball"
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Tree",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Trunk",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       2.4,
+       9.503,
+       2.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50,
+         4.752,
+         550
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.5451,
+       0.3529,
+       0.1686
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet"
+     }
+    },
+    {
+     "Name": "Leaves",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       10.395,
+       10.395,
+       10.395
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -50,
+         12.102,
+         550
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.2471,
+       0.749,
+       0.3098
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Shape": "Ball"
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Tree",
+   "ClassName": "Model",
+   "Children": [
+    {
+     "Name": "Trunk",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       2.4,
+       7.291,
+       2.4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         50,
+         3.645,
+         550
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.5451,
+       0.3529,
+       0.1686
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet"
+     }
+    },
+    {
+     "Name": "Leaves",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       10.406,
+       10.406,
+       10.406
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         50,
+         9.892,
+         550
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       0.4784,
+       0.851,
+       0.3412
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Shape": "Ball"
+     }
+    }
+   ]
+  },
+  {
+   "Name": "Fence",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     122,
+     8,
+     1.5
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       4.0,
+       440.0
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "InvisibleWall",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     122,
+     60,
+     1.5
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       30,
+       440.0
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Smooth",
+    "BottomSurface": "Smooth",
+    "Transparency": 1
+   }
+  },
+  {
+   "Name": "Fence",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     122,
+     8,
+     1.5
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       4.0,
+       560.0
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "InvisibleWall",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     122,
+     60,
+     1.5
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       0,
+       30,
+       560.0
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Smooth",
+    "BottomSurface": "Smooth",
+    "Transparency": 1
+   }
+  },
+  {
+   "Name": "Fence",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     1.5,
+     8,
+     122
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -60.0,
+       4.0,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "InvisibleWall",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     1.5,
+     60,
+     122
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       -60.0,
+       30,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Smooth",
+    "BottomSurface": "Smooth",
+    "Transparency": 1
+   }
+  },
+  {
+   "Name": "Fence",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     1.5,
+     8,
+     122
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       60.0,
+       4.0,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     0.1804,
+     0.6196,
+     0.2745
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Studs",
+    "BottomSurface": "Inlet"
+   }
+  },
+  {
+   "Name": "InvisibleWall",
+   "ClassName": "Part",
+   "Properties": {
+    "Anchored": true,
+    "Size": [
+     1.5,
+     60,
+     122
+    ],
+    "CFrame": {
+     "CFrame": {
+      "position": [
+       60.0,
+       30,
+       500
+      ],
+      "orientation": [
+       [
+        1.0,
+        0.0,
+        0.0
+       ],
+       [
+        0,
+        1.0,
+        0.0
+       ],
+       [
+        0.0,
+        0.0,
+        1.0
+       ]
+      ]
+     }
+    },
+    "Color": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "Material": "Plastic",
+    "TopSurface": "Smooth",
+    "BottomSurface": "Smooth",
+    "Transparency": 1
+   }
+  },
+  {
+   "Name": "Spawns",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         48.0,
+         0.5,
+         500.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         41.569,
+         0.5,
+         524.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         24.0,
+         0.5,
+         541.569
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         0.0,
+         0.5,
+         548.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -24.0,
+         0.5,
+         541.569
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -41.569,
+         0.5,
+         524.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -48.0,
+         0.5,
+         500.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -41.569,
+         0.5,
+         476.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -24.0,
+         0.5,
+         458.431
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         -0.0,
+         0.5,
+         452.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         24.0,
+         0.5,
+         458.431
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "Spawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         41.569,
+         0.5,
+         476.0
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    },
+    {
+     "Name": "ChaserSpawn",
+     "ClassName": "Part",
+     "Properties": {
+      "Anchored": true,
+      "Size": [
+       4,
+       1,
+       4
+      ],
+      "CFrame": {
+       "CFrame": {
+        "position": [
+         0,
+         0.5,
+         508
+        ],
+        "orientation": [
+         [
+          1.0,
+          0.0,
+          0.0
+         ],
+         [
+          0,
+          1.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0,
+          1.0
+         ]
+        ]
+       }
+      },
+      "Color": [
+       1.0,
+       0.3098,
+       0.4275
+      ],
+      "Material": "Plastic",
+      "TopSurface": "Studs",
+      "BottomSurface": "Inlet",
+      "Transparency": 1,
+      "CanCollide": false,
+      "CanQuery": false,
+      "CanTouch": false
+     }
+    }
+   ]
+  }
+ ],
+ "Properties": {
+  "Attributes": {
+   "Attributes": {
+    "DisplayName": {
+     "String": "Hedge Garden"
+    }
+   }
+  }
+ }
+}

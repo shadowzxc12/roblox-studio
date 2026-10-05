@@ -1,0 +1,38 @@
+{
+  "name": "KiddoShopGame",
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": { "Gravity": 196.2 },
+      "NatureMap": { "$path": "map/NatureMap.model.json" }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Ambient": [0.45, 0.45, 0.5],
+        "OutdoorAmbient": [0.6, 0.6, 0.65],
+        "Brightness": 2.5,
+        "ClockTime": 14,
+        "GeographicLatitude": 30,
+        "GlobalShadows": true,
+        "EnvironmentDiffuseScale": 0,
+        "EnvironmentSpecularScale": 0,
+        "FogEnd": 100000
+      },
+      "Sky": { "$className": "Sky", "$properties": { "CelestialBodiesShown": true, "StarCount": 0 } }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$path": "src/ServerScriptService"
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$properties": { "CameraMaxZoomDistance": 120 },
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$path": "src/StarterPlayerScripts"
+      }
+    }
+  }
+}

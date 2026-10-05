@@ -1,38 +1,73 @@
-# Kiddo Shop — Roblox shop UI pre deti (simulator štýl)
+# STUD CHASE — Roblox multiplayer naháňačka (stud štýl)
 
-Bočné menu s ikonami vľavo, STORE okno s oranžovým pruhovaným záhlavím, R$ tlačidlá,
-Starter Pack, Server Luck, Game Passes a ponuky vznášajúce sa vpravo —
-s animáciami, efektmi (konfety, lesk, lúče) a zvukmi.
+Hotový súbor hry: **`StudChase.rbxlx`** → otvor v Roblox Studiu (*File → Open from File*).
 
-Dizajn systém (farby, komponenty, animácie): https://claude.ai/artifact/MBjEgrfa9DZRxWEMVHyeUB
+Dva herné módy (**NORMAL CHASE** a **INFECTION**), matchmaking s rezervovanými servermi,
+loading screen, 3D hlavné menu, výsledky s odmenami, ukladanie dát, cosmetic shop a nastavenia.
+Mapy sú jednoduché a v klasickom „stud" štýle (plastové kocky so studs).
 
-## Hotová hra (najrýchlejšie)
+## Ako to vyskúšať v Studiu
 
-Stiahni **`KiddoShopGame.rbxlx`** a otvor ho v Roblox Studiu (*File → Open from File*).
-Je tam všetko: stud-style prírodná mapa (tráva, stromy, kopce, jazierko s mostíkom,
-kamene, kvety, huby, oblaky), spawn, stánok **SHOP** (podíď a stlač **E**) a celé shop UI.
-Potom *File → Publish to Roblox*.
+1. Otvor `StudChase.rbxlx`.
+2. **Test → Clients and Servers → 2 Players → Start** (na naháňačku treba aspoň 2 hráčov).
+3. V každom okne klikni v menu na **NORMAL CHASE** alebo **INFECTION → PLAY**.
+   V Studiu sa teleport nedá použiť, preto sa zápas spustí priamo v testovacom serveri.
+4. Po 15 s intermission sa spustí kolo: odhalenie chasera, 3-2-1-GO!, naháňačka, výsledky.
 
-![Mapa](map/preview_top.png)
+> **Ukladanie dát v Studiu:** *File → Publish to Roblox*, potom
+> *Game Settings → Security → Enable Studio Access to API Services*.
+> Bez toho hra funguje, len sa coins/XP neuložia.
 
-Mapa sa generuje skriptom `tools/build_map.py` (zmeň seed alebo počty a spusti znova),
-place súbor sa skladá cez [Rojo](https://rojo.space): `rojo build -o KiddoShopGame.rbxlx`.
+## Ako to funguje na Roblox serveroch
 
-## Len UI do vlastnej hry
+- Hráč príde do **lobby** (verejný server) → loading screen → 3D menu.
+- Vyberie mód → „**Finding Players... 3/12**“ → lobby nájde otvorený zápas toho istého módu
+  (zdieľaný cez `MemoryStoreService` naprieč všetkými servermi) alebo vytvorí nový
+  **Reserved Server** (`TeleportService:ReserveServer`) a hráčov tam teleportuje.
+  Módy sa nikdy nemiešajú.
+- Match server hrá kolá dookola. **PLAY AGAIN** = ďalšie kolo, **MAIN MENU** = späť do lobby.
 
-1. **StarterPlayer → StarterPlayerScripts** → Insert Object → **LocalScript** →
-   vlož obsah `src/StarterPlayerScripts/KiddoShop.client.lua`.
-2. **ServerScriptService** → Insert Object → **Script** →
-   vlož obsah `src/ServerScriptService/ShopReceipts.server.lua`.
-3. Stlač **Play**. Vľavo klikni na **Store** (alebo na ponuku vpravo).
+## Štruktúra
 
-## Nastavenie
+```
+ReplicatedFirst/LoadingScreen          loading screen (hneď po pripojení)
+ReplicatedStorage/
+  Remotes/                             všetky RemoteEvents/Functions na jednom mieste
+  Modules/Config                       VŠETKY čísla hry (časy, odmeny, rýchlosti, matchmaking)
+  Modules/Cosmetics                    katalóg shopu (len vizuálne veci)
+  Modules/UIKit, Icons, Sounds, Util   UI stavebnice, kreslené ikony, zvuky
+  Assets/Sounds/                       Sound objekty – vymeň SoundId za vlastné
+ServerScriptService/
+  ServerMain                           jediný server Script: spustí všetko, lobby vs match
+  RoundManager                         stavový automat kola (LOBBY…RETURNING)
+  TagManager                           chytanie (iba server, cooldown, no tag-back, anti-teleport)
+  MatchmakingManager                   fronty, reserved servers, MemoryStore
+  DataManager                          DataStore (pcall, retry, session lock, BindToClose)
+  RewardManager, ShopManager, RoleManager, MapManager, RateLimiter
+  Modes/Normal, Modes/Infection        logika módov (nový mód = nový modul + riadok v Config)
+ServerStorage/Maps/Map1..3             mapy (nová mapa = nový Model so Spawns priečinkom)
+StarterPlayer/StarterPlayerScripts/
+  ClientMain                           jediný klient LocalScript
+  MenuController, UIController, CameraController, PanelsController, ClientState
+Workspace/Lobby                        čakacia plocha + MenuScene (3D pozadie menu)
+```
 
-- `PRODUCTS` v LocalScripte: ID Developer Productov / Game Passov z Creator Dashboard.
-  Kým je `id = 0`, tlačidlo spraví len ukážkový efekt (bez platby).
-- `REWARDS` v server Scripte: čo hráč dostane po kúpe (bez toho Roblox nákup nepotvrdí).
-- `SFX`: zvuky. Teraz sú tam vstavané zvuky Robloxu, vymeň ich za vlastné `rbxassetid://…`.
-- **Ikony** sa kreslia priamo v skripte z tvarov (fungujú hneď, nič netreba nahrávať).
-  Voliteľne: ostrejšie PNG z `icons/png` nahraj cez *View → Asset Manager → Bulk Import*
-  a ich ID vlož do tabuľky `ICONS` (namiesto `rbxassetid://0`).
-- **Pozadie:** všetky panely majú Roblox „studs“ vzor; v STORE sa studs pomaly posúvajú a zozadu stúpajú iskričky.
+UI sa vytvára kódom (`UIKit`) do PlayerGui ako ScreenGuis: `LoadingScreen`, `MainMenu`,
+`GameModeUI`, `GameUI`, `ResultsUI`, `SettingsUI`, `ShopUI`, `CreditsUI`, `Notifications`.
+
+## Úpravy
+
+| Chcem… | Kde |
+| --- | --- |
+| dĺžku kola, odmeny, rýchlosť, dosah chytania | `ReplicatedStorage/Modules/Config` |
+| novú mapu | Model do `ServerStorage/Maps` s priečinkom `Spawns` (Party `Spawn`, voliteľne `ChaserSpawn`) a atribútom `DisplayName` |
+| nový cosmetic | riadok v `Modules/Cosmetics` |
+| zvuky / hudbu | `ReplicatedStorage/Assets/Sounds` → `SoundId` (MenuMusic, MatchMusic sú zatiaľ prázdne) |
+| mapy cez generátor | `python3 tools/build_maps.py && rojo build -o StudChase.rbxlx` |
+
+## Bezpečnosť
+
+Klient iba **žiada** (vybrať mód, kúpiť, uložiť nastavenie). Roly, chytanie, výsledky, coins, XP
+a teleporty rieši server. Remotes majú rate-limit a server kontroluje každý vstup.
+
+`legacy/kiddo-shop/` obsahuje predchádzajúci shop UI demo.

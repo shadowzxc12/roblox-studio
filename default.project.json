@@ -1,17 +1,227 @@
 {
-  "name": "KiddoShopGame",
+  "name": "StudChase",
   "tree": {
     "$className": "DataModel",
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "$path": "src/ReplicatedFirst"
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Remotes": {
+        "$className": "Folder",
+        "GameModeSelected": {
+          "$className": "RemoteEvent"
+        },
+        "CancelMatchmaking": {
+          "$className": "RemoteEvent"
+        },
+        "MatchmakingStatus": {
+          "$className": "RemoteEvent"
+        },
+        "RoundState": {
+          "$className": "RemoteEvent"
+        },
+        "Countdown": {
+          "$className": "RemoteEvent"
+        },
+        "UpdateRole": {
+          "$className": "RemoteEvent"
+        },
+        "ShowResults": {
+          "$className": "RemoteEvent"
+        },
+        "ReturnToMenu": {
+          "$className": "RemoteEvent"
+        },
+        "RequestSettings": {
+          "$className": "RemoteEvent"
+        },
+        "DataUpdated": {
+          "$className": "RemoteEvent"
+        },
+        "Notify": {
+          "$className": "RemoteEvent"
+        },
+        "TagEffect": {
+          "$className": "RemoteEvent"
+        },
+        "RequestShop": {
+          "$className": "RemoteFunction"
+        },
+        "RequestData": {
+          "$className": "RemoteFunction"
+        }
+      },
+      "Modules": {
+        "$path": "src/ReplicatedStorage/Modules"
+      },
+      "Assets": {
+        "$className": "Folder",
+        "Sounds": {
+          "$className": "Folder",
+          "Hover": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/switch.wav",
+              "Volume": 0.25,
+              "PlaybackSpeed": 1.6,
+              "Looped": false
+            }
+          },
+          "Click": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/button.wav",
+              "Volume": 0.6,
+              "PlaybackSpeed": 1.0,
+              "Looped": false
+            }
+          },
+          "Whoosh": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/swoosh.wav",
+              "Volume": 0.5,
+              "PlaybackSpeed": 1.1,
+              "Looped": false
+            }
+          },
+          "Countdown": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/electronicpingshort.wav",
+              "Volume": 0.6,
+              "PlaybackSpeed": 0.8,
+              "Looped": false
+            }
+          },
+          "Go": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/electronicpingshort.wav",
+              "Volume": 0.8,
+              "PlaybackSpeed": 1.4,
+              "Looped": false
+            }
+          },
+          "RoundStart": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/snap.wav",
+              "Volume": 0.8,
+              "PlaybackSpeed": 0.6,
+              "Looped": false
+            }
+          },
+          "Tag": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/hit.wav",
+              "Volume": 0.8,
+              "PlaybackSpeed": 1.0,
+              "Looped": false
+            }
+          },
+          "Infect": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/splat.wav",
+              "Volume": 0.8,
+              "PlaybackSpeed": 0.9,
+              "Looped": false
+            }
+          },
+          "Victory": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/electronicpingshort.wav",
+              "Volume": 0.9,
+              "PlaybackSpeed": 1.2,
+              "Looped": false
+            }
+          },
+          "Defeat": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/uuhhh.mp3",
+              "Volume": 0.5,
+              "PlaybackSpeed": 1.0,
+              "Looped": false
+            }
+          },
+          "Coin": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "rbxasset://sounds/clickfast.wav",
+              "Volume": 0.5,
+              "PlaybackSpeed": 1.3,
+              "Looped": false
+            }
+          },
+          "MenuMusic": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "",
+              "Volume": 0.35,
+              "PlaybackSpeed": 1.0,
+              "Looped": true
+            }
+          },
+          "MatchMusic": {
+            "$className": "Sound",
+            "$properties": {
+              "SoundId": "",
+              "Volume": 0.3,
+              "PlaybackSpeed": 1.0,
+              "Looped": true
+            }
+          }
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$path": "src/ServerScriptService"
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "Maps": {
+        "$className": "Folder",
+        "Map1": {
+          "$path": "generated/Map1.model.json"
+        },
+        "Map2": {
+          "$path": "generated/Map2.model.json"
+        },
+        "Map3": {
+          "$path": "generated/Map3.model.json"
+        }
+      }
+    },
     "Workspace": {
       "$className": "Workspace",
-      "$properties": { "Gravity": 196.2 },
-      "NatureMap": { "$path": "map/NatureMap.model.json" }
+      "$properties": {
+        "Gravity": 196.2,
+        "StreamingEnabled": false
+      },
+      "Lobby": {
+        "$path": "generated/Lobby.model.json"
+      }
     },
     "Lighting": {
       "$className": "Lighting",
       "$properties": {
-        "Ambient": [0.45, 0.45, 0.5],
-        "OutdoorAmbient": [0.6, 0.6, 0.65],
+        "Ambient": [
+          0.45,
+          0.45,
+          0.5
+        ],
+        "OutdoorAmbient": [
+          0.6,
+          0.6,
+          0.65
+        ],
         "Brightness": 2.5,
         "ClockTime": 14,
         "GeographicLatitude": 30,
@@ -20,19 +230,34 @@
         "EnvironmentSpecularScale": 0,
         "FogEnd": 100000
       },
-      "Sky": { "$className": "Sky", "$properties": { "CelestialBodiesShown": true, "StarCount": 0 } }
+      "Sky": {
+        "$className": "Sky",
+        "$properties": {
+          "StarCount": 0
+        }
+      }
     },
-    "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "$path": "src/ServerScriptService"
+    "Players": {
+      "$className": "Players",
+      "$properties": {
+        "RespawnTime": 2
+      }
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
-      "$properties": { "CameraMaxZoomDistance": 120 },
+      "$properties": {
+        "CameraMaxZoomDistance": 60,
+        "CharacterWalkSpeed": 16,
+        "CharacterUseJumpPower": false,
+        "CharacterJumpHeight": 7.2
+      },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
         "$path": "src/StarterPlayerScripts"
       }
+    },
+    "SoundService": {
+      "$className": "SoundService"
     }
   }
 }
