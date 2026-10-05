@@ -8,10 +8,29 @@ local Config = {}
 
 Config.GameName = "MASSIVE STORE"
 Config.Subtitle = "LOCUST"
-Config.Version = "1.0.0"
+Config.Version = "2.0.0"
 Config.DataStoreName = "MassiveStoreLocust_v1"
 Config.ServerRegistryName = "MSL_Servers_v1"
 Config.MaxPlayers = 12
+
+--[[
+	Two places in one experience:
+	  Lobby  the start place: menu, party, cosmetics, shop. Teleports you into a store.
+	  Game   the store itself. Every run is a reserved (private) server just for you / your party.
+	Publish both, then put their place ids here (Creator Dashboard -> experience -> Places).
+	While an id is 0 (e.g. in Studio) teleports are skipped with a message.
+]]
+Config.Places = {
+	Lobby = 0,
+	Game = 0,
+}
+
+Config.Party = {
+	MaxSize = 4,
+	InviteTimeout = 30, -- seconds an invite stays valid
+	LobbyModes = { "Survival", "Infection", "Hardcore" },
+	Pads = 16, -- party lineups in the lobby parking lot
+}
 
 --=============================== MAP ===============================--
 Config.Map = {

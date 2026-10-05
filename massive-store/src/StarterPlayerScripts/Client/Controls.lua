@@ -17,12 +17,15 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Cosmetics = require(Shared.Cosmetics)
+local Holding = require(Shared.Holding)
 
 local UI = require(script.Parent.UI)
 local ClientState = require(script.Parent.ClientState)
 local InventoryUI = require(script.Parent.InventoryUI)
 local BuildUI = require(script.Parent.BuildUI)
 local MapUI = require(script.Parent.MapUI)
+local ViewModel = require(script.Parent.ViewModel)
+local CharacterAnimator = require(script.Parent.CharacterAnimator)
 
 local Controls = {}
 
@@ -65,6 +68,10 @@ function Controls.Use()
 	local slot = inv.Selected or 0
 	if slot > 0 and inv.Slots[slot] then
 		Net.Event("UseItem"):FireServer(slot, aimPoint())
+		-- play the animation right away (the server's echo is skipped)
+		local action = Holding.ActionFor(inv.Slots[slot].Id)
+		ViewModel.Play(action)
+		CharacterAnimator.PlayLocal(action)
 	end
 end
 
@@ -110,8 +117,10 @@ local function onInput(input: InputObject, processed: boolean)
 		crouch = true
 	elseif kc == Enum.KeyCode.F then
 		Net.Event("Flashlight"):FireServer()
+		ViewModel.Play("Click")
 	elseif kc == Enum.KeyCode.R then
 		Net.Event("Reload"):FireServer()
+		ViewModel.Play("Reload")
 	elseif kc == Enum.KeyCode.N then
 		Net.Event("NightVision"):FireServer()
 	elseif kc == Enum.KeyCode.ButtonSelect then

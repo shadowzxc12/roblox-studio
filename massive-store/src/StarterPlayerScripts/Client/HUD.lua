@@ -81,60 +81,85 @@ HUD.Glyph = glyph
 
 --============================ BUILD ============================--
 local function buildVitals()
-	local box = make("Frame", { Name = "Vitals", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 22, 1, -22), Size = UDim2.fromOffset(260, 130) }, root)
-	UI.list(box, 6).VerticalAlignment = Enum.VerticalAlignment.Bottom
+	-- Figma 04: glass panel, mono labels, thin bars, numbers on the right
+	local box = UI.panel(root, { Name = "Vitals", AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 24, 1, -24), Size = UDim2.fromOffset(284, 124), BackgroundTransparency = 0.2 }, 8)
+	local list = make("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(14, 10), Size = UDim2.new(1, -28, 1, -20) }, box)
+	UI.list(list, 5).VerticalAlignment = Enum.VerticalAlignment.Center
 	local rows = {}
 	local defs = {
-		{ "Health", C.Health, 1 },
-		{ "Hunger", C.Hunger, 2 },
-		{ "Stamina", C.Stamina, 3 },
-		{ "Energy", C.Energy, 4 },
-		{ "Battery", C.Battery, 5 },
+		{ "Health", "HP", C.Health, 1 },
+		{ "Hunger", "FOOD", C.Hunger, 2 },
+		{ "Energy", "ENERGY", C.Energy, 3 },
+		{ "Stamina", "STAMINA", C.Stamina, 4 },
+		{ "Battery", "BATTERY", C.Battery, 5 },
 	}
 	for _, d in defs do
-		local row = make("Frame", { BackgroundTransparency = 1, Size = UDim2.fromOffset(260, 20), LayoutOrder = d[3] }, box)
-		glyph(row, d[1], d[2], 16).Position = UDim2.fromOffset(0, 2)
-		local bar, set = UI.bar(row, d[2], { Position = UDim2.fromOffset(24, 5), Size = UDim2.fromOffset(186, 10) })
-		local value = UI.text(row, "100", 13, C.Text, UI.Mono, { Position = UDim2.fromOffset(218, 0), Size = UDim2.fromOffset(42, 20) })
+		local row = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), LayoutOrder = d[4] }, list)
+		UI.text(row, d[2], 9, C.Muted, UI.Mono, { Size = UDim2.fromOffset(64, 16) })
+		local bar, set = UI.bar(row, d[3], { Position = UDim2.fromOffset(68, 4), Size = UDim2.new(1, -108, 0, 7) })
+		local value = UI.text(row, "100", 11, C.Text, UI.Mono, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(34, 16), TextXAlignment = Enum.TextXAlignment.Right })
 		rows[d[1]] = { Row = row, Set = set, Value = value, Bar = bar }
 	end
 	rows.Battery.Row.Visible = false
 	refs.Vitals = rows
-	local buff = UI.text(box, "", 12, C.Accent, UI.Caps, { Size = UDim2.fromOffset(260, 16), LayoutOrder = 0, Visible = false })
+	refs.VitalsBox = box
+	local buff = UI.text(root, "", 11, C.Accent, UI.Mono, { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 26, 1, -154), Size = UDim2.fromOffset(280, 16), Visible = false })
 	refs.Buff = buff
+
+	-- noise meter (bottom right, Figma 04)
+	local nm = UI.panel(root, { Name = "Noise", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -56), Size = UDim2.fromOffset(220, 62), BackgroundTransparency = 0.2 }, 8)
+	UI.text(nm, "NOISE", 9, C.Muted, UI.Mono, { Position = UDim2.fromOffset(14, 8), Size = UDim2.fromOffset(80, 12) })
+	local state = UI.text(nm, "QUIET", 9, C.Good, UI.Mono, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -14, 0, 8), Size = UDim2.fromOffset(100, 12), TextXAlignment = Enum.TextXAlignment.Right })
+	local bars = {}
+	for i = 1, 14 do
+		local f = make("Frame", { BackgroundColor3 = C.Text, BackgroundTransparency = 0.85, BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromOffset(14 + (i - 1) * 13.6, 54), Size = UDim2.fromOffset(8, 4) }, nm)
+		UI.corner(f, 2)
+		bars[i] = f
+	end
+	refs.Noise = { Bars = bars, State = state, Level = 0, Shape = {} }
+	for i = 1, 14 do
+		refs.Noise.Shape[i] = 0.35 + 0.65 * math.abs(math.sin(i * 1.7))
+	end
+
+	-- crosshair (first person)
+	local dot = make("Frame", { Name = "Crosshair", BackgroundColor3 = C.Text, BackgroundTransparency = 0.1, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(6, 6) }, root)
+	UI.corner(dot)
+	UI.stroke(dot, Color3.new(0, 0, 0), 1, 0.5)
+	refs.Crosshair = dot
 end
 
 local function buildPhase()
-	local pill = UI.panel(root, { Name = "Phase", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(300, 64) }, 12)
-	local title = UI.text(pill, "DAY 1", 26, C.Text, UI.Title, { Position = UDim2.fromOffset(16, 6), Size = UDim2.fromOffset(170, 30) })
-	local clock = UI.text(pill, "07:00 AM", 18, C.Accent, UI.Mono, { Position = UDim2.fromOffset(170, 9), Size = UDim2.fromOffset(115, 24), TextXAlignment = Enum.TextXAlignment.Right })
-	local sub = UI.text(pill, "", 11, C.Muted, UI.Caps, { Position = UDim2.fromOffset(16, 36), Size = UDim2.fromOffset(270, 14) })
-	local bar, set, fill = UI.bar(pill, C.Accent, { Position = UDim2.fromOffset(16, 52), Size = UDim2.fromOffset(268, 4) })
+	local pill = UI.panel(root, { Name = "Phase", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 20), Size = UDim2.fromOffset(260, 70), BackgroundTransparency = 0.15 }, 8)
+	local title = UI.text(pill, "DAY 1", 26, C.Text, UI.Title, { Position = UDim2.fromOffset(16, 4), Size = UDim2.fromOffset(150, 32) })
+	local clock = UI.text(pill, "07:00 AM", 18, C.Text, UI.Mono, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 9), Size = UDim2.fromOffset(110, 24), TextXAlignment = Enum.TextXAlignment.Right })
+	local sub = UI.text(pill, "", 9, C.Muted, UI.Mono, { Position = UDim2.fromOffset(16, 36), Size = UDim2.new(1, -32, 0, 12), TextTruncate = Enum.TextTruncate.AtEnd })
+	local bar, set, fill = UI.bar(pill, C.Accent, { Position = UDim2.fromOffset(16, 54), Size = UDim2.new(1, -32, 0, 4) })
 	refs.Phase = { Pill = pill, Title = title, Clock = clock, Sub = sub, SetBar = set, Fill = fill }
 
-	local event = UI.panel(root, { Name = "Event", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 86), Size = UDim2.fromOffset(360, 52), Visible = false }, 10)
-	UI.stroke(event, C.Danger, 1.5)
-	local en = UI.text(event, "", 16, C.Danger, UI.Title, { Position = UDim2.fromOffset(14, 6), Size = UDim2.fromOffset(330, 20) })
-	local ed = UI.text(event, "", 12, C.Text, UI.Body, { Position = UDim2.fromOffset(14, 27), Size = UDim2.fromOffset(330, 18), TextTruncate = Enum.TextTruncate.AtEnd })
+	local event = UI.panel(root, { Name = "Event", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 98), Size = UDim2.fromOffset(360, 52), Visible = false }, 8)
+	UI.stroke(event, C.Danger, 1, 0.3)
+	event.BackgroundColor3 = Color3.fromHex("1a0b0c")
+	local en = UI.text(event, "", 16, C.Danger, UI.Title, { Position = UDim2.fromOffset(14, 5), Size = UDim2.fromOffset(330, 22) })
+	local ed = UI.text(event, "", 11, C.Text, UI.Body, { Position = UDim2.fromOffset(14, 28), Size = UDim2.fromOffset(330, 16), TextTruncate = Enum.TextTruncate.AtEnd })
 	refs.Event = { Frame = event, Name = en, Desc = ed }
 end
 
 local function buildObjective()
-	local box = make("Frame", { Name = "Objective", BackgroundTransparency = 1, Position = UDim2.fromOffset(22, 18), Size = UDim2.fromOffset(340, 80) }, root)
-	local bar = make("Frame", { BackgroundColor3 = C.Accent, BorderSizePixel = 0, Size = UDim2.fromOffset(3, 40) }, box)
-	UI.text(box, "OBJECTIVE", 11, C.Accent, UI.Caps, { Position = UDim2.fromOffset(12, 0), Size = UDim2.fromOffset(300, 14) })
-	local text = UI.text(box, "Explore the store", 16, C.Text, UI.Bold, { Position = UDim2.fromOffset(12, 16), Size = UDim2.fromOffset(320, 24), TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top })
-	local teamLine = UI.text(box, "", 12, C.Purple, UI.Bold, { Position = UDim2.fromOffset(12, 40), Size = UDim2.fromOffset(320, 16), TextTruncate = Enum.TextTruncate.AtEnd })
-	local loc = make("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(10, 58), Size = UDim2.fromOffset(320, 20) }, box)
-	glyph(loc, "Pin", C.Muted, 14).Position = UDim2.fromOffset(0, 3)
-	local where = UI.text(loc, "", 12, C.Muted, UI.Caps, { Position = UDim2.fromOffset(20, 0), Size = UDim2.fromOffset(300, 20) })
+	local box = UI.panel(root, { Name = "Objective", Position = UDim2.fromOffset(24, 24), Size = UDim2.fromOffset(320, 92), BackgroundTransparency = 0.2 }, 8)
+	local bar = make("Frame", { BackgroundColor3 = C.Accent, BorderSizePixel = 0, Size = UDim2.new(0, 4, 1, 0), ZIndex = 3 }, box)
+	UI.text(box, "OBJECTIVE", 10, C.Accent, UI.Mono, { Position = UDim2.fromOffset(18, 10), Size = UDim2.fromOffset(200, 12) })
+	local text = UI.text(box, "Explore the store", 17, C.Text, UI.Heading, { Position = UDim2.fromOffset(18, 24), Size = UDim2.new(1, -30, 0, 22), TextTruncate = Enum.TextTruncate.AtEnd })
+	local teamLine = UI.text(box, "", 11, C.Purple, UI.Semi, { Position = UDim2.fromOffset(18, 48), Size = UDim2.new(1, -30, 0, 14), TextTruncate = Enum.TextTruncate.AtEnd })
+	local loc = make("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 66), Size = UDim2.new(1, -30, 0, 16) }, box)
+	glyph(loc, "Pin", C.Muted, 12).Position = UDim2.fromOffset(0, 2)
+	local where = UI.text(loc, "", 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(18, 0), Size = UDim2.new(1, -18, 1, 0) })
 	refs.Objective = { Text = text, Where = where, Bar = bar, Team = teamLine }
 end
 
 local function buildSquad()
-	local box = make("Frame", { Name = "Squad", BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -20, 0, 18), Size = UDim2.fromOffset(230, 240) }, root)
+	local box = make("Frame", { Name = "Squad", BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -24, 0, 24), Size = UDim2.fromOffset(230, 260) }, root)
 	UI.list(box, 4, false, Enum.HorizontalAlignment.Right)
-	UI.text(box, "SURVIVORS", 11, C.Muted, UI.Caps, { Size = UDim2.fromOffset(230, 14), TextXAlignment = Enum.TextXAlignment.Right, LayoutOrder = 0 })
+	UI.text(box, "TEAM", 10, C.Muted, UI.Mono, { Size = UDim2.fromOffset(230, 12), TextXAlignment = Enum.TextXAlignment.Right, LayoutOrder = 0 })
 	refs.Squad = { Box = box, Rows = {} }
 end
 
@@ -370,30 +395,79 @@ function HUD.Flash(strength: number)
 end
 
 --============================ RESULTS ============================--
+-- Figma 08 "Run Over — Results": big title, stat tiles, party, BACK TO LOBBY / NEW STORE
 function HUD.Results(summary)
-	local panel = UI.panel(overlayRoot, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(560, 380), ZIndex = 20 }, 14)
-	UI.stroke(panel, C.Danger, 2)
-	UI.text(panel, "THE STORE CLAIMED YOU", 30, C.Danger, UI.Title, { Position = UDim2.fromOffset(0, 18), Size = UDim2.new(1, 0, 0, 36), TextXAlignment = Enum.TextXAlignment.Center })
-	UI.text(panel, ("%s · %d NIGHTS SURVIVED · %s"):format(Config.Modes[summary.Mode] and Config.Modes[summary.Mode].Name or "", summary.Nights, Util.FormatTime(summary.Duration or 0)), 13, C.Muted, UI.Caps, { Position = UDim2.fromOffset(0, 58), Size = UDim2.new(1, 0, 0, 18), TextXAlignment = Enum.TextXAlignment.Center })
-	local list = make("ScrollingFrame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(24, 92), Size = UDim2.new(1, -48, 0, 220), CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 4, BorderSizePixel = 0 }, panel)
-	UI.list(list, 4)
-	local header = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18) }, list)
-	for i, h in { "SURVIVOR", "NIGHTS", "BUILT", "REVIVES", "DOWNS" } do
-		UI.text(header, h, 11, C.Muted, UI.Caps, { Position = UDim2.fromScale(if i == 1 then 0 else 0.4 + (i - 2) * 0.15, 0), Size = UDim2.fromScale(if i == 1 then 0.4 else 0.15, 1) })
+	local old = overlayRoot:FindFirstChild("Results")
+	if old then
+		old:Destroy()
 	end
+	local screen = make("Frame", { Name = "Results", BackgroundColor3 = Color3.fromHex("060708"), BackgroundTransparency = 0.08, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), ZIndex = 20 }, overlayRoot)
+	ClientState.SetBusy("Results", true)
+	local glow = make("Frame", { BackgroundColor3 = C.Danger, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.45), Size = UDim2.fromScale(0.9, 0.9), ZIndex = 20 }, screen)
+	UI.corner(glow)
+	make("UIGradient", { Transparency = NumberSequence.new(0.86, 1), Rotation = 90 }, glow)
+	local body = make("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 60), Size = UDim2.fromOffset(816, 620), ZIndex = 21 }, screen)
+	local z = 22
+	local modeName = Config.Modes[summary.Mode] and Config.Modes[summary.Mode].Name or ""
+	UI.text(body, "THE STORE IS CLOSED", 12, C.Danger, UI.Mono, { Size = UDim2.new(1, 0, 0, 16), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z })
+	UI.text(body, ("YOU SURVIVED %d NIGHT%s"):format(summary.Nights, if summary.Nights == 1 then "" else "S"), 60, C.Text, UI.Title, { Position = UDim2.fromOffset(0, 20), Size = UDim2.new(1, 0, 0, 72), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z })
+	local d = ClientState.Data
+	UI.text(body, ("Best: %d nights  ·  %s  ·  %s"):format(d and d.BestNight or summary.Nights, modeName, Util.FormatTime(summary.Duration or 0)), 13, C.Muted, UI.Body, { Position = UDim2.fromOffset(0, 96), Size = UDim2.new(1, 0, 0, 18), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z })
+	-- tiles
+	local built, revives, downs = 0, 0, 0
 	for _, p in summary.Players or {} do
-		local row = make("Frame", { BackgroundColor3 = C.Panel2, BackgroundTransparency = 0.2, Size = UDim2.new(1, 0, 0, 28) }, list)
-		UI.corner(row, 6)
-		local vals = { p.Name, p.Nights or 0, p.Built or 0, p.Revives or 0, p.Downs or 0 }
-		for i, v in vals do
-			UI.text(row, tostring(v), 14, C.Text, if i == 1 then UI.Bold else UI.Mono, { Position = UDim2.new(if i == 1 then 0 else 0.4 + (i - 2) * 0.15, 8, 0, 0), Size = UDim2.fromScale(if i == 1 then 0.4 else 0.15, 1) })
+		built += p.Built or 0
+		revives += p.Revives or 0
+		downs += p.Downs or 0
+	end
+	for i, t in { { "NIGHTS", summary.Nights, C.Accent }, { "BUILT", built, C.Text }, { "REVIVES", revives, C.Good }, { "DOWNS", downs, C.Danger } } do
+		local tile = make("Frame", { BackgroundColor3 = C.Panel, BorderSizePixel = 0, Position = UDim2.fromOffset((i - 1) * 208, 136), Size = UDim2.fromOffset(196, 116), ZIndex = z }, body)
+		UI.corner(tile, 10)
+		UI.stroke(tile, Color3.new(1, 1, 1), 1, 0.92)
+		UI.text(tile, t[1], 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(0, 18), Size = UDim2.new(1, 0, 0, 14), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+		UI.text(tile, tostring(t[2]), 46, t[3], UI.Title, { Position = UDim2.fromOffset(0, 38), Size = UDim2.new(1, 0, 0, 56), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+	end
+	-- party
+	local party = make("Frame", { BackgroundColor3 = C.Panel, BorderSizePixel = 0, Position = UDim2.fromOffset(0, 268), Size = UDim2.new(1, 0, 0, 180), ZIndex = z }, body)
+	UI.corner(party, 10)
+	UI.stroke(party, Color3.new(1, 1, 1), 1, 0.92)
+	local list = make("ScrollingFrame", { BackgroundTransparency = 1, BorderSizePixel = 0, Position = UDim2.fromOffset(20, 14), Size = UDim2.new(1, -40, 1, -28), CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 3, ZIndex = z + 1 }, party)
+	make("UIGridLayout", { CellSize = UDim2.new(0.5, -8, 0, 48), CellPadding = UDim2.fromOffset(12, 8), SortOrder = Enum.SortOrder.LayoutOrder }, list)
+	for i, p in summary.Players or {} do
+		local row = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = z + 1 }, list)
+		local av = make("Frame", { BackgroundColor3 = if i == 1 then C.Accent else C.Info, BorderSizePixel = 0, Size = UDim2.fromOffset(44, 44), ZIndex = z + 2 }, row)
+		UI.corner(av)
+		UI.text(av, string.upper(string.sub(p.Name or "?", 1, 1)), 20, C.Ink, UI.Title, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 3 })
+		UI.text(row, p.Name or "?", 17, C.Text, UI.Heading, { Position = UDim2.fromOffset(56, 2), Size = UDim2.new(1, -60, 0, 22), ZIndex = z + 2, TextTruncate = Enum.TextTruncate.AtEnd })
+		UI.text(row, ("%d nights · %d built · %d revives%s"):format(p.Nights or 0, p.Built or 0, p.Revives or 0, if i == 1 then " · MVP" else ""), 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(56, 26), Size = UDim2.new(1, -60, 0, 14), ZIndex = z + 2 })
+	end
+	-- buttons
+	local lobby = UI.button(body, { Name = "BackToLobby", Text = "BACK TO LOBBY", Sub = "teleport · your party stays together", Style = "Primary", Position = UDim2.fromOffset(0, 468), Size = UDim2.fromOffset(400, 66), TextSize = 26, ZIndex = z })
+	local stay = UI.button(body, { Name = "NewStore", Text = "NEW STORE", Sub = "same server · starts by itself", Position = UDim2.fromOffset(416, 468), Size = UDim2.fromOffset(400, 66), TextSize = 26, ZIndex = z })
+	local timer = UI.text(body, "", 11, C.Muted, UI.Mono, { Position = UDim2.fromOffset(0, 546), Size = UDim2.new(1, 0, 0, 14), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z })
+	local function close()
+		ClientState.SetBusy("Results", false)
+		if screen.Parent then
+			screen:Destroy()
 		end
 	end
-	UI.text(panel, "A NEW STORE OPENS IN A MOMENT...", 13, C.Accent, UI.Caps, { Position = UDim2.new(0, 0, 1, -40), Size = UDim2.new(1, 0, 0, 20), TextXAlignment = Enum.TextXAlignment.Center })
-	local scale = make("UIScale", { Scale = 0.7 }, panel)
-	UI.tween(scale, 0.4, { Scale = 1 }, Enum.EasingStyle.Back)
-	task.delay(Config.Cycle.WipeResults - 1, function()
-		panel:Destroy()
+	lobby.Activated:Connect(function()
+		Net.Event("Lobby"):FireServer("Return")
+		local label = lobby:FindFirstChild("Label")
+		if label then
+			label.Text = "SEE YOU THERE"
+		end
+	end)
+	stay.Activated:Connect(close)
+	local scale = make("UIScale", { Scale = 0.92 }, body)
+	UI.tween(scale, 0.45, { Scale = 1 }, Enum.EasingStyle.Back)
+	local ends = os.clock() + Config.Cycle.WipeResults - 1
+	task.spawn(function()
+		while screen.Parent and os.clock() < ends do
+			timer.Text = ("A NEW STORE OPENS IN %ds"):format(math.ceil(ends - os.clock()))
+			task.wait(0.25)
+		end
+		close()
 	end)
 end
 
@@ -464,13 +538,15 @@ local function updatePhase()
 	if isNight then
 		ph.Title.Text = "NIGHT " .. night
 		ph.Title.TextColor3 = C.Danger
+		ph.Clock.TextColor3 = C.Text
 		ph.Fill.BackgroundColor3 = C.Danger
-		ph.Sub.Text = ("%s · DAWN IN %s"):format(ReplicatedStorage:GetAttribute("LocustVariant") or "THE LOCUST", Util.FormatTime(left))
+		ph.Sub.Text = string.upper(("%s · dawn in %s"):format(ReplicatedStorage:GetAttribute("LocustVariant") or "THE LOCUST", Util.FormatTime(left)))
 	elseif phase == "Dusk" then
 		ph.Title.Text = "DUSK"
 		ph.Title.TextColor3 = Color3.fromHex("ff7a1a")
 		ph.Fill.BackgroundColor3 = Color3.fromHex("ff7a1a")
 		ph.Sub.Text = ("NIGHT %d IN %s"):format(night, Util.FormatTime(left))
+		ph.Clock.TextColor3 = C.Orange
 	elseif phase == "Results" then
 		ph.Title.Text = "GAME OVER"
 		ph.Title.TextColor3 = C.Danger
@@ -480,6 +556,7 @@ local function updatePhase()
 		ph.Title.TextColor3 = C.Text
 		ph.Fill.BackgroundColor3 = C.Accent
 		ph.Sub.Text = if phase == "Day" then ("NIGHTFALL IN %s · %s"):format(Util.FormatTime(left), ReplicatedStorage:GetAttribute("ModeName") or "") else ""
+		ph.Clock.TextColor3 = C.Text
 	end
 	ph.SetBar(1 - left / math.max(1, length))
 	ph.Clock.Text = Util.FormatClock(ReplicatedStorage:GetAttribute("Clock") or 7)
@@ -508,17 +585,19 @@ local function updateSquad()
 		local e = list[i]
 		local row = sq.Rows[i]
 		if e and not row then
-			row = make("Frame", { BackgroundColor3 = C.Panel, BackgroundTransparency = 0.25, Size = UDim2.fromOffset(220, 26), LayoutOrder = i }, sq.Box)
+			row = make("Frame", { BackgroundColor3 = C.Panel, BackgroundTransparency = 0.2, Size = UDim2.fromOffset(230, 36), LayoutOrder = i }, sq.Box)
 			UI.corner(row, 6)
-			local dot = make("Frame", { BackgroundColor3 = C.Good, Position = UDim2.fromOffset(8, 9), Size = UDim2.fromOffset(8, 8) }, row)
+			UI.stroke(row, Color3.new(1, 1, 1), 1, 0.93)
+			local dot = make("Frame", { BackgroundColor3 = C.Good, Position = UDim2.fromOffset(10, 9), Size = UDim2.fromOffset(18, 18) }, row)
 			UI.corner(dot)
-			local name = UI.text(row, "", 13, C.Text, UI.Bold, { Position = UDim2.fromOffset(22, 0), Size = UDim2.fromOffset(120, 26), TextTruncate = Enum.TextTruncate.AtEnd })
-			local dist = UI.text(row, "", 12, C.Muted, UI.Mono, { Position = UDim2.fromOffset(140, 0), Size = UDim2.fromOffset(50, 26), TextXAlignment = Enum.TextXAlignment.Right })
-			local arrow = make("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromOffset(204, 13), Size = UDim2.fromOffset(14, 14) }, row)
+			local name = UI.text(row, "", 12, C.Text, UI.Bold, { Position = UDim2.fromOffset(36, 3), Size = UDim2.fromOffset(110, 18), TextTruncate = Enum.TextTruncate.AtEnd })
+			local _, hp = UI.track(row, C.Good, 1, { Position = UDim2.fromOffset(36, 23), Size = UDim2.fromOffset(150, 4) })
+			local dist = UI.text(row, "", 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(140, 3), Size = UDim2.fromOffset(50, 18), TextXAlignment = Enum.TextXAlignment.Right })
+			local arrow = make("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromOffset(210, 18), Size = UDim2.fromOffset(14, 14) }, row)
 			local tip = make("Frame", { BackgroundColor3 = C.Text, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0), Size = UDim2.fromOffset(3, 12) }, arrow)
 			UI.corner(tip, 2)
 			local head = make("Frame", { BackgroundColor3 = C.Text, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.15), Size = UDim2.fromOffset(7, 7), Rotation = 45 }, arrow)
-			row = { Frame = row, Dot = dot, Name = name, Dist = dist, Arrow = arrow }
+			row = { Frame = row, Dot = dot, Name = name, Dist = dist, Arrow = arrow, HP = hp }
 			sq.Rows[i] = row
 		end
 		if row then
@@ -538,6 +617,8 @@ local function updateSquad()
 					color = C.Accent
 				end
 				row.Dot.BackgroundColor3 = color
+				row.HP.Size = UDim2.fromScale(math.clamp((e.Health or 100) / Config.Survival.MaxHealth, 0, 1), 1)
+				row.HP.BackgroundColor3 = if (e.Health or 100) < 40 then C.Danger else C.Good
 				row.Name.TextColor3 = if e.Dead then C.Dim else C.Text
 				if me and e.Pos then
 					local d = (e.Pos - me).Magnitude
@@ -570,6 +651,27 @@ local function updateWarnings(dt)
 		e.BackgroundTransparency = math.clamp(dark - red * 0.6, 0, 1)
 	end
 	refs.Hunted.Visible = inRun and player:GetAttribute("LocustHunting") == true and night
+	-- noise meter: jumps to how loud you were, then decays
+	local nz = refs.Noise
+	local heard = player:GetAttribute("Noise") or 0
+	local at = player:GetAttribute("NoiseAt") or 0
+	local live = if Workspace:GetServerTimeNow() - at < 0.6 then heard else 0
+	if player:GetAttribute("Sprinting") then
+		live = math.max(live, 0.55)
+	elseif player:GetAttribute("Crouching") then
+		live = math.max(live * 0.5, 0.05)
+	end
+	nz.Level = math.max(live, nz.Level - dt * 0.6)
+	local lit = math.floor(nz.Level * 14 + 0.5)
+	for i, f in nz.Bars do
+		local on = i <= lit
+		f.Size = UDim2.fromOffset(8, 4 + (if on then nz.Shape[i] * 30 * (0.8 + 0.2 * beat) else 0))
+		f.BackgroundTransparency = if on then 0 else 0.85
+		f.BackgroundColor3 = if not on then C.Text elseif i > 10 then C.Danger else C.Accent
+	end
+	nz.State.Text = if nz.Level > 0.7 then "LOUD" elseif nz.Level > 0.3 then "AUDIBLE" else "QUIET"
+	nz.State.TextColor3 = if nz.Level > 0.7 then C.Danger elseif nz.Level > 0.3 then C.Accent else C.Good
+	refs.Crosshair.Visible = inRun and not ClientState.IsBusy() and not player:GetAttribute("Dead") and not player:GetAttribute("Hidden")
 	-- overlays
 	local downed = player:GetAttribute("Downed") == true and inRun
 	refs.Downed.Frame.Visible = downed

@@ -19,6 +19,15 @@ function Noise.Emit(position: Vector3, loudness: number, source: any?, kind: str
 		return
 	end
 	table.insert(events, { Pos = position, Loud = loudness, Source = source, Kind = kind or "Noise", Time = os.clock() })
+	-- the HUD noise meter: how loud you just were
+	if typeof(source) == "Instance" and source:IsA("Player") then
+		local last = source:GetAttribute("NoiseAt") or 0
+		local now = game:GetService("Workspace"):GetServerTimeNow()
+		if loudness > (source:GetAttribute("Noise") or 0) or now - last > 0.25 then
+			source:SetAttribute("Noise", math.floor(math.clamp(loudness, 0, 1) * 100 + 0.5) / 100)
+			source:SetAttribute("NoiseAt", now)
+		end
+	end
 	if #events > MAX then
 		table.remove(events, 1)
 	end

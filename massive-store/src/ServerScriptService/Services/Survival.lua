@@ -692,6 +692,7 @@ function Survival.Init()
 				return
 			end
 		end
+		require(script.Parent.Inventory).PlayAction(player, "Revive")
 		Survival.Revive(target, player)
 	end)
 

@@ -393,6 +393,7 @@ function Building.Place(player: Player, id: string, pos: Vector3, rot: number)
 	if not Inventory.Consume(player, def.Cost) then
 		return false, "Not enough materials"
 	end
+	Inventory.PlayAction(player, "Build")
 	local d = Data.Get(player)
 	local model, main = buildVisual(def, cf, d and d.Equipped)
 	nextId += 1

@@ -18,34 +18,44 @@ local Rarity = require(Shared.Rarity)
 
 local UI = {}
 
+-- design tokens: Figma "MASSIVE STORE: LOCUST — UI" (00 Style Guide)
 UI.C = {
-	Bg = Color3.fromHex("0a0b0e"),
-	Panel = Color3.fromHex("121418"),
-	Panel2 = Color3.fromHex("1a1d23"),
+	Bg = Color3.fromHex("0a0c0f"),
+	Panel = Color3.fromHex("12151a"),
+	Panel2 = Color3.fromHex("1a1e25"),
 	Panel3 = Color3.fromHex("23272f"),
-	Line = Color3.fromHex("2e333d"),
-	Text = Color3.fromHex("eceef2"),
-	Muted = Color3.fromHex("8a92a2"),
+	Line = Color3.fromHex("2a2f38"),
+	Text = Color3.fromHex("f2f0ea"),
+	Muted = Color3.fromHex("8d939c"),
 	Dim = Color3.fromHex("5a6170"),
+	Ink = Color3.fromHex("0b0b0b"),
 	Accent = Color3.fromHex("ffc61a"),
 	AccentDark = Color3.fromHex("b8860b"),
-	Danger = Color3.fromHex("ff3b3b"),
-	Good = Color3.fromHex("5fd36a"),
-	Info = Color3.fromHex("5ab4ff"),
-	Purple = Color3.fromHex("b76bff"),
-	Health = Color3.fromHex("ff4757"),
-	Hunger = Color3.fromHex("ff9f43"),
-	Stamina = Color3.fromHex("f1f2f6"),
-	Energy = Color3.fromHex("54a0ff"),
-	Battery = Color3.fromHex("ffe14d"),
+	Danger = Color3.fromHex("e0262d"),
+	Good = Color3.fromHex("4cd964"),
+	Info = Color3.fromHex("3d8bff"),
+	Purple = Color3.fromHex("a66bff"),
+	Orange = Color3.fromHex("ff8a1f"),
+	Health = Color3.fromHex("e0262d"),
+	Hunger = Color3.fromHex("ff8a1f"),
+	Stamina = Color3.fromHex("4cd964"),
+	Energy = Color3.fromHex("3d8bff"),
+	Battery = Color3.fromHex("ffc61a"),
+	Paper = Color3.fromHex("ebe6d8"),
 }
 local C = UI.C
 
-UI.Title = Font.fromEnum(Enum.Font.GothamBlack)
-UI.Bold = Font.fromEnum(Enum.Font.GothamBold)
-UI.Body = Font.fromEnum(Enum.Font.GothamMedium)
-UI.Mono = Font.fromEnum(Enum.Font.RobotoMono)
-UI.Caps = Font.fromEnum(Enum.Font.Michroma)
+-- type: Oswald (display / buttons), Montserrat (body), Roboto Mono (labels & numbers)
+local OSWALD = "rbxasset://fonts/families/Oswald.json"
+local MONTSERRAT = "rbxasset://fonts/families/Montserrat.json"
+local MONO = "rbxasset://fonts/families/RobotoMono.json"
+UI.Title = Font.new(OSWALD, Enum.FontWeight.Bold)
+UI.Heading = Font.new(OSWALD, Enum.FontWeight.SemiBold)
+UI.Bold = Font.new(MONTSERRAT, Enum.FontWeight.Bold)
+UI.Semi = Font.new(MONTSERRAT, Enum.FontWeight.SemiBold)
+UI.Body = Font.new(MONTSERRAT, Enum.FontWeight.Medium)
+UI.Mono = Font.new(MONO, Enum.FontWeight.Bold)
+UI.Caps = Font.new(MONO, Enum.FontWeight.Bold) -- small spaced labels
 
 local player = Players.LocalPlayer
 
@@ -125,15 +135,11 @@ end
 function UI.panel(parent: Instance, props, radius: number?): Frame
 	local f = make("Frame", {
 		BackgroundColor3 = C.Panel,
-		BackgroundTransparency = 0.08,
+		BackgroundTransparency = 0.1,
 		BorderSizePixel = 0,
 	}, parent)
 	UI.corner(f, radius or 10)
-	UI.stroke(f, C.Line, 1, 0.1)
-	make("UIGradient", {
-		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(200, 200, 205)),
-		Rotation = 90,
-	}, f)
+	UI.stroke(f, Color3.new(1, 1, 1), 1, 0.92)
 	if props then
 		for k, v in props do
 			(f :: any)[k] = v
@@ -143,48 +149,102 @@ function UI.panel(parent: Instance, props, radius: number?): Frame
 end
 
 --[[
-	button(parent, { Text, Size, Position, AnchorPoint, Style = "Primary"|"Ghost"|"Danger"|"Dark", TextSize, LayoutOrder, Icon })
+	button(parent, { Text, Sub, Key, Size, Position, AnchorPoint, Style = "Primary"|"Dark"|"Ghost"|"Danger"|"Good",
+	                 Accent (yellow left bar), TextSize, LayoutOrder, Font, Radius })
+	Figma: primary = sign yellow with black Oswald caps; dark = glass panel with a thin outline,
+	optional yellow accent bar, sub line and a keycap on the right.
 ]]
 function UI.button(parent: Instance, opts): TextButton
 	local style = opts.Style or "Dark"
-	local bg, fg = C.Panel2, C.Text
+	local bg, fg, strokeT = C.Panel2, C.Text, 0.9
 	if style == "Primary" then
-		bg, fg = C.Accent, Color3.fromHex("111111")
+		bg, fg, strokeT = C.Accent, C.Ink, 1
 	elseif style == "Danger" then
-		bg, fg = C.Danger, Color3.new(1, 1, 1)
+		bg, fg = C.Panel2, C.Danger
 	elseif style == "Good" then
-		bg, fg = C.Good, Color3.fromHex("0b1a0d")
+		bg, fg, strokeT = C.Good, C.Ink, 1
 	elseif style == "Ghost" then
 		bg = C.Panel
 	end
+	local hasSub = opts.Sub ~= nil
 	local b = make("TextButton", {
 		Name = opts.Name or ((opts.Text or "Button") .. "Button"),
 		AutoButtonColor = false,
 		BackgroundColor3 = bg,
-		BackgroundTransparency = if style == "Ghost" then 0.4 else 0,
+		BackgroundTransparency = if style == "Ghost" then 0.25 elseif style == "Dark" then 0.08 else 0,
 		BorderSizePixel = 0,
 		Size = opts.Size or UDim2.fromOffset(180, 40),
 		Position = opts.Position or UDim2.new(),
 		AnchorPoint = opts.AnchorPoint or Vector2.zero,
-		FontFace = opts.Font or UI.Bold,
-		Text = opts.Text or "",
-		TextSize = opts.TextSize or 16,
+		FontFace = opts.Font or UI.Title,
+		Text = if hasSub or opts.Accent then "" else (opts.Text or ""),
+		TextSize = opts.TextSize or 18,
 		TextColor3 = fg,
 		LayoutOrder = opts.LayoutOrder or 0,
 		Selectable = true,
 		ZIndex = opts.ZIndex or 2,
+		ClipsDescendants = false,
 	}, parent)
-	UI.corner(b, opts.Radius or 8)
-	local stroke = UI.stroke(b, if style == "Primary" then C.AccentDark else C.Line, 1, 0)
+	UI.corner(b, opts.Radius or 6)
+	local strokeColor = if style == "Danger" then C.Danger else Color3.new(1, 1, 1)
+	local stroke = UI.stroke(b, strokeColor, 1, if style == "Danger" then 0.5 else strokeT)
+	local z = (opts.ZIndex or 2) + 1
+	local left = 0
+	if opts.Accent then
+		local bar = make("Frame", { Name = "Accent", BackgroundColor3 = C.Accent, BorderSizePixel = 0, Size = UDim2.new(0, 4, 1, 0), ZIndex = z }, b)
+		UI.corner(bar, 2)
+		left = 18
+	end
+	if hasSub or opts.Accent then
+		local pad = if left > 0 then left else 18
+		UI.text(b, opts.Text or "", opts.TextSize or 22, fg, opts.Font or UI.Title, {
+			Name = "Label",
+			Position = UDim2.new(0, pad, 0, if hasSub then 4 else 0),
+			Size = UDim2.new(1, -pad - (if opts.Key then 56 else 12), if hasSub then 0.6 else 1, if hasSub then -4 else 0),
+			ZIndex = z,
+			TextYAlignment = if hasSub then Enum.TextYAlignment.Bottom else Enum.TextYAlignment.Center,
+		})
+		if hasSub then
+			UI.text(b, opts.Sub, 11, if style == "Primary" then Color3.fromHex("3d3000") else C.Muted, UI.Semi, {
+				Name = "Sub",
+				Position = UDim2.new(0, pad, 0.6, 0),
+				Size = UDim2.new(1, -pad - (if opts.Key then 56 else 12), 0.4, -6),
+				TextYAlignment = Enum.TextYAlignment.Top,
+				ZIndex = z,
+			})
+		end
+	end
+	if opts.Key then
+		local kc = make("Frame", {
+			Name = "Keycap",
+			AnchorPoint = Vector2.new(1, 0.5),
+			Position = UDim2.new(1, -14, 0.5, 0),
+			Size = UDim2.fromOffset(40, 28),
+			BackgroundColor3 = if style == "Primary" then C.Ink else C.Panel3,
+			BackgroundTransparency = if style == "Primary" then 0.15 else 0,
+			BorderSizePixel = 0,
+			ZIndex = z,
+		}, b)
+		UI.corner(kc, 4)
+		UI.text(kc, opts.Key, 12, if style == "Primary" then C.Accent else C.Text, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+	end
 	local scale = make("UIScale", {}, b)
 	b.MouseEnter:Connect(function()
-		UI.tween(scale, 0.12, { Scale = 1.03 })
-		UI.tween(stroke, 0.12, { Color = if style == "Primary" then Color3.new(1, 1, 1) else C.Accent })
+		UI.tween(scale, 0.12, { Scale = 1.02 })
+		if style ~= "Primary" then
+			UI.tween(stroke, 0.12, { Color = C.Accent, Transparency = 0.2 })
+		else
+			UI.tween(b, 0.12, { BackgroundColor3 = Color3.fromHex("ffd54d") })
+		end
 		UI.Sound("Hover")
 	end)
 	b.MouseLeave:Connect(function()
 		UI.tween(scale, 0.12, { Scale = 1 })
-		UI.tween(stroke, 0.12, { Color = if style == "Primary" then C.AccentDark else C.Line })
+		if style ~= "Primary" then
+			UI.tween(stroke, 0.12, { Color = strokeColor, Transparency = if style == "Danger" then 0.5 else strokeT })
+		else
+			UI.tween(b, 0.12, { BackgroundColor3 = bg })
+		end
 	end)
 	b.MouseButton1Down:Connect(function()
 		UI.tween(scale, 0.06, { Scale = 0.97 })
@@ -198,13 +258,47 @@ function UI.button(parent: Instance, opts): TextButton
 	return b
 end
 
+-- small rounded tag like LEADER / READY / EPIC
+function UI.tag(parent: Instance, text: string, color: Color3, props): Frame
+	local f = make("Frame", {
+		Name = "Tag",
+		BackgroundColor3 = color,
+		BackgroundTransparency = 0.82,
+		BorderSizePixel = 0,
+		Size = UDim2.fromOffset(math.max(44, #text * 7 + 14), 18),
+		ZIndex = 4,
+	}, parent)
+	UI.corner(f, 4)
+	UI.text(f, text, 10, color, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 5 })
+	if props then
+		for k, v in props do
+			(f :: any)[k] = v
+		end
+	end
+	return f
+end
+
+-- thin progress track (Figma: 4-6px, white 10% track, coloured fill)
+function UI.track(parent: Instance, color: Color3, fraction: number, props): (Frame, Frame)
+	local back = make("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.9, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 4) }, parent)
+	UI.corner(back, 3)
+	local fill = make("Frame", { Name = "Fill", BackgroundColor3 = color, BorderSizePixel = 0, Size = UDim2.fromScale(math.clamp(fraction, 0, 1), 1), ZIndex = (back.ZIndex or 1) + 1 }, back)
+	UI.corner(fill, 3)
+	if props then
+		for k, v in props do
+			(back :: any)[k] = v
+		end
+	end
+	return back, fill
+end
+
 -- horizontal bar. returns frame, setter(fraction, text?)
 function UI.bar(parent: Instance, color: Color3, props)
 	local back = make("Frame", {
-		BackgroundColor3 = Color3.fromHex("0d0f13"),
-		BackgroundTransparency = 0.15,
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundTransparency = 0.9,
 		BorderSizePixel = 0,
-		Size = UDim2.fromOffset(200, 10),
+		Size = UDim2.fromOffset(200, 7),
 	}, parent)
 	UI.corner(back, 4)
 	local fillBack = make("Frame", {
@@ -223,10 +317,6 @@ function UI.bar(parent: Instance, color: Color3, props)
 		ZIndex = 2,
 	}, back)
 	UI.corner(fill, 4)
-	make("UIGradient", {
-		Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(200, 200, 200)),
-		Rotation = 90,
-	}, fill)
 	if props then
 		for k, v in props do
 			(back :: any)[k] = v
@@ -416,13 +506,13 @@ end
 function UI.keycap(parent: Instance, key: string, size: number?): Frame
 	local s = size or 22
 	local f = make("Frame", {
-		BackgroundColor3 = C.Text,
+		BackgroundColor3 = C.Accent,
 		BorderSizePixel = 0,
 		Size = UDim2.fromOffset(math.max(s, #key * s * 0.45 + 10), s),
 		ZIndex = 5,
 	}, parent)
 	UI.corner(f, 5)
-	UI.text(f, key, s * 0.6, Color3.fromHex("111111"), UI.Title, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 6 })
+	UI.text(f, key, s * 0.55, C.Ink, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 6 })
 	return f
 end
 

@@ -284,6 +284,9 @@ end
 V2.__div = function(a, b)
 	return v2(a.X / b, a.Y / b)
 end
+V2.__unm = function(a)
+	return v2(-a.X, -a.Y)
+end
 Vector2.new = v2
 Vector2.zero = v2(0, 0)
 
@@ -446,6 +449,10 @@ function CFrame.lookAt(eye, target, up)
 	right = right.Unit
 	local upv = right:Cross(f)
 	return cfnew(eye.X, eye.Y, eye.Z, { { right.X, upv.X, -f.X }, { right.Y, upv.Y, -f.Y }, { right.Z, upv.Z, -f.Z } })
+end
+function CFrame.fromMatrix(pos, vx, vy, vz)
+	vz = vz or vx:Cross(vy)
+	return cfnew(pos.X, pos.Y, pos.Z, { { vx.X, vy.X, vz.X }, { vx.Y, vy.Y, vz.Y }, { vx.Z, vy.Z, vz.Z } })
 end
 function CFrame.fromAxisAngle(axis, a)
 	return CFrame.Angles(0, a, 0)
@@ -1390,7 +1397,12 @@ function Instance_:ReserveServer()
 	return "code-" .. math.random(1, 99999), "psid-" .. math.random(1, 99999)
 end
 function Instance_:TeleportAsync(placeId, players, options)
-	table.insert(G.TELEPORTS, { Players = players, Options = options })
+	table.insert(G.TELEPORTS, { PlaceId = placeId, Players = players, Options = options, Data = options and rawget(options, "_p").TeleportData })
+end
+local guidN = 0
+function Instance_:GenerateGUID()
+	guidN += 1
+	return ("guid-%06d"):format(guidN)
 end
 function Instance_:SetTeleportData(d)
 	rawget(self, "_p").TeleportData = d
@@ -1554,9 +1566,32 @@ local function makeCharacter(player)
 		return p
 	end
 	local hrp = part("HumanoidRootPart", Vector3.new(2, 2, 1), 0)
-	part("Head", Vector3.new(1, 1, 1), 1.5)
-	part("RightHand", Vector3.new(0.5, 0.5, 0.5), -1)
-	part("UpperTorso", Vector3.new(2, 1.6, 1), 0.2)
+	local head = part("Head", Vector3.new(1, 1, 1), 1.5)
+	local hand = part("RightHand", Vector3.new(0.5, 0.5, 0.5), -1)
+	local upper = part("UpperTorso", Vector3.new(2, 1.6, 1), 0.2)
+	local lower = part("LowerTorso", Vector3.new(2, 0.4, 1), -0.8)
+	local rua = part("RightUpperArm", Vector3.new(1, 1.2, 1), 0)
+	local rla = part("RightLowerArm", Vector3.new(1, 1, 1), -0.6)
+	local rul = part("RightUpperLeg", Vector3.new(1, 1.2, 1), -1.5)
+	local lul = part("LeftUpperLeg", Vector3.new(1, 1.2, 1), -1.5)
+	-- a few R15 joints so the character animator has something to drive
+	local function motor(name, p0, p1, c0)
+		local m = newInstance("Motor6D", name)
+		m.Part0 = p0
+		m.Part1 = p1
+		m.C0 = c0
+		m.C1 = CFrame.new()
+		m.Transform = CFrame.new()
+		m.Parent = p1
+	end
+	motor("Root", hrp, lower, CFrame.new(0, -0.8, 0))
+	motor("Waist", lower, upper, CFrame.new(0, 0.2, 0))
+	motor("Neck", upper, head, CFrame.new(0, 0.8, 0))
+	motor("RightShoulder", upper, rua, CFrame.new(1, 0.5, 0))
+	motor("RightElbow", rua, rla, CFrame.new(0, -0.4, 0))
+	motor("RightWrist", rla, hand, CFrame.new(0, -0.5, 0))
+	motor("RightHip", lower, rul, CFrame.new(0.5, -0.2, 0))
+	motor("LeftHip", lower, lul, CFrame.new(-0.5, -0.2, 0))
 	char.PrimaryPart = hrp
 	local hum = newInstance("Humanoid", "Humanoid")
 	hum.Parent = char

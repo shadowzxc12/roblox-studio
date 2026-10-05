@@ -534,6 +534,8 @@ function BuildUI.Init()
 	gui, root = UI.screen("MSL_Build", 4)
 	buildMenu()
 	RunService.RenderStepped:Connect(function()
+		-- first person: the mouse is free while you pick from the menu, locked while placing
+		ClientState.SetBusy("BuildMenu", active and menu.Visible)
 		if active then
 			updatePlacement()
 			updateHover()

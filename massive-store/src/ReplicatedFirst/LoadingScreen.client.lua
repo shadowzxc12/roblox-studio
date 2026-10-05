@@ -14,17 +14,23 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 ReplicatedFirst:RemoveDefaultLoadingScreen()
+-- coming from a teleport: keep the receipt screen from the other place up until we're ready
+local arriving = nil
+pcall(function()
+	arriving = game:GetService("TeleportService"):GetArrivingTeleportGui()
+end)
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local YELLOW = Color3.fromHex("ffc61a")
-local RED = Color3.fromHex("c4161c")
-local TEXT = Color3.fromHex("eceef2")
-local MUTED = Color3.fromHex("8a92a2")
-local TITLE = Font.fromEnum(Enum.Font.GothamBlack)
-local CAPS = Font.fromEnum(Enum.Font.Michroma)
-local BODY = Font.fromEnum(Enum.Font.GothamMedium)
+local RED = Color3.fromHex("e0262d")
+local TEXT = Color3.fromHex("f2f0ea")
+local MUTED = Color3.fromHex("8d939c")
+-- Figma type: Oswald (display), Roboto Mono (labels), Montserrat (body)
+local TITLE = Font.new("rbxasset://fonts/families/Oswald.json", Enum.FontWeight.Bold)
+local CAPS = Font.new("rbxasset://fonts/families/RobotoMono.json", Enum.FontWeight.Bold)
+local BODY = Font.new("rbxasset://fonts/families/Montserrat.json", Enum.FontWeight.Medium)
 local MIN_TIME = 4.5
 
 local TIPS = {
@@ -54,6 +60,10 @@ local function make(className, props, parent)
 end
 
 local gui = make("ScreenGui", { Name = "LoadingScreen", IgnoreGuiInset = true, ResetOnSpawn = false, DisplayOrder = 1000, ZIndexBehavior = Enum.ZIndexBehavior.Sibling }, playerGui)
+if arriving then
+	arriving.DisplayOrder = 1001
+	arriving.Parent = playerGui
+end
 local fade = make("CanvasGroup", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromHex("050506"), BorderSizePixel = 0 }, gui)
 
 -- faint aisle lines in the background
@@ -87,10 +97,11 @@ end
 local sign = make("Frame", { BackgroundColor3 = YELLOW, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromOffset(320, 40), Size = UDim2.fromOffset(520, 100), BackgroundTransparency = 1 }, center)
 make("UICorner", { CornerRadius = UDim.new(0, 10) }, sign)
 local signStroke = make("UIStroke", { Color = Color3.fromHex("6b4e00"), Thickness = 3, Transparency = 1 }, sign)
-local signText = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), FontFace = TITLE, Text = "MASSIVE STORE", TextSize = 62, TextColor3 = Color3.fromHex("141414"), TextTransparency = 1 }, sign)
-local stripe = make("Frame", { BackgroundColor3 = RED, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromOffset(320, 142), Size = UDim2.fromOffset(520, 38), BackgroundTransparency = 1 }, center)
-make("UICorner", { CornerRadius = UDim.new(0, 5) }, stripe)
-local stripeText = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), FontFace = CAPS, Text = "L   O   C   U   S   T", TextSize = 22, TextColor3 = Color3.new(1, 1, 1), TextTransparency = 1 }, stripe)
+local signText = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), FontFace = TITLE, Text = "MASSIVE STORE", TextSize = 76, TextColor3 = TEXT, TextTransparency = 1 }, sign)
+local stripe = make("Frame", { BackgroundColor3 = RED, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromOffset(320, 146), Size = UDim2.fromOffset(236, 52), BackgroundTransparency = 1 }, center)
+make("UICorner", { CornerRadius = UDim.new(0, 4) }, stripe)
+local stripeText = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), FontFace = TITLE, Text = "LOCUST", TextSize = 40, TextColor3 = Color3.new(1, 1, 1), TextTransparency = 1 }, stripe)
+make("TextLabel", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromOffset(320, 20), Size = UDim2.fromOffset(400, 16), FontFace = CAPS, Text = "OPEN 24/7  ·  NO EXIT", TextSize = 12, TextColor3 = YELLOW }, center)
 local glow = make("Frame", { BackgroundColor3 = YELLOW, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromOffset(320, 100), Size = UDim2.fromOffset(700, 260), BackgroundTransparency = 1, ZIndex = 0 }, center)
 make("UICorner", { CornerRadius = UDim.new(1, 0) }, glow)
 
@@ -126,9 +137,7 @@ task.spawn(function()
 	for i = 1, 7 do
 		local on = i % 2 == 1 or i == 7
 		local t = if on then 0 else 0.85
-		sign.BackgroundTransparency = t
 		signText.TextTransparency = t
-		signStroke.Transparency = t
 		stripe.BackgroundTransparency = t
 		stripeText.TextTransparency = t
 		glow.BackgroundTransparency = if on then 0.94 else 1
@@ -142,10 +151,10 @@ task.spawn(function()
 	-- occasional flicker afterwards
 	while gui.Parent do
 		task.wait(1 + math.random() * 3)
-		sign.BackgroundTransparency = 0.6
+		stripe.BackgroundTransparency = 0.6
 		glow.BackgroundTransparency = 1
 		task.wait(0.06)
-		sign.BackgroundTransparency = 0
+		stripe.BackgroundTransparency = 0
 		glow.BackgroundTransparency = 0.94
 	end
 end)
@@ -211,6 +220,9 @@ end
 task.wait(0.4)
 
 player:SetAttribute("LoadingDone", true)
+if arriving then
+	arriving:Destroy()
+end
 TweenService:Create(fade, TweenInfo.new(1.2, Enum.EasingStyle.Quad), { GroupTransparency = 1 }):Play()
 TweenService:Create(hum, TweenInfo.new(1.2), { Volume = 0 }):Play()
 task.wait(1.3)

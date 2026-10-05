@@ -15,6 +15,7 @@ local Config = require(Shared.Config)
 local Items = require(Shared.Items)
 local InventoryCore = require(Shared.InventoryCore)
 local Models = require(Shared.Models)
+local Holding = require(Shared.Holding)
 local Net = require(Shared.Net)
 local Progression = require(Shared.Progression)
 
@@ -95,26 +96,44 @@ local function updateHeld(player: Player)
 	if not s or not char then
 		return
 	end
-	local hand = char:FindFirstChild("RightHand") or char:FindFirstChild("Right Arm")
+	local r15Hand = char:FindFirstChild("RightHand")
+	local hand = r15Hand or char:FindFirstChild("Right Arm")
 	if not hand or not hand:IsA("BasePart") then
 		return
 	end
 	local model = Models.Item(s.Id)
 	model.Name = "HeldItem"
+	model:SetAttribute("ItemId", s.Id)
 	local handle = model.PrimaryPart :: BasePart
 	for _, p in model:GetDescendants() do
 		if p:IsA("BasePart") then
 			p.CanCollide = false
 			p.Massless = true
 			p.CanQuery = false
+			p.CanTouch = false
 		end
 	end
-	model:PivotTo(hand.CFrame * CFrame.new(0, -0.45, -0.35))
-	local w = Instance.new("WeldConstraint")
+	-- a real grip (same numbers the first-person view model uses), not "stuck to the wrist"
+	local grip = Holding.Grip(s.Id, r15Hand == nil)
+	model:PivotTo(hand.CFrame * grip)
+	local w = Instance.new("Weld")
+	w.Name = "HeldGrip"
 	w.Part0 = hand
 	w.Part1 = handle
+	w.C0 = grip
+	w.C1 = handle.PivotOffset
 	w.Parent = handle
 	model.Parent = char
+end
+
+-- tell every client to play an action animation on this character (third person + view model)
+function Inventory.PlayAction(player: Player, action: string?)
+	local char = player.Character
+	if not char or not action then
+		return
+	end
+	char:SetAttribute("Action", action)
+	char:SetAttribute("ActionN", (char:GetAttribute("ActionN") or 0) + 1)
 end
 
 --============================ SYNC ============================--
@@ -367,6 +386,9 @@ local function useItem(player: Player, slot: number, aim: Vector3?)
 		return
 	end
 	local consumed = false
+	if not st.Downed then
+		Inventory.PlayAction(player, Holding.ActionFor(s.Id))
+	end
 
 	if st.Downed then
 		-- only a medkit (self revive) or adrenaline works while down

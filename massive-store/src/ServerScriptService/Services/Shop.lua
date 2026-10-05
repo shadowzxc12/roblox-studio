@@ -17,7 +17,9 @@ local Util = require(Shared.Util)
 
 local State = require(script.Parent.State)
 local Data = require(script.Parent.Data)
-local Survival = require(script.Parent.Survival)
+-- the lobby place has no Survival service (no runs there)
+local survivalModule = script.Parent:FindFirstChild("Survival")
+local Survival = if survivalModule then require(survivalModule) :: any else nil
 local RateLimiter = require(script.Parent.RateLimiter)
 
 local Shop = {}
@@ -218,7 +220,7 @@ local function emote(player: Player, id: any)
 	if not c or c.Slot ~= "Emote" or not d or not Cosmetics.Owns(d, Data.Level(player), id) then
 		return
 	end
-	if not Survival.IsActive(player) or player:GetAttribute("Hidden") then
+	if Survival and (not Survival.IsActive(player) or player:GetAttribute("Hidden")) then
 		return
 	end
 	local char = player.Character
@@ -330,9 +332,11 @@ function Shop.Init()
 
 	MarketplaceService.ProcessReceipt = processReceipt
 
-	Survival.Spawned:Connect(function(player)
-		task.defer(applyCosmetics, player)
-	end)
+	if Survival then
+		Survival.Spawned:Connect(function(player)
+			task.defer(applyCosmetics, player)
+		end)
+	end
 end
 
 return Shop

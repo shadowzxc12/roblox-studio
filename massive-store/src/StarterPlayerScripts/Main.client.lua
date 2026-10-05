@@ -23,6 +23,10 @@ local ClientState = require(Client.ClientState)
 local Audio = require(Client.Audio)
 local Atmosphere = require(Client.Atmosphere)
 local LocustAnimator = require(Client.LocustAnimator)
+local CharacterAnimator = require(Client.CharacterAnimator)
+local ViewModel = require(Client.ViewModel)
+local TeleportScreen = require(Client.TeleportScreen)
+local ShelfDresser = require(Client.ShelfDresser)
 local PromptUI = require(Client.PromptUI)
 local HUD = require(Client.HUD)
 local InventoryUI = require(Client.InventoryUI)
@@ -47,6 +51,9 @@ ClientState.Init()
 Audio.Init()
 Atmosphere.Init()
 LocustAnimator.Init()
+CharacterAnimator.Init()
+ViewModel.Init()
+ShelfDresser.Init()
 PromptUI.Init()
 HUD.Init()
 InventoryUI.Init()
@@ -62,6 +69,18 @@ Net.Event("Cue").OnClientEvent:Connect(function(kind, position, extra)
 	HUD.Cue(kind, position, extra)
 	if kind == "OpenBuild" then
 		BuildUI.Toggle(true)
+	end
+end)
+
+-- teleports (back to the lobby): the receipt screen
+Net.Event("Teleporting").OnClientEvent:Connect(function(info)
+	if info.Cancel then
+		TeleportScreen.Hide()
+		if info.Message then
+			HUD.Toast(info.Message, "Warn")
+		end
+	else
+		TeleportScreen.Show(info)
 	end
 end)
 

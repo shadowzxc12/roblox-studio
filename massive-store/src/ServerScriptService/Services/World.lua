@@ -254,6 +254,9 @@ local function buildProps(plan, folder: Instance)
 		if p.N then
 			pt.Name = p.N
 		end
+		if p.Face then
+			pt:SetAttribute("Face", p.Face)
+		end
 		if math.max(size.X, size.Z) < 2.5 and size.Y < 2.5 then
 			pt.CanQuery = false -- small products: skip raycasts
 		end

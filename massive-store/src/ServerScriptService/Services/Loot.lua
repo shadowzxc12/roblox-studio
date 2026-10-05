@@ -101,7 +101,13 @@ local function spawnItem(itemId: string, qty: number, pos: Vector3, opts)
 		h = item.Size[1]
 	end
 	local yaw = rng:Range(0, 360)
-	model:PivotTo(CFrame.new(pos + Vector3.new(0, h / 2 + 0.02, 0)) * CFrame.Angles(0, math.rad(yaw), 0))
+	-- long upright things (hammer, crowbar, baton) lie on their side
+	local lay = CFrame.new()
+	if item.Size[2] > math.max(item.Size[1], item.Size[3]) * 1.8 then
+		lay = CFrame.Angles(0, 0, math.pi / 2)
+		h = math.max(item.Size[1], item.Size[3])
+	end
+	model:PivotTo(CFrame.new(pos + Vector3.new(0, h / 2 + 0.02, 0)) * CFrame.Angles(0, math.rad(yaw), 0) * lay)
 	decorate(model, item)
 	local prompt = Prompts.Make(handle, "Loot", "Pick up", if qty > 1 then ("%s ×%d"):format(item.Name, qty) else item.Name, {
 		Distance = Config.Loot.PickupDistance,
@@ -286,6 +292,7 @@ local function onLootPrompt(player: Player, prompt: ProximityPrompt)
 		return
 	end
 	Loot.OnPickedUp(player, itemId, l.Fresh)
+	Inventory.PlayAction(player, "Pickup")
 	State.Cue("Pickup", l.Model:GetPivot().Position, itemId, player)
 	Noise.Emit(l.Model:GetPivot().Position, Config.Noise.Pickup, player, "Pickup")
 	if added >= l.Qty then

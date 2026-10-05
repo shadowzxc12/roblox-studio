@@ -43,7 +43,7 @@ local function paint(cart, skinId: string?)
 	local color = Color3.fromHex(skin.Color)
 	local material = if skin.Material then (Enum.Material :: any)[skin.Material] else Enum.Material.Metal
 	for _, p in cart.Model:GetDescendants() do
-		if p:IsA("BasePart") and p.Name ~= "Wheel" and p.Name ~= "Root" and p.Name ~= "Handle" and p.Name ~= "Load" then
+		if p:IsA("BasePart") and p.Name ~= "Wheel" and p.Name ~= "Root" and p.Name ~= "Handle" and p.Name ~= "Load" and p.Name ~= "Bumper" and p.Name ~= "Logo" then
 			p.Color = color
 			if p.Name == "Rim" or p.Name == "Leg" or p.Name == "HandlePost" then
 				p.Material = material

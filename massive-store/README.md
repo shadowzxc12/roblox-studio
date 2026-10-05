@@ -9,7 +9,19 @@ ktoré je každú noc rýchlejšie, lepšie počuje a ľahšie rozbíja steny.
 LOOT → BUILD → SURVIVE → UPGRADE → PREŽI ĎALŠIU NOC
 ```
 
-Hotový súbor hry: **`MassiveStoreLocust.rbxlx`** → otvor v Roblox Studiu (*File → Open from File*).
+Hra má **dva place-y** (jeden Roblox experience):
+
+| Súbor | Place | Čo tam je |
+| --- | --- | --- |
+| **`MassiveStoreLobby.rbxlx`** | **Lobby** (štartovací place) | parkovisko pred obchodom, party, pozvánky, výber módu, outfity, shop, misie |
+| **`MassiveStoreLocust.rbxlx`** | **Game** (obchod) | samotná hra v **first-person**; každý run je súkromný (rezervovaný) server |
+
+**SOLO** = teleport do vlastného súkromného servera len pre teba. **PARTY** = celá party sa
+teleportuje spolu do jedného súkromného servera. Po hre **BACK TO LOBBY** vráti party spolu.
+
+UI je navrhnuté vo **Figme**: [MASSIVE STORE: LOCUST — UI](https://www.figma.com/design/j2isfuKLgJTi75wSVQlhv4)
+(lobby, štart runu, teleport/loading, HUD, inventár, stavanie, shop, výsledky) a hra ho
+presne kopíruje (farby, Oswald / Montserrat / Roboto Mono, panely, tlačidlá).
 
 Všetko (mapa, modely, Locust, ikony, UI, zvuky) je vyrobené kódom — nie sú potrebné žiadne
 nahraté assety. Hra je pôvodná: nepoužíva nič z 3008 (assety, mapu, mená, UI ani kód).
@@ -20,21 +32,31 @@ nahraté assety. Hra je pôvodná: nepoužíva nič z 3008 (assety, mapu, mená,
 
 ## Ako to vyskúšať v Studiu
 
-1. Otvor `MassiveStoreLocust.rbxlx`.
-2. **Play** (jeden hráč) alebo **Test → Clients and Servers → 2–4 Players → Start**.
-3. Po loading screene sa objaví 3D menu → **PLAY → ENTER THE STORE**.
-4. Prvý deň trvá 5 minút. Rýchly test noci: v `ReplicatedStorage/Shared/Config` zníž
-   `Cycle.FirstDay` a `Cycle.Day` napr. na 30.
+**Obchod (hra):**
+1. Otvor `MassiveStoreLocust.rbxlx` → **Play** (alebo *Test → Clients and Servers → 2–4 Players*).
+2. Objaví sa **STUDIO TEST** panel → vyber mód (PLAY SURVIVAL / INFECTION / HARDCORE / SOLO).
+3. Si v obchode v first-person. Prvý deň trvá 5 minút; rýchly test noci: v
+   `ReplicatedStorage/Shared/Config` zníž `Cycle.FirstDay` a `Cycle.Day` napr. na 30.
 
-> V Studiu nefungujú teleporty, preto **prvý stlačený mód** (Survival / Infection / Hardcore /
-> Solo) rozhodne, aký mód testovací server hrá.
->
+**Lobby:** otvor `MassiveStoreLobby.rbxlx` → Play. Uvidíš parkovisko, svoju postavu pred
+obchodom, menu, party panel, shop, outfity. V Studiu teleporty nefungujú, takže ENTER THE STORE
+napíše, že treba publikovať (party, pozvánky medzi hráčmi v lobby a ready sa dajú testovať cez
+*Clients and Servers*).
+
 > **Ukladanie dát:** *File → Publish to Roblox*, potom *Game Settings → Security →
 > Enable Studio Access to API Services*. Bez toho hra funguje, len sa XP/kredity neuložia
 > (menu ukáže „progress isn't saving“).
 
-### Po publikovaní
-- *Game Settings → Places → Max Players* = **12**.
+### Po publikovaní (prepojenie lobby ↔ hra)
+1. Vytvor experience a publikuj **`MassiveStoreLobby.rbxlx` ako štartovací place** (*File →
+   Publish to Roblox*).
+2. V Creator Dashboard → experience → **Places → Add Place**, otvor `MassiveStoreLocust.rbxlx`
+   a publikuj ho do tohto nového place-u (*File → Publish to Roblox As… → existujúca hra → ten place*).
+3. ID oboch place-ov zapíš do `ReplicatedStorage/Shared/Config` → `Config.Places = { Lobby = …, Game = … }`
+   **v oboch súboroch** a publikuj ich znova.
+4. Game Settings → **Security → Allow Third Party Teleports** netreba (teleporty sú v rámci
+   jedného experience). Zapni *Enable Studio Access to API Services* pre ukladanie.
+- *Game Settings → Places → Max Players*: lobby napr. **30**, hra **12**.
 - Kredity za Robux (voliteľné): vytvor 3 Developer Products a ich ID daj do
   `Config.CreditProducts`. Kým sú `0`, obchod píše, že balíčky nie sú nastavené.
 - Odporúčaný avatar: R15 (R6 tiež funguje).
@@ -45,6 +67,7 @@ nahraté assety. Hra je pôvodná: nepoužíva nič z 3008 (assety, mapu, mená,
 
 | Klávesa | Akcia |
 | --- | --- |
+| myš | rozhliadanie (first-person; citlivosť v Settings) |
 | WASD / Shift | chôdza / šprint (hlučný!) |
 | C (alebo držať Ctrl) | krčenie — tichý pohyb, horšie ťa vidno |
 | E | interakcia (zobrať, otvoriť, skryť sa, oživiť – podržať) |
@@ -60,11 +83,66 @@ nahraté assety. Hra je pôvodná: nepoužíva nič z 3008 (assety, mapu, mená,
 | L | druhá akcia pri dverách / generátore (zamknúť, doplniť palivo) |
 | H | emoty |
 | Space | vyliezť zo skrýše |
+| P | pauza: outfity, misie, nastavenia, späť do lobby |
+
+V lobby: **Enter** = PLAY SOLO, **P** = PLAY WITH PARTY, **L** = outfity, **B** = shop.
 
 Mobil: tlačidlá USE / RUN / SNEAK / LIGHT / BAG / BUILD + MAP / CART / DROP. Gamepad: R2 použiť,
 L3 šprint, R3 krčenie, Y stavanie, D-pad predmety.
 
 ---
+
+## Čo je nové vo verzii 2
+
+### Lobby + party + teleporty
+- **Lobby place**: nočné parkovisko pred MASSIVE STORE. Každá party má vlastný „pad“ — kúsok
+  fasády obchodu (svietiaci nápis, posuvné dvere so svetlom vnútri, lampy, vozíky) a party
+  stojí v rade pred ním; kamera je filmová (jemný pohyb + paralaxa myšou).
+- **Party** (max 4, `Config.Party`): pozvať hráča v lobby (JOIN / NO toast s časovačom),
+  **pozvať Roblox priateľov** (Roblox pozvánka nesie kód party — po príchode sa automaticky
+  pridajú), **pripojiť sa kódom** (`# K7Q-2M4`), odísť, vyhodiť (líder), READY.
+- **START A RUN** (Figma 02): SOLO | PARTY, karty SURVIVAL / INFECTION / HARDCORE
+  (sila Locusta, loot, smrť), líder vyberá, ostatní dajú READY, líder spustí **ENTER THE STORE**.
+  SOLO + SURVIVAL = mód Solo (samo-oživenie), INFECTION potrebuje aspoň 2 hráčov.
+- Spustenie: `TeleportService:ReserveServer` + **jeden** `TeleportAsync` pre celú party
+  (pristanú spolu), TeleportData `{ Mode, Rules, PartyKey, Leader, Members }`.
+- V hre: hráči z lobby rovno vojdú do obchodu. Na konci runu **BACK TO LOBBY** (hlasujúci idú
+  spolu, lobby party obnoví aj s lídrom a pravidlami) alebo **NEW STORE**. Kto dá v pauze
+  BACK TO LOBBY uprostred runu, nechá batoh na zemi pre tím.
+- Prechod medzi place-mi kryje obrazovka „pokladničný bloček“ (Figma 03), ktorá ostane na
+  obrazovke aj počas samotného teleportu (`SetTeleportGui` / `GetArrivingTeleportGui`).
+
+### First-person
+- V obchode `LockFirstPerson`. **Viewmodel**: dve ruky (farba pokožky, rukávy vo farbe outfitu)
+  a predmet v ruke — rovnaké úchopy ako v tretej osobe (`Shared/Holding`):
+  baterka mieri kam pozeráš (šošovka svieti keď je zapnutá), kladivo/páčidlo/obušok v päsni,
+  jedlo pred sebou, dosky/lekárnička/kanister oboma rukami, vozík oboma rukami na rukoväti.
+- Vrstvy: vytiahnutie predmetu, kývanie pri chôdzi/šprinte (šprint = predmet sklopený),
+  oneskorenie za myšou (pružina), skok/dopad, dych, krčenie.
+- Akcie: **švih** (kladivo, páčidlo, obušok, stavanie), **jedenie / pitie** (k ústam),
+  **liečenie**, **hod** (svetlica, repelent), **položenie**, **výmena batérií**, cvaknutie baterky.
+  Klient ich prehrá hneď (bez oneskorenia), server ich rozošle ostatným.
+- Otvorené okná (inventár, mapa, pauza, výber v stavaní, výsledky) uvoľnia myš.
+
+### Vlastné animácie postáv (bez nahratých animácií)
+Predvolený `Animate` je vypnutý; `Client/CharacterAnimator` hýbe kĺbmi (R15 aj R6) u všetkých
+hráčov: idle (dych, prenášanie váhy, rozhliadanie), chôdza/beh s krokom podľa skutočnej
+rýchlosti (žiadne kĺzanie nôh), cúvanie, krčenie, výskok, pád, dopad s prepružením, lezenie,
+plávanie, sedenie, zrazený (plazenie), skrytý, držanie predmetov (Aim / Melee / OneHand /
+TwoHand / Push) a všetky akcie vyššie. Emoty (animation tracks) majú prednosť.
+
+### Lepšie modely
+- **Predmety**: plechovky s okrajmi, etiketou a otváračom, fľaše s hrdlom a uzáverom,
+  baterka s ryhovaným gripom, vypínačom, hlavou a sklom, kladivo s gumovým gripom a pazúrom,
+  páčidlo s hákom, obušok s hrotmi, lekárnička s rukoväťou a zámkami, kanister s hubicou,
+  dosky s klincami, plechy so skrutkami, doska plošných spojov, burger, torta, kura…
+- **Regály (LOD)**: `Client/ShelfDresser` pri hráčovi nahradí farebné bloky tovarom —
+  rady plechoviek, krabíc cereálií, fliaš, pohárov a vrecúšok chipsov s etiketami
+  a cenovkami; ďaleko sa vráti jednoduchý blok (výkon).
+- **Vozík**: drôtený kôš, kolieska s vidlicami, sklápacie sedadlo, nárazníky, logo.
+- **THE LOCUST**: tŕne na chrbte, pancierové platne, segmenty bruška so svietiacimi
+  prieduchmi, žihadlo, hrebeň, menšie oči, dvojdielne kusadlá, makadlá, kudlankové tŕne na
+  predlaktiach, žily na krídlach + zadné krídla, kolená, ostrohy.
 
 ## Čo v hre je
 
@@ -160,8 +238,8 @@ celé okolie aj v noci. Generátory sú hlučné.
 | HARDCORE | menej zásob, silnejší Locust, oživenie len s lekárničkou |
 | SOLO | pre jedného hráča, samo-oživenie lekárničkou |
 
-Verejné servery hrajú SURVIVAL. Iný mód → hra nájde server toho módu alebo vytvorí rezervovaný
-server a teleportuje ťa. **SERVERS** v menu ukazuje bežiace obchody.
+Mód sa vyberá v lobby; každý obchod je súkromný server pre teba alebo tvoju party
+(verejný server herného place-u pošle hráča do lobby).
 
 ### Progres, misie, obchod
 - Survival XP za noci, vzácny loot, oživenia, stavanie, objavovanie, tímové ciele, misie.
@@ -176,14 +254,18 @@ server a teleportuje ťa. **SERVERS** v menu ukazuje bežiace obchody.
 
 ```
 massive-store/
-  default.project.json               Rojo projekt
-  MassiveStoreLocust.rbxlx           zostavená hra
-  src/ReplicatedFirst/LoadingScreen  cinematic loading screen
+  default.project.json               Rojo projekt — GAME place (obchod)
+  lobby.project.json                 Rojo projekt — LOBBY place
+  MassiveStoreLocust.rbxlx           zostavený game place
+  MassiveStoreLobby.rbxlx            zostavený lobby place
+  src/ReplicatedFirst/LoadingScreen  loading screen (oba place-y)
   src/ReplicatedStorage/Shared/      zdieľané (server + klient)
     Config        VŠETKY čísla (časy, prežitie, Locust, módy, loot, ekonomika)
     StoreLayout   generátor obchodu (čisté dáta) · Zones · Nav (A*)
     Items, Rarity, Buildables, Cosmetics, Progression, Missions
     InventoryCore, LocustRig, Models, Net, Signal, Util
+    Holding       úchopy predmetov + ktorá akcia/animácia patrí ku ktorému predmetu
+    PartyRules    SOLO/PARTY × pravidlá → mód, kódy party
   src/ServerScriptService/
     Main.server   spustí všetko
     Services/     World, Director, Locust, Survival, Inventory, Loot, Building, Power,
@@ -191,8 +273,13 @@ massive-store/
                   Noise, Prompts, State, RateLimiter
   src/StarterPlayerScripts/
     Main.client   spustí klienta
-    Client/       UI, Menu, MenuScene, HUD, InventoryUI, BuildUI, MapUI, PromptUI,
+    Client/       UI (dizajn systém z Figmy), Menu (studio test + pauza), Pages (outfity,
+                  shop, misie, nastavenia), HUD, InventoryUI, BuildUI, MapUI, PromptUI,
+                  ViewModel, CharacterAnimator, ShelfDresser, TeleportScreen, MenuScene,
                   Atmosphere, Audio, LocustAnimator, CameraFX, Controls, ClientState
+  src/Lobby/                         LOBBY place (zdieľa Shared + Data/Shop/Progress + UI moduly)
+    ServerScriptService/Main.server  Lobby/Party (party, pozvánky, teleport), Lobby/LobbyWorld
+    StarterPlayerScripts/Main.client Lobby/LobbyUI (Figma 01/02 + okno pozvánok), Lobby/LobbyCamera
   tests/          testy generátora + headless simulácie servera aj klienta
   tools/          check.sh (lint), test.sh (všetky testy), render_map.py (náhľad mapy)
 ```
@@ -228,13 +315,16 @@ na klientovi, stav hráča cez atribúty, tímové info 1× za sekundu.
 Potrebné: [Rojo](https://rojo.space) a Luau CLI (`luau`, `luau-analyze`, `luau-compile`).
 
 ```
-LUAU_BIN=/cesta/k/luau tools/test.sh     # lint + testy + 9 simulácií (server aj klient)
+LUAU_BIN=/cesta/k/luau tools/test.sh     # lint + testy + 10 simulácií (server, klient, lobby)
 rojo build default.project.json -o MassiveStoreLocust.rbxlx
+rojo build lobby.project.json -o MassiveStoreLobby.rbxlx
 python3 tools/render_map.py 2024         # náhľad mapy do docs/
 ```
 
 Simulácie spúšťajú skutočný kód hry na falošnom Roblox engine (virtuálny čas, boti):
 viac dní a nocí, Locust (naháňačka, zrazenie, oživenie, skrývanie, rozbíjanie, ústup),
-základňa s elektrinou a obranou, všetky udalosti, noc 10 a 25, všetky módy, matchmaking
-a celý klient (loading screen, menu, HUD, inventár, stavanie, mapa, výsledky).
+základňa s elektrinou a obranou, všetky udalosti, noc 10 a 25, všetky módy, súkromné servery
+z lobby (mód z TeleportData, návrat party do lobby), lobby (party, pozvánky, kódy, ready,
+spoločný teleport, návrat party) a celý klient (loading, studio test, pauza, stránky,
+first-person viewmodel, animácie, HUD, inventár, stavanie, mapa, výsledky).
 Nenahrádzajú test v Studiu (fyzika, vzhľad, zvuky), ale chytia chyby v logike.

@@ -52,10 +52,12 @@ local function slotFrame(parent, size: number, order: number)
 		BorderSizePixel = 0,
 	}, parent)
 	UI.corner(f, 8)
-	local stroke = UI.stroke(f, C.Line, 1)
+	local stroke = UI.stroke(f, Color3.new(1, 1, 1), 1, 0.92)
 	local iconHolder = make("Frame", { Name = "IconHolder", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.48), Size = UDim2.fromOffset(size * 0.72, size * 0.72) }, f)
 	local qty = UI.text(f, "", 12, C.Text, UI.Mono, { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -5, 1, -2), Size = UDim2.fromOffset(40, 14), TextXAlignment = Enum.TextXAlignment.Right, ZIndex = 6 })
-	local rarityBar = make("Frame", { BackgroundColor3 = C.Line, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -1), Size = UDim2.new(1, -14, 0, 2), ZIndex = 5 }, f)
+	-- Figma: a full-width rarity strip along the bottom edge
+	local rarityBar = make("Frame", { BackgroundColor3 = C.Line, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, 0), Size = UDim2.new(1, -8, 0, 3), ZIndex = 5 }, f)
+	UI.corner(rarityBar, 2)
 	return { Button = f, Stroke = stroke, Icon = iconHolder, Qty = qty, Rarity = rarityBar, ItemId = nil, Size = size }
 end
 
@@ -77,11 +79,11 @@ end
 
 --============================ HOTBAR ============================--
 local function buildHotbar()
-	hotbar = make("Frame", { Name = "Hotbar", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.fromOffset(6 * 64 + 5 * 6, 64) }, root)
-	UI.list(hotbar, 6, true)
+	hotbar = make("Frame", { Name = "Hotbar", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -24), Size = UDim2.fromOffset(6 * 68 + 5 * 8, 68) }, root)
+	UI.list(hotbar, 8, true)
 	for i = 1, 6 do
-		local s = slotFrame(hotbar, 64, i)
-		UI.text(s.Button, tostring(i), 11, C.Muted, UI.Mono, { Position = UDim2.fromOffset(6, 3), Size = UDim2.fromOffset(12, 12), ZIndex = 6 })
+		local s = slotFrame(hotbar, 68, i)
+		s.Number = UI.text(s.Button, tostring(i), 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(6, 4), Size = UDim2.fromOffset(12, 12), ZIndex = 6 })
 		s.Button.Activated:Connect(function()
 			Net.Event("Hotbar"):FireServer(i)
 		end)
@@ -96,9 +98,13 @@ local function refreshHotbar(inv)
 		local s = hotSlots[i]
 		fillSlot(s, inv.Slots[i] or nil)
 		local sel = inv.Selected == i
-		s.Stroke.Color = if sel then C.Accent else C.Line
+		s.Stroke.Color = if sel then C.Accent else Color3.new(1, 1, 1)
+		s.Stroke.Transparency = if sel then 0 else 0.92
 		s.Stroke.Thickness = if sel then 2 else 1
-		s.Button.BackgroundColor3 = if sel then C.Panel3 else C.Panel
+		s.Button.BackgroundColor3 = if sel then C.Panel2 else C.Panel
+		if s.Number then
+			s.Number.TextColor3 = if sel then C.Accent else C.Muted
+		end
 	end
 	local held = inv.Slots[inv.Selected or 0]
 	local heldId = held and held.Id or nil

@@ -231,7 +231,7 @@ local function fuzz(p)
 			for _ = 1, 2 do
 				r.OnServerEvent:Fire(p, junk[rng:NextInteger(1, #junk)], junk[rng:NextInteger(1, #junk)])
 			end
-		elseif r.ClassName == "RemoteFunction" and r.OnServerInvoke and r.Name ~= "JoinServer" then
+		elseif r.ClassName == "RemoteFunction" and r.OnServerInvoke then
 			local ok, err = pcall(r.OnServerInvoke, p, junk[rng:NextInteger(1, #junk)])
 			if not ok then
 				table.insert(ERRORS, "RemoteFunction " .. r.Name .. ": " .. tostring(err))

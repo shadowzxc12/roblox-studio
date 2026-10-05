@@ -43,9 +43,15 @@ check(gui("MSL_Menu") and gui("MSL_Menu").Enabled, "main menu is showing")
 check(gui("LoadingScreen") == nil, "loading screen removed")
 
 local function findButton(root, text)
+	if not root then
+		return nil
+	end
 	for _, d in root:GetDescendants() do
-		if (d.ClassName == "TextButton") and d.Text == text then
-			return d
+		if d.ClassName == "TextButton" then
+			local label = d:FindFirstChild("Label")
+			if d.Text == text or (label and label.Text == text) then
+				return d
+			end
 		end
 	end
 	return nil
@@ -58,27 +64,18 @@ local function click(btn)
 	return btn ~= nil
 end
 
--- every menu page
-for _, page in { "SERVERS", "INVENTORY", "SHOP", "MISSIONS", "SETTINGS", "CREDITS", "PLAY" } do
-	check(click(findButton(gui("MSL_Menu"), page)), "menu page " .. page)
+-- Studio: the store place shows the STUDIO TEST mode picker (the real menu is in the lobby place)
+for _, id in Config.ModeOrder do
+	check(gui("MSL_Menu"):FindFirstChild("Play" .. id, true) ~= nil, "studio test lists " .. id)
 end
--- a few sub tabs
-click(findButton(gui("MSL_Menu"), "SHOP"))
-click(findButton(gui("MSL_Menu"), "BEAMS"))
-click(findButton(gui("MSL_Menu"), "+ CREDITS"))
-click(findButton(gui("MSL_Menu"), "INVENTORY"))
-click(findButton(gui("MSL_Menu"), "UNLOCKS"))
-click(findButton(gui("MSL_Menu"), "SETTINGS"))
-click(findButton(gui("MSL_Menu"), "ON"))
-click(findButton(gui("MSL_Menu"), "+"))
-click(findButton(gui("MSL_Menu"), "PLAY"))
 
 -- enter the store
-check(click(findButton(gui("MSL_Menu"), "ENTER THE STORE")), "pressed ENTER THE STORE")
+check(click(gui("MSL_Menu"):FindFirstChild("PlaySurvival", true)), "pressed PLAY SURVIVAL")
 G.RunUntil(3)
 check(me:GetAttribute("InRun") == true, "server put me in the store")
 check(gui("MSL_HUD") and gui("MSL_HUD").Enabled, "HUD visible")
 check(not gui("MSL_Menu").Enabled, "menu hidden")
+check(me.CameraMode == Enum.CameraMode.LockFirstPerson, "first person in the store")
 -- buddy joins too (server side only)
 game:GetService("ReplicatedStorage").Remotes:FindFirstChild("Play").OnServerEvent:Fire(buddy, "Survival")
 G.RunUntil(2)
@@ -159,6 +156,49 @@ click(findButton(map, "B1"))
 click(findButton(map, "MAIN FLOOR"))
 key(Enum.KeyCode.M)
 
+-- pause menu + shared pages (locker, missions, settings)
+key(Enum.KeyCode.P)
+local pause = gui("MSL_Pause")
+check(pause and pause.Enabled, "pause menu opens")
+for _, entry in { { "LOADOUT & OUTFITS", "FLASHLIGHT" }, { "DAILY MISSIONS", nil }, { "SETTINGS", "ON" } } do
+	check(click(findButton(pause, entry[1])), "pause page " .. entry[1])
+	local content = pause:FindFirstChild("Content", true)
+	check(content and #content:GetChildren() > 0, "page drawn " .. entry[1])
+	if entry[2] then
+		click(findButton(pause, entry[2]))
+	end
+	click(findButton(pause, "←  BACK"))
+end
+check(click(findButton(pause, "RESUME")), "resume")
+check(not pause.Enabled, "pause menu closed")
+
+-- first-person view model: arms + the held item in front of the camera
+key(Enum.KeyCode.One)
+local cam = game:GetService("Workspace").CurrentCamera
+for _ = 1, 10 do
+	local head = me.Character and me.Character:FindFirstChild("Head")
+	if head then
+		cam.CFrame = head.CFrame
+	end
+	G.RunUntil(0.1)
+end
+local vm = cam:FindFirstChild("MSL_ViewModel")
+check(vm ~= nil and vm:FindFirstChild("RHand") ~= nil, "view model arms drawn")
+check(me:GetAttribute("HeldItem") ~= "" and vm and #vm:GetChildren() > 12, "held item in the view model")
+local held = me.Character and me.Character:FindFirstChild("HeldItem")
+local grip = held and held:FindFirstChild("HeldGrip", true)
+check(grip ~= nil and grip.ClassName == "Weld", "third-person item uses a real grip weld")
+mouse()
+check(me.Character:GetAttribute("ActionN") ~= nil, "use broadcasts an action animation")
+-- character animator drove a joint
+local moved = false
+for _, d in me.Character:GetDescendants() do
+	if d.ClassName == "Motor6D" and d.Transform ~= CFrame.new() then
+		moved = true
+	end
+end
+check(moved, "custom animation drives the joints")
+
 -- custom prompts: show a loot prompt
 local lootPrompt
 for _, d in World.Folders.Loot:GetDescendants() do
@@ -223,11 +263,16 @@ for _ = 1, 120 do
 	end
 end
 check(State.Phase == "Results", "results screen")
+G.RunUntil(1)
+local results = gui("MSL_Overlay"):FindFirstChild("Results", true)
+check(results ~= nil, "results screen drawn (Figma 08)")
+check(click(results and results:FindFirstChild("NewStore", true)), "NEW STORE closes the results")
 G.RunUntil(Config.Cycle.WipeResults + 4)
 
--- back to the menu
-click(findButton(gui("MSL_InGameMenu"), "MENU"))
-click(findButton(gui("MSL_InGameMenu"), "MAIN MENU"))
+-- leave the store (Studio: no lobby place, so back to the test menu)
+key(Enum.KeyCode.P)
+click(findButton(gui("MSL_Pause"), "LEAVE THE STORE"))
+click(findButton(gui("MSL_Pause"), "LEAVE"))
 G.RunUntil(1)
 check(me:GetAttribute("InRun") == false, "returned to the main menu")
 check(gui("MSL_Menu").Enabled, "menu showing again")

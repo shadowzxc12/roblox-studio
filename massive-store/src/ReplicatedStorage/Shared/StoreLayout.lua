@@ -694,7 +694,8 @@ function StoreLayout.Generate(seed: number, options)
 						if rng:Chance(0.8) then
 							local cx = -length / 2 + 0.5 + segLen * (k - 0.5)
 							local ph = math.min(gap - 0.5, rng:Range(0.8, 1.7))
-							gbox(g, cx, sy, side * depth / 4, segLen * rng:Range(0.55, 0.95), ph, depth / 2 - 0.5, opts.Product or pickProduct(zinfo), "SmoothPlastic")
+							-- N/Face: the client dresses these blocks with individual products (ShelfDresser)
+							gbox(g, cx, sy, side * depth / 4, segLen * rng:Range(0.55, 0.95), ph, depth / 2 - 0.5, opts.Product or pickProduct(zinfo), "SmoothPlastic", { N = "Product", Face = side })
 						end
 					end
 				end

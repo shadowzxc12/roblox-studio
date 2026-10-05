@@ -24,7 +24,7 @@
         "CharacterWalkSpeed": 14,
         "CharacterUseJumpPower": false,
         "CharacterJumpHeight": 7.2,
-        "EnableMouseLockOption": true
+        "EnableMouseLockOption": false
       },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
@@ -32,6 +32,9 @@
       },
       "StarterCharacterScripts": {
         "$className": "StarterCharacterScripts",
+        "Animate": {
+          "$className": "LocalScript"
+        },
         "Health": {
           "$className": "Script"
         }
@@ -64,14 +67,26 @@
       "$className": "Lighting",
       "$properties": {
         "Technology": "Future",
-        "Ambient": [0.16, 0.16, 0.17],
-        "OutdoorAmbient": [0.05, 0.05, 0.06],
+        "Ambient": [
+          0.16,
+          0.16,
+          0.17
+        ],
+        "OutdoorAmbient": [
+          0.05,
+          0.05,
+          0.06
+        ],
         "Brightness": 0,
         "ClockTime": 0,
         "EnvironmentDiffuseScale": 0.25,
         "EnvironmentSpecularScale": 0.35,
         "GlobalShadows": true,
-        "FogColor": [0.05, 0.05, 0.06],
+        "FogColor": [
+          0.05,
+          0.05,
+          0.06
+        ],
         "FogStart": 40,
         "FogEnd": 520,
         "ExposureCompensation": 0
@@ -97,7 +112,11 @@
           "Brightness": 0,
           "Contrast": 0.08,
           "Saturation": -0.12,
-          "TintColor": [1.0, 0.98, 0.95]
+          "TintColor": [
+            1.0,
+            0.98,
+            0.95
+          ]
         }
       }
     },

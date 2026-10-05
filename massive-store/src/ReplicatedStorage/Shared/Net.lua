@@ -25,6 +25,9 @@ Net.Events = {
 	"Objective", -- (text)
 	"Event", -- ({ Kind, Name, Desc, Position })
 	"Unlocks", -- ({ unlock entries }) after a level up
+	"Party", -- (party state) lobby: your party changed
+	"PartyInvite", -- ({ PartyId, From, FromUserId, Size }) lobby: someone invited you
+	"Teleporting", -- ({ Mode, Solo, Members, Cancel? }) a teleport to another place starts / fails
 	-- client -> server
 	"Input", -- ({ Sprint = bool, Crouch = bool })
 	"Flashlight", -- ()
@@ -41,13 +44,13 @@ Net.Events = {
 	"ClaimMission", -- (missionId)
 	"NightVision", -- ()
 	"LeaveHiding", -- ()
+	"PartyAction", -- ({ Action = "Invite" | "Accept" | "Decline" | "Leave" | "Kick" | "Ready" | "SetMode" | "JoinCode" | "Launch", ... })
+	"Lobby", -- ("Return") game place: go back to the lobby
 }
 
 Net.Functions = {
 	"GetData",
 	"Shop", -- ({ Action = "Buy" | "Equip", Id })
-	"GetServers",
-	"JoinServer", -- (entry)
 	"GetPlan", -- -> store seed and gate states
 }
 
