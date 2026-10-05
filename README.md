@@ -1,21 +1,23 @@
-# Kiddo Shop — Roblox shop UI pre malé deti
+# Kiddo Shop — Roblox shop UI pre deti (simulator štýl)
 
-Veľké tlačidlá, jasné farby, hrubé obrysy. Dizajn systém (farby, písmo, komponenty):
-https://claude.ai/artifact/MBjEgrfa9DZRxWEMVHyeUB
+Bočné menu s ikonami vľavo, STORE okno s oranžovým pruhovaným záhlavím, R$ tlačidlá,
+Starter Pack, Server Luck, Game Passes a ponuky vznášajúce sa vpravo —
+s animáciami, efektmi (konfety, lesk, lúče) a zvukmi.
+
+Dizajn systém (farby, komponenty, animácie): https://claude.ai/artifact/MBjEgrfa9DZRxWEMVHyeUB
 
 ## Ako to dať do Roblox Studia
 
-1. Otvor svoj place v Roblox Studiu.
-2. V Exploreri: **StarterPlayer → StarterPlayerScripts** → pravý klik → **Insert Object → LocalScript**.
-3. Skopíruj doň obsah `src/StarterPlayerScripts/KiddoShop.client.lua`.
-4. Stlač **Play** — vľavo je fialové tlačidlo **SHOP**.
+1. **StarterPlayer → StarterPlayerScripts** → Insert Object → **LocalScript** →
+   vlož obsah `src/StarterPlayerScripts/KiddoShop.client.lua`.
+2. **ServerScriptService** → Insert Object → **Script** →
+   vlož obsah `src/ServerScriptService/ShopReceipts.server.lua`.
+3. Stlač **Play**. Vľavo klikni na **Store** (alebo na ponuku vpravo).
 
-Itemy upravíš v tabuľke `ITEMS` (meno, cena, rarita, `image = "rbxassetid://…"`).
+## Nastavenie
 
-> Mince sú v ukážke len na klientovi. V skutočnej hre drž peniaze na serveri
-> (DataStore) a nákup rob cez `RemoteFunction`, inak sa dá podvádzať.
-
-## Figma
-
-Farby a rozmery sú v dizajn systéme vyššie — v Figme si ich vytvor ako Variables
-(rovnaké názvy: `grape`, `mint`, `sunshine`, `radius-lg`…), aby Figma aj Studio sedeli.
+- `PRODUCTS` v LocalScripte: ID Developer Productov / Game Passov z Creator Dashboard.
+  Kým je `id = 0`, tlačidlo spraví len ukážkový efekt (bez platby).
+- `REWARDS` v server Scripte: čo hráč dostane po kúpe (bez toho Roblox nákup nepotvrdí).
+- `SFX`: zvuky. Teraz sú tam vstavané zvuky Robloxu, vymeň ich za vlastné `rbxassetid://…`.
+- Ikony sú emoji — môžeš ich nahradiť obrázkami (ImageLabel s `rbxassetid://…`).
