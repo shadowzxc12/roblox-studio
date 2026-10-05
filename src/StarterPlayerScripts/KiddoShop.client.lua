@@ -1103,6 +1103,13 @@ local function closeStore()
 end
 
 closeBtn.Activated:Connect(closeStore)
+
+-- The SHOP stand on the map has a ProximityPrompt named "OpenShop" (press E / tap)
+game:GetService("ProximityPromptService").PromptTriggered:Connect(function(prompt)
+	if prompt.Name == "OpenShop" then
+		openStore()
+	end
+end)
 dim.Activated:Connect(closeStore)
 ;(Workspace.CurrentCamera :: Camera):GetPropertyChangedSignal("ViewportSize"):Connect(function()
 	if isOpen then
