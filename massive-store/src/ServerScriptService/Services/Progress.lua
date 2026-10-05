@@ -18,6 +18,7 @@ local RateLimiter = require(script.Parent.RateLimiter)
 
 local Progress = {}
 Progress.LeveledUp = Signal.new() -- (player, oldLevel, newLevel)
+Progress.Tracked = Signal.new() -- (player, stat, amount) for team objectives
 
 local nightBudget: { [Player]: { BuildXP: number, Credits: number } } = {}
 local claimLimiter = RateLimiter.new(6, 5)
@@ -97,6 +98,7 @@ end
 -- lifetime stat + daily mission progress
 function Progress.Track(player: Player, stat: string, amount: number?)
 	local n = amount or 1
+	Progress.Tracked:Fire(player, stat, n)
 	local completed = {}
 	Data.Update(player, function(d)
 		if d.Stats[stat] ~= nil then

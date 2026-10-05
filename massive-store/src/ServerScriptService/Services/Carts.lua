@@ -220,7 +220,7 @@ function Carts.Grab(player: Player, cart)
 	player:SetAttribute("CartId", cart.Id)
 	player:SetAttribute("CartContainer", cart.ContainerId)
 	updateLoad(cart)
-	State.Notify(player, ("Pushing a cart (%d slots). [G] let go · [C] open basket"):format(cart.Inv.Size), "Info")
+	State.Notify(player, ("Pushing a cart (%d slots). [G] let go · [X] open basket"):format(cart.Inv.Size), "Info")
 end
 
 -- the Locust walked into something: push a parked cart out of the way

@@ -3,7 +3,7 @@
 #   LUAU_BIN=/path/to/luau-binaries tools/check.sh
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BIN="${LUAU_BIN:-$ROOT/.luau}"
+BIN="$(cd "${LUAU_BIN:-$ROOT/.luau}" && pwd)"
 TMP="$(mktemp -d)"
 cat > "$TMP/.luaurc" <<'RC'
 {

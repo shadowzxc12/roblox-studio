@@ -258,8 +258,13 @@ function StoreLayout.Generate(seed: number, options)
 		end
 	end
 
-	-- leftover cells join the smallest neighbouring growable zone
+	-- leftover cells join a neighbouring zone, preferring the big departments
+	-- (so small rooms like restrooms stay small)
 	local NO_JOIN = { Sealed = true, Stairwell = true, Solid = true, Entrance = true, LoadingDocks = true }
+	local function joinScore(z)
+		local size = Zones.Types[z.Type].Size or 1
+		return size * 10 - #z.Cells * 0.1
+	end
 	local function fillLeftovers(level)
 		local changed = true
 		while changed do
@@ -268,7 +273,7 @@ function StoreLayout.Generate(seed: number, options)
 				local best = nil
 				for _, n in neighbors(cell) do
 					local z = n.Zone and plan.Zones[n.Zone]
-					if z and not NO_JOIN[z.Type] and (not best or #z.Cells < #best.Cells) then
+					if z and not NO_JOIN[z.Type] and (not best or joinScore(z) > joinScore(best)) then
 						best = z
 					end
 				end
@@ -283,10 +288,21 @@ function StoreLayout.Generate(seed: number, options)
 		end
 	end
 
+	-- department sizes are scaled so they fill the floor (few leftovers)
+	local function sizeFactor(order, level, extra)
+		local total = extra or 0
+		for _, t in order do
+			local info = Zones.Types[t]
+			total += info.Size * (info.Count or 1)
+		end
+		return #freeCells(level) / math.max(1, total)
+	end
+	local mainFactor = sizeFactor(Zones.GrowOrder, 0, Zones.Types.Warehouse.Size)
+
 	-- main floor
 	local growMain = {}
 	local warehouse = newZone("Warehouse", 0)
-	warehouse.Target = math.floor(Zones.Types.Warehouse.Size * rng:Range(0.85, 1.2) + 0.5)
+	warehouse.Target = math.floor(Zones.Types.Warehouse.Size * mainFactor * rng:Range(0.85, 1.1) + 0.5)
 	for c = ds, ds + 4 do
 		local cl = cellAt(0, c, 2)
 		if cl and not cl.Zone then
@@ -298,7 +314,8 @@ function StoreLayout.Generate(seed: number, options)
 		local info = Zones.Types[t]
 		for _ = 1, info.Count or 1 do
 			local z = newZone(t, 0)
-			z.Target = math.max(1, math.floor(info.Size * rng:Range(0.75, 1.3) + 0.5))
+			local f = if info.Size <= 3 then math.min(mainFactor, 1.4) else mainFactor
+			z.Target = math.max(1, math.floor(info.Size * f * rng:Range(0.8, 1.15) + 0.5))
 			table.insert(growMain, z)
 		end
 	end
@@ -308,11 +325,12 @@ function StoreLayout.Generate(seed: number, options)
 
 	-- basement
 	local growBase = {}
+	local baseFactor = sizeFactor(Zones.BasementOrder, -1)
 	for _, t in Zones.BasementOrder do
 		local info = Zones.Types[t]
 		for _ = 1, info.Count or 1 do
 			local z = newZone(t, -1)
-			z.Target = math.max(1, math.floor(info.Size * rng:Range(0.85, 1.2) + 0.5))
+			z.Target = math.max(1, math.floor(info.Size * baseFactor * rng:Range(0.85, 1.15) + 0.5))
 			table.insert(growBase, z)
 		end
 	end
@@ -859,12 +877,24 @@ function StoreLayout.Generate(seed: number, options)
 
 	local FILL = {}
 
+	-- products knocked off the shelves, lying in the aisles (decoration, no collision)
+	local function scatter(q, zinfo, along)
+		local g = grp(q.X, q.Y, q.Z, if along == "X" then 0 else 90)
+		for _ = 1, rng:Int(1, 3) do
+			local s = rng:Range(0.6, 1.4)
+			gbox(g, rng:Range(-11, 11), 0, rng:Pick({ -12.5, 0, 12.5 }) + rng:Range(-1, 1), s, s * rng:Range(0.4, 1.2), s * 0.7, pickProduct(zinfo), "SmoothPlastic", { NC = true, Yaw = g.Yaw + rng:Range(0, 180), Roll = rng:Pick({ 0, 90 }) })
+		end
+	end
+
 	FILL.Aisles = function(cell, zinfo, zs)
 		for _, q in quads(cell) do
 			if rng:Chance(0.12) then
 				promo(q, zinfo)
 			else
 				shelvesQuad(q, zinfo, zs.Along)
+				if rng:Chance(0.35 * detail) then
+					scatter(q, zinfo, zs.Along)
+				end
 			end
 		end
 		plan.AisleCounter = (plan.AisleCounter or 0) + 1

@@ -473,6 +473,9 @@ function Building.Damage(s, amount: number, source: any?): boolean
 	if not structures[s.Id] then
 		return true
 	end
+	if s.Def.Kind == "Door" and s.Def.Power and s.Powered then
+		amount *= 0.5 -- a powered blast door holds much better
+	end
 	s.HP -= amount
 	updateHPAttr(s)
 	if s.HP <= 0 then

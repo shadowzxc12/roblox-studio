@@ -1,3 +1,6 @@
+> **Nová hra v tomto repozitári: [MASSIVE STORE: LOCUST](massive-store/README.md)** —
+> survival horror v obrovskom supermarkete (`massive-store/MassiveStoreLocust.rbxlx`).
+
 # STUD CHASE — Roblox multiplayer naháňačka (stud štýl)
 
 Hotový súbor hry: **`StudChase.rbxlx`** → otvor v Roblox Studiu (*File → Open from File*).

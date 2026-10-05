@@ -22,7 +22,7 @@ run_sim() {
   echo "== sim $*"
   python3 tests/sim/build.py "$@" > "$TMP/sim.lua"
   "$LUAU_BIN/luau" "$TMP/sim.lua" > "$TMP/out.txt" 2>&1 || { tail -40 "$TMP/out.txt"; exit 1; }
-  grep -E "OK|SIM OK" "$TMP/out.txt" | tail -1
+  grep -E "OK$|SIM OK" "$TMP/out.txt" | tail -1
 }
 run_sim tests/sim/run.lua
 run_sim tests/sim/run_locust.lua
@@ -31,5 +31,7 @@ run_sim tests/sim/run_modes.lua MODE=Infection
 run_sim tests/sim/run_modes.lua MODE=Solo
 run_sim tests/sim/run_modes.lua MODE=Hardcore
 run_sim tests/sim/run_client.lua
+run_sim tests/sim/run_live.lua
+run_sim tests/sim/run_reserved.lua
 rm -rf "$TMP"
 echo "ALL TESTS PASSED"

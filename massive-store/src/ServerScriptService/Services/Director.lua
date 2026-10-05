@@ -44,6 +44,20 @@ local C = Config.Cycle
 local runStats = { Started = 0, Downs = 0, Revives = 0, Built = 0, Players = {} }
 local phaseThread = nil
 
+-- team objectives: one per day, everyone in the store contributes
+local TEAM_OBJECTIVES = {
+	{ Stat = "FoodFound", Goal = 8, Text = "find %d food items" },
+	{ Stat = "StructuresBuilt", Goal = 8, Text = "build %d structures" },
+	{ Stat = "Refuels", Goal = 1, Text = "refuel a generator" },
+	{ Stat = "ZonesExplored", Goal = 4, Text = "explore %d new departments" },
+	{ Stat = "RoomsOpened", Goal = 1, Text = "open a locked or hidden room" },
+	{ Stat = "RareFound", Goal = 2, Text = "find %d rare items" },
+	{ Stat = "LootFound", Goal = 30, Text = "pick up %d items" },
+}
+local team = nil -- { Def, Goal, Progress, Done }
+local teamRng = Util.RNG(os.time() % 4441 + 9)
+local primaryObjective = ""
+
 local function setPhase(phase: string, length: number)
 	State.Phase = phase
 	local now = State.Now()
@@ -56,12 +70,52 @@ local function setPhase(phase: string, length: number)
 	Power.RefreshZones()
 end
 
-local function objective(text: string, player: Player?)
-	if player then
-		Net.Event("Objective"):FireClient(player, text)
-	else
-		Net.Event("Objective"):FireAllClients(text)
+local function teamText(): string
+	if not team then
+		return ""
 	end
+	local body = string.format(team.Def.Text, team.Goal)
+	if team.Done then
+		return "TEAM ✓ " .. body
+	end
+	return ("TEAM · %s (%d/%d)"):format(body, math.min(team.Progress, team.Goal), team.Goal)
+end
+
+local function objective(text: string?, player: Player?)
+	if text then
+		primaryObjective = text
+	end
+	if player then
+		Net.Event("Objective"):FireClient(player, primaryObjective, teamText())
+	else
+		Net.Event("Objective"):FireAllClients(primaryObjective, teamText())
+	end
+end
+
+local function newTeamObjective()
+	local def = TEAM_OBJECTIVES[teamRng:Int(1, #TEAM_OBJECTIVES)]
+	local players = math.max(1, #Survival.RunPlayers())
+	local goal = if def.Goal > 1 then math.ceil(def.Goal * (0.6 + 0.4 * math.min(players, 6) / 2)) else 1
+	team = { Def = def, Goal = goal, Progress = 0, Done = false }
+end
+
+local function onTracked(player: Player, stat: string, amount: number)
+	if not team or team.Done or stat ~= team.Def.Stat or not State.RunActive then
+		return
+	end
+	if State.Phase ~= "Day" and State.Phase ~= "Dusk" then
+		return
+	end
+	team.Progress += amount
+	if team.Progress >= team.Goal then
+		team.Done = true
+		for _, p in Survival.RunPlayers() do
+			Progress.AddXP(p, Config.XP.Objective, "Team objective complete")
+			Progress.AddCredits(p, 5, "Team objective")
+		end
+		State.Notify(nil, "TEAM OBJECTIVE COMPLETE: " .. string.format(team.Def.Text, team.Goal), "Good")
+	end
+	objective(nil)
 end
 
 function Director.OpenGate(id: string, by: Player?)
@@ -99,7 +153,9 @@ local function storeShift(night: number)
 	end
 	local variant = Config.VariantFor(night)
 	State.Banner(nil, "THE STORE SHIFTS", "New areas, better loot... and " .. variant.Name, "ff7a1a", 5)
-	-- fresh, better stock everywhere
+	-- fresh, better stock everywhere; emptied stock rooms get locked up and refilled
+	World.RelockRooms(6)
+	Loot.RestockRooms()
 	Loot.Populate(250)
 end
 
@@ -131,6 +187,7 @@ local function runDay(first: boolean)
 	if not first then
 		State.Banner(nil, "DAY " .. (State.Night + 1), "The Locust sleeps. Loot, build, prepare.", "ffc61a", 3.5)
 	end
+	newTeamObjective()
 	objective(if first then "Explore the store and grab food & materials" else "Restock: food, fuel, materials. Upgrade your base.")
 	task.delay(length * 0.55, function()
 		if State.Phase == "Day" then
@@ -384,6 +441,7 @@ end
 
 function Director.Init()
 	Director.PendingStart = false
+	Progress.Tracked:Connect(onTracked)
 	-- extra run stats
 	Survival.Downed:Connect(function(player)
 		local rs = runStats.Players and runStats.Players[player.UserId]

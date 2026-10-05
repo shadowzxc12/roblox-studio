@@ -645,6 +645,32 @@ function World.Build(plan)
 	return store
 end
 
+-- the store shift: some opened locked rooms are closed and locked again (with new stock inside)
+function World.RelockRooms(max: number)
+	local opened = {}
+	for _, door in World.RoomDoors do
+		if door.BaseLock and not door.Lock then
+			table.insert(opened, door)
+		end
+	end
+	for i = 1, math.min(max, #opened) do
+		local door = table.remove(opened, math.random(1, #opened))
+		door.Lock = nil
+		World.SetRoomDoor(door.Id, false)
+		door.Lock = door.BaseLock
+		local mod = door.Leaf:FindFirstChildOfClass("PathfindingModifier")
+		if mod then
+			mod.PassThrough = false
+		end
+		door.Prompt.ActionText = if door.Lock == "Crowbar" then "Pry open" else "Swipe Keycard"
+		door.Prompt.ObjectText = if door.Lock == "Crowbar" then "Locked · needs Crowbar" else "Security door"
+		door.Prompt.HoldDuration = if door.Lock == "Crowbar" then 2.5 else 0
+		if door.Led then
+			door.Led.Color = col("ff1744")
+		end
+	end
+end
+
 -- reset doors/gates/rooms for a new run (the building itself stays)
 function World.ResetRun()
 	for id in World.Gates do

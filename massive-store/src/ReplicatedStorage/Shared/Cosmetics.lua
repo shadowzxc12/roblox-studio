@@ -2,15 +2,17 @@
 	Cosmetics: bought with Store Credits (earned by playing, optionally bought with Robux).
 	Purely visual. Nothing here changes survival stats.
 
-	Slots: Title, Flashlight (beam colour), Cart (cart paint), Effect (player effect),
-	       Emote (owned emotes are all usable, not equipped), Decor (unlocks base decorations)
+	Slots: Title, Outfit (player skin), Flashlight (beam colour), Cart (cart paint),
+	       Effect (player effect), Emote (owned emotes are all usable, not equipped),
+	       Decor (unlocks base decorations)
 ]]
 
 local Cosmetics = {}
 
-Cosmetics.Slots = { "Title", "Flashlight", "Cart", "Effect", "Emote", "Decor" }
+Cosmetics.Slots = { "Title", "Outfit", "Flashlight", "Cart", "Effect", "Emote", "Decor" }
 Cosmetics.SlotNames = {
 	Title = "TITLES",
+	Outfit = "OUTFITS",
 	Flashlight = "FLASHLIGHT SKINS",
 	Cart = "CART PAINT",
 	Effect = "PLAYER EFFECTS",
@@ -30,6 +32,14 @@ Cosmetics.List = {
 	{ Id = "StoreVeteran", Slot = "Title", Name = "Store Veteran", Price = 0, Color = "ffb31a", Level = 20 },
 	{ Id = "LocustBane", Slot = "Title", Name = "Locust Bane", Price = 0, Color = "ff3b3b", Level = 30 },
 	{ Id = "AfterHours", Slot = "Title", Name = "After Hours", Price = 0, Color = "e8e8ff", Level = 50 },
+
+	-- outfits (skins): worn over your avatar
+	{ Id = "OutfitNone", Slot = "Outfit", Name = "Your Avatar", Price = 0, Free = true },
+	{ Id = "OutfitClerk", Slot = "Outfit", Name = "Store Clerk Vest", Price = 180, Color = "ffc61a", Accent = "c4161c" },
+	{ Id = "OutfitJanitor", Slot = "Outfit", Name = "Night Janitor", Price = 260, Color = "1f8a8a", Accent = "e0e0e0" },
+	{ Id = "OutfitSecurity", Slot = "Outfit", Name = "Security Guard", Price = 350, Color = "1c2a4a", Accent = "ffd23f" },
+	{ Id = "OutfitHoodie", Slot = "Outfit", Name = "Midnight Hoodie", Price = 420, Color = "15151a", Accent = "ff3b3b" },
+	{ Id = "OutfitHazmat", Slot = "Outfit", Name = "Hazmat Suit", Price = 900, Color = "f2d22e", Accent = "2b2b2b" },
 
 	-- flashlight beams
 	{ Id = "BeamWarm", Slot = "Flashlight", Name = "Warm White", Price = 0, Color = "fff1c9", Free = true },
@@ -74,7 +84,7 @@ for i, c in Cosmetics.List do
 	Cosmetics.ById[c.Id] = c
 end
 
-Cosmetics.Defaults = { Title = "Shopper", Flashlight = "BeamWarm", Cart = "CartChrome", Effect = "FxNone" }
+Cosmetics.Defaults = { Title = "Shopper", Outfit = "OutfitNone", Flashlight = "BeamWarm", Cart = "CartChrome", Effect = "FxNone" }
 
 function Cosmetics.Get(id: string)
 	return Cosmetics.ById[id]

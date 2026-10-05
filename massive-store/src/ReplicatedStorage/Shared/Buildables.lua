@@ -45,7 +45,7 @@ local LIST = {
 	{ Id = "DoorWood", Name = "Wood Door", Category = "Doors", Kind = "Door", Tier = 1, Size = { 8, 8, 1 }, HP = 140, Cost = { Wood = 5, Screws = 1 }, Upgrade = "DoorMetal", Unlock = 1, Color = "8d5a2b", Material = "WoodPlanks" },
 	{ Id = "DoorMetal", Name = "Metal Door", Category = "Doors", Kind = "Door", Tier = 2, Size = { 8, 8, 1 }, HP = 420, Cost = { Metal = 5, Screws = 3 }, Upgrade = "DoorReinforced", Unlock = 3, Color = "7d858d", Material = "DiamondPlate" },
 	{ Id = "DoorReinforced", Name = "Vault Door", Category = "Doors", Kind = "Door", Tier = 3, Size = { 8, 8, 1.4 }, HP = 1000, Cost = { SteelPlate = 3, Metal = 3, Electronics = 1 }, Upgrade = "DoorAdvanced", Unlock = 8, Color = "4f5f7f", Material = "Metal" },
-	{ Id = "DoorAdvanced", Name = "Blast Door", Category = "Doors", Kind = "Door", Tier = 4, Size = { 8, 8, 1.6 }, HP = 2400, Cost = { Alloy = 3, SteelPlate = 2, CircuitBoard = 2 }, Unlock = 16, Color = "262b33", Material = "Metal", Glow = "ffb31a" },
+	{ Id = "DoorAdvanced", Name = "Blast Door", Category = "Doors", Kind = "Door", Tier = 4, Size = { 8, 8, 1.6 }, HP = 2400, Cost = { Alloy = 3, SteelPlate = 2, CircuitBoard = 2 }, Unlock = 16, Color = "262b33", Material = "Metal", Glow = "ffb31a", Power = 1 },
 
 	--============================ FLOORS ============================--
 	{ Id = "FloorWood", Name = "Wood Floor / Ceiling", Category = "Floors", Kind = "Floor", Tier = 1, Size = { 8, 1, 8 }, HP = 160, Cost = { Wood = 4 }, Upgrade = "FloorMetal", Unlock = 1, Color = "a8743f", Material = "WoodPlanks" },

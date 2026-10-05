@@ -124,10 +124,11 @@ local function buildObjective()
 	local bar = make("Frame", { BackgroundColor3 = C.Accent, BorderSizePixel = 0, Size = UDim2.fromOffset(3, 40) }, box)
 	UI.text(box, "OBJECTIVE", 11, C.Accent, UI.Caps, { Position = UDim2.fromOffset(12, 0), Size = UDim2.fromOffset(300, 14) })
 	local text = UI.text(box, "Explore the store", 16, C.Text, UI.Bold, { Position = UDim2.fromOffset(12, 16), Size = UDim2.fromOffset(320, 24), TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top })
-	local loc = make("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(10, 50), Size = UDim2.fromOffset(320, 20) }, box)
+	local teamLine = UI.text(box, "", 12, C.Purple, UI.Bold, { Position = UDim2.fromOffset(12, 40), Size = UDim2.fromOffset(320, 16), TextTruncate = Enum.TextTruncate.AtEnd })
+	local loc = make("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(10, 58), Size = UDim2.fromOffset(320, 20) }, box)
 	glyph(loc, "Pin", C.Muted, 14).Position = UDim2.fromOffset(0, 3)
 	local where = UI.text(loc, "", 12, C.Muted, UI.Caps, { Position = UDim2.fromOffset(20, 0), Size = UDim2.fromOffset(300, 20) })
-	refs.Objective = { Text = text, Where = where, Bar = bar }
+	refs.Objective = { Text = text, Where = where, Bar = bar, Team = teamLine }
 end
 
 local function buildSquad()
@@ -603,6 +604,8 @@ local function updateWhere()
 	local zone = ClientState.Where()
 	refs.Objective.Where.Text = if zone and zone.Name ~= "" then zone.Name else ""
 	refs.Objective.Text.Text = ClientState.Objective ~= "" and ClientState.Objective or "Explore the store"
+	refs.Objective.Team.Text = ClientState.TeamObjective or ""
+	refs.Objective.Team.TextColor3 = if string.find(ClientState.TeamObjective or "", "✓") then C.Good else C.Purple
 end
 
 function HUD.SetVisible(on: boolean)

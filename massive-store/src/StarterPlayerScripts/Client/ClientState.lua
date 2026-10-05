@@ -19,6 +19,7 @@ local ClientState = {
 	Squad = {},
 	Plan = nil,
 	Objective = "",
+	TeamObjective = "",
 	Discovered = {}, -- [cellId] = true
 	MenuOpen = true,
 	Busy = {}, -- UI layers that capture input: [name] = true
@@ -88,8 +89,9 @@ function ClientState.Init()
 		ClientState.Squad = list
 		ClientState.SquadChanged:Fire(list)
 	end)
-	Net.Event("Objective").OnClientEvent:Connect(function(text)
-		ClientState.Objective = text
+	Net.Event("Objective").OnClientEvent:Connect(function(text, teamText)
+		ClientState.Objective = text or ""
+		ClientState.TeamObjective = teamText or ""
 		ClientState.ObjectiveChanged:Fire(text)
 	end)
 	task.spawn(function()

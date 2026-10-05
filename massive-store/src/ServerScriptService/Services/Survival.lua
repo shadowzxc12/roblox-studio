@@ -373,6 +373,7 @@ local function setupCharacter(player: Player, char: Model)
 	hum.WalkSpeed = SV.WalkSpeed
 	hum.UseJumpPower = false
 	hum.JumpHeight = 7.2
+	hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None -- the title billboard shows the name
 	-- nothing but our system may kill this character
 	hum:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
 	hum.HealthChanged:Connect(function(h)

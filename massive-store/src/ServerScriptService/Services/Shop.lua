@@ -84,6 +84,68 @@ local function applyCosmetics(player: Player)
 		end
 		bb.Parent = head
 	end
+	-- outfit: a vest / jacket shell over the torso and arms
+	local oldOutfit = char:FindFirstChild("Outfit")
+	if oldOutfit then
+		oldOutfit:Destroy()
+	end
+	local outfit = Cosmetics.Get(d.Equipped.Outfit or "OutfitNone")
+	if outfit and outfit.Color then
+		local folder = Instance.new("Folder")
+		folder.Name = "Outfit"
+		local function shell(partName: string, grow: Vector3, color: string, ofs: CFrame?)
+			local base = char:FindFirstChild(partName)
+			if not base or not base:IsA("BasePart") then
+				return nil
+			end
+			local p = Instance.new("Part")
+			p.Name = "OutfitShell"
+			p.Size = base.Size + grow
+			p.Color = Color3.fromHex(color)
+			p.Material = Enum.Material.Fabric
+			p.CanCollide = false
+			p.CanQuery = false
+			p.CanTouch = false
+			p.Massless = true
+			p.CFrame = base.CFrame * (ofs or CFrame.new())
+			local w = Instance.new("WeldConstraint")
+			w.Part0 = base
+			w.Part1 = p
+			w.Parent = p
+			p.Parent = folder
+			return p
+		end
+		local torso = shell("UpperTorso", Vector3.new(0.12, 0.08, 0.14), outfit.Color) or shell("Torso", Vector3.new(0.12, 0.08, 0.14), outfit.Color)
+		shell("LowerTorso", Vector3.new(0.1, 0.06, 0.12), outfit.Color)
+		if outfit.Id ~= "OutfitClerk" then
+			for _, arm in { "LeftUpperArm", "RightUpperArm", "Left Arm", "Right Arm" } do
+				shell(arm, Vector3.new(0.08, 0.04, 0.08), outfit.Color)
+			end
+		end
+		if outfit.Id == "OutfitHazmat" then
+			for _, leg in { "LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "RightLowerLeg", "Left Leg", "Right Leg" } do
+				shell(leg, Vector3.new(0.08, 0.04, 0.08), outfit.Color)
+			end
+		end
+		if torso and outfit.Accent then
+			local badge = Instance.new("Part")
+			badge.Name = "Badge"
+			badge.Size = Vector3.new(0.5, 0.3, 0.06)
+			badge.Color = Color3.fromHex(outfit.Accent)
+			badge.Material = Enum.Material.SmoothPlastic
+			badge.CanCollide = false
+			badge.CanQuery = false
+			badge.Massless = true
+			badge.CFrame = torso.CFrame * CFrame.new(0.45, 0.25, -torso.Size.Z / 2 - 0.02)
+			local w = Instance.new("WeldConstraint")
+			w.Part0 = torso
+			w.Part1 = badge
+			w.Parent = badge
+			badge.Parent = folder
+		end
+		folder.Parent = char
+	end
+
 	local fx = Cosmetics.Get(d.Equipped.Effect)
 	if fx and fx.Color and hrp then
 		local att = Instance.new("Attachment")

@@ -189,6 +189,25 @@ function Loot.Restock()
 	return Loot.Populate(Config.Loot.RestockPerDay)
 end
 
+-- refill the free loot points inside locked / hidden rooms and sealed areas
+function Loot.RestockRooms()
+	local points = State.Plan.LootPoints
+	local placed = 0
+	for index, p in points do
+		if p.Bonus >= 2.5 and not pointUsed[index] and worldCount < Config.Loot.MaxWorldItems then
+			local zinfo = Zones.Types[p.Type]
+			if zinfo and zinfo.Loot and rng:Chance(0.7) then
+				local id, qty = Items.Roll(zinfo.Loot, luckFor(p.Bonus + 1), rng)
+				if id then
+					spawnItem(id, qty, Vector3.new(p.X, p.Y, p.Z), { Point = index })
+					placed += 1
+				end
+			end
+		end
+	end
+	return placed
+end
+
 function Loot.Drop(pos: Vector3, itemId: string, qty: number)
 	local ground = rayDown(pos)
 	return spawnItem(itemId, qty, ground, { Dropped = true })

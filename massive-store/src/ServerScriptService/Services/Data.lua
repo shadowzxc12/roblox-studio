@@ -46,7 +46,7 @@ local TEMPLATE = {
 		Downs = 0,
 	},
 	Owned = {},
-	Equipped = { Title = "Shopper", Flashlight = "BeamWarm", Cart = "CartChrome", Effect = "FxNone" },
+	Equipped = { Title = "Shopper", Outfit = "OutfitNone", Flashlight = "BeamWarm", Cart = "CartChrome", Effect = "FxNone" },
 	Missions = { Day = 0, Progress = {}, Claimed = {} },
 	Settings = { Music = true, SFX = true, Effects = true, CameraShake = true, Brightness = 0, Sensitivity = 1 },
 	Purchases = {},

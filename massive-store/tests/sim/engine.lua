@@ -1392,6 +1392,12 @@ end
 function Instance_:TeleportAsync(placeId, players, options)
 	table.insert(G.TELEPORTS, { Players = players, Options = options })
 end
+function Instance_:SetTeleportData(d)
+	rawget(self, "_p").TeleportData = d
+end
+function Instance_:GetTeleportData()
+	return rawget(self, "_p").TeleportData
+end
 -- Tween
 function Instance_:Create(obj, info, props)
 	local t = newInstance("Tween", "Tween")

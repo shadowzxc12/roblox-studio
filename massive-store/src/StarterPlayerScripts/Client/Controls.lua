@@ -93,7 +93,7 @@ local function onInput(input: InputObject, processed: boolean)
 	if not inRun() then
 		return
 	end
-	if BuildUI.HandleInput(input) then
+	if BuildUI.HandleInput(input, processed) then
 		return
 	end
 	if processed then

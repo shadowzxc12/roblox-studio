@@ -193,7 +193,7 @@ local lockerTab = "Title"
 PAGES.INVENTORY = function()
 	clear()
 	header("LOCKER", "Your cosmetics and what you've unlocked")
-	local list = { { Id = "Title", Text = "TITLES" }, { Id = "Flashlight", Text = "BEAMS" }, { Id = "Cart", Text = "CARTS" }, { Id = "Effect", Text = "EFFECTS" }, { Id = "Emote", Text = "EMOTES" }, { Id = "Unlocks", Text = "UNLOCKS" } }
+	local list = { { Id = "Title", Text = "TITLES", Width = 74 }, { Id = "Outfit", Text = "OUTFITS", Width = 80 }, { Id = "Flashlight", Text = "BEAMS", Width = 70 }, { Id = "Cart", Text = "CARTS", Width = 66 }, { Id = "Effect", Text = "EFFECTS", Width = 76 }, { Id = "Emote", Text = "EMOTES", Width = 74 }, { Id = "Unlocks", Text = "UNLOCKS", Width = 80 } }
 	local t = tabs(content, list, lockerTab, function(id)
 		lockerTab = id
 		PAGES.INVENTORY()
@@ -250,7 +250,7 @@ PAGES.SHOP = function()
 	local d = ClientState.Data
 	header("SHOP", "Cosmetics only. Earn Store Credits by surviving nights and doing missions.")
 	UI.text(content, ("%s CREDITS"):format(Util.Commas(d and d.Credits or 0)), 16, C.Accent, UI.Title, { Position = UDim2.new(1, -220, 0, 6), Size = UDim2.fromOffset(220, 22), TextXAlignment = Enum.TextXAlignment.Right })
-	local list = { { Id = "Title", Text = "TITLES" }, { Id = "Flashlight", Text = "BEAMS" }, { Id = "Cart", Text = "CARTS" }, { Id = "Effect", Text = "EFFECTS" }, { Id = "Emote", Text = "EMOTES" }, { Id = "Decor", Text = "DECOR" }, { Id = "Credits", Text = "+ CREDITS", Width = 96 } }
+	local list = { { Id = "Title", Text = "TITLES", Width = 66 }, { Id = "Outfit", Text = "OUTFITS", Width = 72 }, { Id = "Flashlight", Text = "BEAMS", Width = 62 }, { Id = "Cart", Text = "CARTS", Width = 60 }, { Id = "Effect", Text = "EFFECTS", Width = 70 }, { Id = "Emote", Text = "EMOTES", Width = 68 }, { Id = "Decor", Text = "DECOR", Width = 60 }, { Id = "Credits", Text = "+ CREDITS", Width = 84 } }
 	local t = tabs(content, list, shopTab, function(id)
 		shopTab = id
 		PAGES.SHOP()

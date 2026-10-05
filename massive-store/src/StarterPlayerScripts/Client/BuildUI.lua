@@ -485,11 +485,15 @@ function BuildUI.IsPlacing(): boolean
 	return placing ~= nil
 end
 
-function BuildUI.HandleInput(input: InputObject): boolean
+function BuildUI.HandleInput(input: InputObject, processed: boolean?): boolean
 	if not active then
 		return false
 	end
 	local kc = input.KeyCode
+	local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2
+	if processed and (isMouse or kc == Enum.KeyCode.Unknown) then
+		return false -- clicks on buttons belong to the UI
+	end
 	if input.UserInputType == Enum.UserInputType.MouseButton1 and placing then
 		BuildUI.Place()
 		return true
