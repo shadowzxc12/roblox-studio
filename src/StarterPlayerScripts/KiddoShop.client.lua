@@ -36,6 +36,26 @@ local SFX = {
 	buy = { id = "rbxasset://sounds/electronicpingshort.wav", volume = 0.8, speed = 1 },
 }
 
+-- Ikony: nahraj PNG z priečinka icons/png (View > Asset Manager > Bulk Import),
+-- potom pravý klik na obrázok > Copy Asset ID a vlož ho sem namiesto 0.
+local ICONS = {
+	cart = "rbxassetid://0",
+	book = "rbxassetid://0",
+	gift = "rbxassetid://0",
+	rebirth = "rbxassetid://0",
+	invite = "rbxassetid://0",
+	gear = "rbxassetid://0",
+	egg_blue = "rbxassetid://0",
+	egg_orange = "rbxassetid://0",
+	egg_purple = "rbxassetid://0",
+	question = "rbxassetid://0",
+	moneybag = "rbxassetid://0",
+	crown = "rbxassetid://0",
+	clover = "rbxassetid://0",
+	cash = "rbxassetid://0",
+	magnet = "rbxassetid://0",
+}
+
 -- Theme ----------------------------------------------------------------------
 
 local INK = Color3.fromHex("1b1530")
@@ -113,16 +133,31 @@ local function text(parent: Instance, str: string, size: number, color: Color3?)
 	return t
 end
 
-local function emoji(parent: Instance, e: string, size: number): TextLabel
-	return make("TextLabel", {
-		BackgroundTransparency = 1,
-		Text = e,
-		TextSize = size,
+-- Icon: the uploaded PNG from ICONS, or a lettered placeholder disc until it is uploaded.
+local function icon(parent: Instance, name: string, size: number): GuiObject
+	local id = ICONS[name]
+	if id and id ~= "rbxassetid://0" then
+		return make("ImageLabel", {
+			BackgroundTransparency = 1,
+			Image = id,
+			ScaleType = Enum.ScaleType.Fit,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.5),
+			Size = UDim2.fromOffset(size, size),
+			ZIndex = 3,
+		}, parent)
+	end
+	local disc = make("Frame", {
+		BackgroundColor3 = WHITE,
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromOffset(size + 10, size + 10),
+		Size = UDim2.fromOffset(size * 0.8, size * 0.8),
 		ZIndex = 3,
 	}, parent)
+	corner(disc)
+	stroke(disc, 2.5)
+	text(disc, string.upper(string.sub(name, 1, 1)), math.floor(size * 0.45), C.orange).ZIndex = 4
+	return disc
 end
 
 local function holder(parent: Instance, size: UDim2, order: number?): Frame
@@ -161,7 +196,7 @@ end
 
 -- Animation registry (one RenderStepped loop drives all idle motion) ---------
 
-local bobbers, spinners, wobblers, pulsers, glowers = {}, {}, {}, {}, {}
+local bobbers, spinners, wobblers, pulsers, glowers, scrollers = {}, {}, {}, {}, {}, {}
 
 RunService.RenderStepped:Connect(function()
 	local t = os.clock()
@@ -179,6 +214,10 @@ RunService.RenderStepped:Connect(function()
 	end
 	for _, g in glowers do
 		g.obj.Transparency = 0.35 + math.sin(t * 3) * 0.35
+	end
+	for _, sc in scrollers do
+		local p = sc.pitch
+		sc.obj.Position = UDim2.fromOffset(-2 * p + (t * sc.speed) % p, -2 * p + (t * sc.speed) % (2 * p))
 	end
 end)
 
@@ -241,6 +280,50 @@ local function juicy(btn: GuiButton, hoverScale: number?): UIScale
 		sfx("click")
 	end)
 	return sc
+end
+
+-- Studs: Lego-like dot pattern for backgrounds (no image assets needed).
+-- w/h = pixel size of the area; speed > 0 makes the pattern drift diagonally.
+local function studs(parent: GuiObject, w: number, h: number, opts: { [string]: any }?): Frame
+	local o = opts or {}
+	local pitch = o.pitch or 28
+	local size = o.size or 12
+	local clip = make("CanvasGroup", {
+		Name = "Studs",
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 1),
+		ZIndex = 0,
+	}, parent)
+	corner(clip, o.radius or 12)
+	local grid = make("Frame", {
+		BackgroundTransparency = 1,
+		Position = UDim2.fromOffset(-2 * pitch, -2 * pitch),
+		Size = UDim2.fromOffset(w + 4 * pitch, h + 4 * pitch),
+	}, clip)
+	for y = 0, math.ceil(h / pitch) + 4 do
+		for x = 0, math.ceil(w / pitch) + 4 do
+			local stud = make("Frame", {
+				BackgroundColor3 = o.color or WHITE,
+				BackgroundTransparency = o.alpha or 0.85,
+				BorderSizePixel = 0,
+				Position = UDim2.fromOffset(x * pitch + (y % 2) * pitch / 2, y * pitch),
+				Size = UDim2.fromOffset(size, size),
+			}, grid)
+			corner(stud)
+			-- small shine dot = the "plastic" look of a Roblox stud
+			make("Frame", {
+				BackgroundColor3 = WHITE,
+				BackgroundTransparency = math.min(1, (o.alpha or 0.85) + 0.05),
+				BorderSizePixel = 0,
+				Position = UDim2.fromScale(0.2, 0.15),
+				Size = UDim2.fromScale(0.35, 0.35),
+			}, stud)
+		end
+	end
+	if o.speed then
+		table.insert(scrollers, { obj = grid, pitch = pitch, speed = o.speed })
+	end
+	return clip
 end
 
 -- GUI root -------------------------------------------------------------------
@@ -409,6 +492,10 @@ local window = make("Frame", {
 }, gui)
 corner(window, 14)
 stroke(window, 4)
+vgrad(window, Color3.fromHex("343a5c"), C.body)
+studs(window, 600, 450, { pitch = 30, size = 14, alpha = 0.9, speed = 12 })
+local sparkleLayer = make("CanvasGroup", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 0 }, window)
+corner(sparkleLayer, 12)
 local wscale = make("UIScale", nil, window)
 
 -- Header: orange stripes, basket icon, STORE title, red X
@@ -432,7 +519,7 @@ corner(header, 10)
 stroke(header, 4)
 shine(header, 10)
 
-local headIcon = emoji(header, "🛒", 52)
+local headIcon = icon(header, "cart", 52)
 headIcon.Position = UDim2.fromOffset(40, 22)
 wobble(headIcon, 10, 3)
 
@@ -485,12 +572,13 @@ end
 local packRow = holder(content, UDim2.fromOffset(552, 160), 1)
 hlist(packRow, 12)
 
-local function packCard(order: number, name: string, top: Color3, bottom: Color3, icon: string, key: string)
+local function packCard(order: number, name: string, top: Color3, bottom: Color3, egg: string, key: string)
 	local h = holder(packRow, UDim2.fromOffset(176, 160), order)
 	local card = make("Frame", centered({ BackgroundColor3 = WHITE }), h)
 	vgrad(card, top, bottom)
 	corner(card, 12)
 	stroke(card, 3)
+	studs(card, 176, 160, { pitch = 22, size = 9, alpha = 0.82 })
 	popIn(card)
 
 	local t = text(card, name, 18)
@@ -503,7 +591,7 @@ local function packCard(order: number, name: string, top: Color3, bottom: Color3
 		local s = make("Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.6, Size = UDim2.fromOffset(44, 44), LayoutOrder = i }, slots)
 		corner(s, 8)
 		stroke(s, 2, WHITE).Transparency = 0.5
-		local e = emoji(s, if i == 2 then icon else "❔", 26)
+		local e = icon(s, if i == 2 then egg else "question", 34)
 		if i == 2 then
 			bob(e, 3, 3)
 		end
@@ -521,9 +609,9 @@ local function packCard(order: number, name: string, top: Color3, bottom: Color3
 		pb.Position = UDim2.fromOffset(0, 24)
 	end
 end
-packCard(1, "Blue Pack", C.blue, C.blueDark, "🐶", "blue")
-packCard(2, "Orange Pack", C.tierOrange, C.tierOrangeDark, "🦊", "orange")
-packCard(3, "Purple Pack", C.purple, C.purpleDark, "🦄", "purple")
+packCard(1, "Blue Pack", C.blue, C.blueDark, "egg_blue", "blue")
+packCard(2, "Orange Pack", C.tierOrange, C.tierOrangeDark, "egg_orange", "orange")
+packCard(3, "Purple Pack", C.purple, C.purpleDark, "egg_purple", "purple")
 
 -- 2) Starter Pack banner
 local starterHolder = holder(content, UDim2.fromOffset(552, 140), 2)
@@ -532,6 +620,7 @@ make("UIGradient", { Color = ColorSequence.new(C.starterA, C.starterB) }, starte
 corner(starter, 14)
 table.insert(glowers, { obj = stroke(starter, 4, WHITE) })
 shine(starter, 14)
+studs(starter, 552, 140, { pitch = 26, size = 11, alpha = 0.82, speed = 8, radius = 14 })
 popIn(starter)
 
 local stTitle = text(starter, "Starter Pack!", 28)
@@ -541,9 +630,9 @@ stTitle.Size = UDim2.new(0, 300, 0, 34)
 
 local stItems = make("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(12, 44), Size = UDim2.fromOffset(360, 88), ZIndex = 3 }, starter)
 hlist(stItems, 4, Enum.HorizontalAlignment.Left)
-local function stItem(order: number, icon: string, caption: string, color: Color3, tag: string?)
+local function stItem(order: number, iconName: string, caption: string, color: Color3, tag: string?)
 	local h = holder(stItems, UDim2.fromOffset(86, 88), order)
-	local e = emoji(h, icon, 48)
+	local e = icon(h, iconName, 56)
 	e.Position = UDim2.new(0.5, 0, 0, 34)
 	bob(e, 4, 2.5)
 	local c = text(h, caption, 20, color)
@@ -561,11 +650,11 @@ local function plus(order: number)
 	local p = text(holder(stItems, UDim2.fromOffset(24, 88), order), "+", 30)
 	p.Position = UDim2.fromOffset(0, -8)
 end
-stItem(1, "💰", "+100k", C.green)
+stItem(1, "moneybag", "+100k", C.green)
 plus(2)
-stItem(3, "👑", "VIP", C.gold)
+stItem(3, "crown", "VIP", C.gold)
 plus(4)
-stItem(5, "🎁", "Item", WHITE, "OP!")
+stItem(5, "gift", "Item", WHITE, "OP!")
 
 local stBuy = priceButton(starter, "R$99", UDim2.fromOffset(130, 56), nil, function(b)
 	buy("starter", b)
@@ -596,8 +685,9 @@ local luck = make("Frame", centered({ BackgroundColor3 = WHITE }), luckHolder)
 vgrad(luck, C.teal, C.tealDark)
 corner(luck, 12)
 stroke(luck, 3)
+studs(luck, 552, 96, { pitch = 24, size = 10, alpha = 0.82 })
 popIn(luck)
-local clover = emoji(luck, "🍀", 50)
+local clover = icon(luck, "clover", 56)
 clover.Position = UDim2.fromOffset(46, 48)
 wobble(clover, 12, 2.5)
 local lt = text(luck, "x2 LUCK", 28)
@@ -630,17 +720,18 @@ divider(5, "Game Passes")
 local passRow = holder(content, UDim2.fromOffset(552, 136), 6)
 hlist(passRow, 12)
 for i, info in {
-	{ "VIP", "👑", "R$199", "vip", C.gold, C.tierOrangeDark },
-	{ "2x Cash", "💵", "R$149", "cash2x", C.green, C.greenDark },
-	{ "Auto Collect", "🧲", "R$99", "auto", C.pink, C.purpleDark },
+	{ "VIP", "crown", "R$199", "vip", C.gold, C.tierOrangeDark },
+	{ "2x Cash", "cash", "R$149", "cash2x", C.green, C.greenDark },
+	{ "Auto Collect", "magnet", "R$99", "auto", C.pink, C.purpleDark },
 } do
 	local h = holder(passRow, UDim2.fromOffset(176, 136), i)
 	local card = make("Frame", centered({ BackgroundColor3 = WHITE }), h)
 	vgrad(card, info[5], info[6])
 	corner(card, 12)
 	stroke(card, 3)
+	studs(card, 176, 160, { pitch = 22, size = 9, alpha = 0.82 })
 	popIn(card)
-	local e = emoji(card, info[2], 40)
+	local e = icon(card, info[2], 48)
 	e.Position = UDim2.new(0.5, 0, 0, 32)
 	bob(e, 4, 2 + i * 0.3)
 	local n = text(card, info[1], 18)
@@ -665,11 +756,39 @@ end
 
 local OFF = UDim2.new(0, -340, 0.5, 0) -- vyletí zboku (od bočného menu)
 
+-- Sparkles drifting up behind the shop content while it is open
+local SPARKLES = { "✦", "✧", "★", "•" }
+local function sparkleLoop()
+	while isOpen do
+		local s = make("TextLabel", {
+			BackgroundTransparency = 1,
+			Text = SPARKLES[math.random(#SPARKLES)],
+			TextColor3 = CONFETTI[math.random(#CONFETTI)],
+			TextSize = math.random(12, 24),
+			TextTransparency = 0.3,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(math.random(), 0, 1, 20),
+			Size = UDim2.fromOffset(30, 30),
+		}, sparkleLayer)
+		local dur = 3 + math.random() * 3
+		TweenService:Create(s, TweenInfo.new(dur, Enum.EasingStyle.Linear), {
+			Position = s.Position + UDim2.new(math.random(-10, 10) / 100, 0, -1.1, 0),
+			Rotation = math.random(-180, 180),
+			TextTransparency = 1,
+		}):Play()
+		task.delay(dur, function()
+			s:Destroy()
+		end)
+		task.wait(0.25)
+	end
+end
+
 local function openStore(highlightStarter: boolean?)
 	if isOpen then
 		return
 	end
 	isOpen = true
+	task.spawn(sparkleLoop)
 	sfx("open")
 	if storeBadge then
 		storeBadge.Visible = false
@@ -749,12 +868,12 @@ make("UIGridLayout", {
 }, side)
 
 local SIDE = {
-	{ name = "Store", icon = "🛒", badge = true, action = function() openStore() end },
-	{ name = "Index", icon = "📘" },
-	{ name = "Gift", icon = "🎁", badge = true },
-	{ name = "Rebirth", icon = "🔄" },
-	{ name = "Invite", icon = "👥" },
-	{ name = "Settings", icon = "⚙️" },
+	{ name = "Store", icon = "cart", badge = true, action = function() openStore() end },
+	{ name = "Index", icon = "book" },
+	{ name = "Gift", icon = "gift", badge = true },
+	{ name = "Rebirth", icon = "rebirth" },
+	{ name = "Invite", icon = "invite" },
+	{ name = "Settings", icon = "gear" },
 }
 
 for i, item in SIDE do
@@ -770,7 +889,7 @@ for i, item in SIDE do
 	vgrad(b, C.sideTop, C.sideBottom)
 	corner(b, 12)
 	stroke(b, 3)
-	local ic = emoji(b, item.icon, 38)
+	local ic = icon(b, item.icon, 44)
 	ic.Position = UDim2.fromScale(0.5, 0.42)
 	local l = text(b, item.name, 15)
 	l.Size = UDim2.new(1, 20, 0, 20)
@@ -819,7 +938,7 @@ end
 
 -- Floating offers (right) with spinning light rays ------------------------------
 
-local function floatingOffer(y: number, icon: string, title: string, price: string)
+local function floatingOffer(y: number, iconName: string, title: string, price: string)
 	local h = make("Frame", {
 		BackgroundTransparency = 1,
 		AnchorPoint = Vector2.new(1, 0.5),
@@ -854,7 +973,7 @@ local function floatingOffer(y: number, icon: string, title: string, price: stri
 	table.insert(pulsers, { obj = make("UIScale", nil, glow), amp = 0.15, speed = 2, phase = y * 10 })
 
 	local b = make("TextButton", centered({ AutoButtonColor = false, Text = "", BackgroundTransparency = 1, ZIndex = 3 }), h)
-	emoji(b, icon, 58)
+	icon(b, iconName, 68)
 	local t = text(b, title, 18, C.gold)
 	t.Size = UDim2.new(1.4, 0, 0, 22)
 	t.AnchorPoint = Vector2.new(0.5, 0)
@@ -868,5 +987,5 @@ local function floatingOffer(y: number, icon: string, title: string, price: stri
 	end)
 	bob(h, 6, 2)
 end
-floatingOffer(0.38, "💸", "OP", "R$99")
-floatingOffer(0.64, "🎁", "Starter Pack!", "R$99")
+floatingOffer(0.38, "cash", "OP", "R$99")
+floatingOffer(0.64, "gift", "Starter Pack!", "R$99")
