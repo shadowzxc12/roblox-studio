@@ -8612,6 +8612,13 @@ local function spawnItem(itemId: string, qty: number, pos: Vector3, opts)
 	})
 	prompt:SetAttribute("LootId", id)
 	prompt:SetAttribute("ItemId", itemId)
+	if opts and opts.Point then
+		local point = State.Plan.LootPoints[opts.Point]
+		if point and point.Bonus >= 2.5 then
+			-- inside locked / hidden rooms: no grabbing through the wall
+			prompt.RequiresLineOfSight = true
+		end
+	end
 	model:SetAttribute("LootId", id)
 	model.Parent = folder()
 	loots[id] = {
