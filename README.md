@@ -20,7 +20,7 @@ Dizajn systém (farby, komponenty, animácie): https://claude.ai/artifact/MBjEgr
   Kým je `id = 0`, tlačidlo spraví len ukážkový efekt (bez platby).
 - `REWARDS` v server Scripte: čo hráč dostane po kúpe (bez toho Roblox nákup nepotvrdí).
 - `SFX`: zvuky. Teraz sú tam vstavané zvuky Robloxu, vymeň ich za vlastné `rbxassetid://…`.
-- **Ikony** (`icons/png`, 15 kusov): v Studiu *View → Asset Manager → Bulk Import*, vyber všetky PNG,
-  potom na každú pravý klik → *Copy Asset ID* a vlož do tabuľky `ICONS` (namiesto `rbxassetid://0`).
-  Kým ID chýba, ukáže sa namiesto ikony krúžok s písmenom.
+- **Ikony** sa kreslia priamo v skripte z tvarov (fungujú hneď, nič netreba nahrávať).
+  Voliteľne: ostrejšie PNG z `icons/png` nahraj cez *View → Asset Manager → Bulk Import*
+  a ich ID vlož do tabuľky `ICONS` (namiesto `rbxassetid://0`).
 - **Pozadie:** všetky panely majú Roblox „studs“ vzor; v STORE sa studs pomaly posúvajú a zozadu stúpajú iskričky.
