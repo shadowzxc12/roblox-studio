@@ -8,7 +8,8 @@
 	  - join a party by its code (# K7Q-2M)
 	  - ready up; the leader picks the rules (SURVIVAL / INFECTION / HARDCORE) and launches
 
-	Launch reserves a brand-new private server of the Game place and teleports the whole party
+	Launch reserves a brand-new private server of THIS place (private servers run the store) and
+	teleports the whole party
 	there in ONE TeleportAsync call (so they land together), with TeleportData
 	  { Mode, PartyKey, Leader, Members, Rules, Solo }
 	SOLO launch: only you go, the party stays here.
@@ -202,15 +203,8 @@ function Party.All()
 end
 
 --============================ LAUNCH ============================--
-local function placesReady(): (boolean, string?)
-	if Config.Places.Game == 0 then
-		return false, "Publish the Game place and set Config.Places.Game first (teleports don't run in Studio)."
-	end
-	if RunService:IsStudio() then
-		return false, "Teleports don't work in Studio. Test the store by playing the Game place directly."
-	end
-	return true
-end
+-- Studio sets this (the store runs on the same server): walk the players in, no teleport
+Party.LocalLaunch = nil :: ((going: { Player }, mode: string) -> ())?
 
 function Party.Launch(player: Player, solo: boolean, soloRules: string?): (boolean, string?)
 	local party = byPlayer[player]
@@ -239,9 +233,18 @@ function Party.Launch(player: Player, solo: boolean, soloRules: string?): (boole
 	if not mode then
 		return false, why
 	end
-	local ok, err = placesReady()
-	if not ok then
-		return false, err
+	if Party.LocalLaunch then
+		if not solo then
+			for _, p in party.Members do
+				party.Ready[p] = nil
+			end
+			push(party)
+		end
+		Party.LocalLaunch(going, mode)
+		return true
+	end
+	if RunService:IsStudio() then
+		return false, "Teleports don't work in Studio."
 	end
 
 	party.Launching = not solo
@@ -272,7 +275,7 @@ function Party.Launch(player: Player, solo: boolean, soloRules: string?): (boole
 		local code
 		for attempt = 1, 3 do
 			local okR, res = pcall(function()
-				return TeleportService:ReserveServer(Config.Places.Game)
+				return TeleportService:ReserveServer(game.PlaceId)
 			end)
 			if okR and res then
 				code = res
@@ -301,7 +304,7 @@ function Party.Launch(player: Player, solo: boolean, soloRules: string?): (boole
 			end
 		end
 		local okT, errT = pcall(function()
-			TeleportService:TeleportAsync(Config.Places.Game, present, options)
+			TeleportService:TeleportAsync(game.PlaceId, present, options)
 		end)
 		if not okT then
 			fail("Teleport failed: " .. tostring(errT))

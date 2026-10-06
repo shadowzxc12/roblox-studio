@@ -133,12 +133,12 @@ local function refreshCards()
 				UI.text(swatch, Buildables.TierInfo[def.Tier].Name, 10, Color3.new(1, 1, 1), UI.Caps, { Position = UDim2.fromOffset(6, 0), Size = UDim2.new(1, -6, 1, 0), TextStrokeTransparency = 0.4 })
 			end
 			UI.text(card, def.Name, 13, C.Text, UI.Bold, { Size = UDim2.new(1, 0, 0, 16), LayoutOrder = 2, TextTruncate = Enum.TextTruncate.AtEnd })
-			UI.text(card, ("HP %d%s"):format(def.HP, if def.Power then (" · ⚡%d"):format(def.Power) elseif def.Slots then (" · %d slots"):format(def.Slots) else ""), 10, C.Muted, UI.Mono, { Size = UDim2.new(1, 0, 0, 13), LayoutOrder = 3 })
+			UI.text(card, ("HP %d%s"):format(def.HP, if def.Power then (" · PWR %d"):format(def.Power) elseif def.Slots then (" · %d slots"):format(def.Slots) else ""), 10, C.Muted, UI.Mono, { Size = UDim2.new(1, 0, 0, 13), LayoutOrder = 3 })
 			costLine(card, def.Cost, 4)
 			if reason then
 				local lock = make("Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.35, Size = UDim2.fromScale(1, 1), ZIndex = 8 }, card)
 				UI.corner(lock, 8)
-				UI.text(lock, "🔒 " .. reason, 13, C.Accent, UI.Title, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 9 })
+				UI.iconLabel(lock, "lock", reason, 13, C.Accent, UI.Title, 9)
 			end
 			card.MouseEnter:Connect(function()
 				stroke.Color = tierColor
@@ -162,7 +162,7 @@ local function buildMenu()
 	menu = UI.panel(root, { Name = "BuildMenu", AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -96), Size = UDim2.fromOffset(820, 330), Visible = false }, 14)
 	UI.text(menu, "BUILD", 22, C.Text, UI.Title, { Position = UDim2.fromOffset(18, 12), Size = UDim2.fromOffset(120, 26) })
 	UI.text(menu, "Materials come from your inventory and the cart you push", 11, C.Muted, UI.Bold, { Position = UDim2.fromOffset(110, 20), Size = UDim2.fromOffset(400, 14) })
-	local close = UI.button(menu, { Text = "✕", Size = UDim2.fromOffset(32, 32), Position = UDim2.new(1, -46, 0, 10) })
+	local close = UI.button(menu, { Text = "", Icon = "close", Name = "Close", Size = UDim2.fromOffset(32, 32), Position = UDim2.new(1, -46, 0, 10) })
 	close.Activated:Connect(function()
 		BuildUI.Toggle(false)
 	end)

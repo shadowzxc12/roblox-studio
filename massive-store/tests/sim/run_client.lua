@@ -39,7 +39,6 @@ local pg = me:FindFirstChild("PlayerGui")
 local function gui(name)
 	return pg:FindFirstChild(name)
 end
-check(gui("MSL_Menu") and gui("MSL_Menu").Enabled, "main menu is showing")
 check(gui("LoadingScreen") == nil, "loading screen removed")
 
 local function findButton(root, text)
@@ -48,7 +47,7 @@ local function findButton(root, text)
 	end
 	for _, d in root:GetDescendants() do
 		if d.ClassName == "TextButton" then
-			local label = d:FindFirstChild("Label")
+			local label = d:FindFirstChild("Label", true)
 			if d.Text == text or (label and label.Text == text) then
 				return d
 			end
@@ -64,21 +63,23 @@ local function click(btn)
 	return btn ~= nil
 end
 
--- Studio: the store place shows the STUDIO TEST mode picker (the real menu is in the lobby place)
-for _, id in Config.ModeOrder do
-	check(gui("MSL_Menu"):FindFirstChild("Play" .. id, true) ~= nil, "studio test lists " .. id)
-end
-
--- enter the store
-check(click(gui("MSL_Menu"):FindFirstChild("PlaySurvival", true)), "pressed PLAY SURVIVAL")
-G.RunUntil(3)
-check(me:GetAttribute("InRun") == true, "server put me in the store")
-check(gui("MSL_HUD") and gui("MSL_HUD").Enabled, "HUD visible")
-check(not gui("MSL_Menu").Enabled, "menu hidden")
-check(me.CameraMode == Enum.CameraMode.LockFirstPerson, "first person in the store")
--- buddy joins too (server side only)
+-- Studio: lobby and store are the same server. You start in the lobby (parking lot).
+check(gui("MSL_Lobby") and gui("MSL_Lobby").Enabled, "lobby shows first")
+check(not gui("MSL_Menu").Enabled, "no mode picker in the store part")
+check(game:GetService("Workspace"):FindFirstChild("Lobby") ~= nil and game:GetService("Workspace"):FindFirstChild("Store") ~= nil, "lobby and store live on one server")
+-- buddy is already in the store (server side), so the run is Survival
 game:GetService("ReplicatedStorage").Remotes:FindFirstChild("Play").OnServerEvent:Fire(buddy, "Survival")
 G.RunUntil(2)
+local lobby = gui("MSL_Lobby")
+check(click(lobby:FindFirstChild("PlaySolo", true)), "PLAY SOLO")
+check(click(lobby:FindFirstChild("Launch", true)), "ENTER THE STORE")
+G.RunUntil(3)
+check(me:GetAttribute("InRun") == true, "the lobby put me straight into the store")
+check(gui("MSL_HUD") and gui("MSL_HUD").Enabled, "HUD visible")
+check(not lobby.Enabled, "lobby hidden in the store")
+check(not gui("MSL_Menu").Enabled, "menu hidden")
+check(me.CameraMode == Enum.CameraMode.LockFirstPerson, "first person in the store")
+check(UIS.MouseIconEnabled == false, "no mouse arrow in first person")
 
 local function key(code)
 	UIS.InputBegan:Fire({ KeyCode = code, UserInputType = Enum.UserInputType.Keyboard }, false)
@@ -132,7 +133,7 @@ local buildMenu = gui("MSL_Build"):FindFirstChild("BuildMenu", true)
 check(buildMenu and buildMenu.Visible, "build menu opens")
 local card
 for _, d in buildMenu:GetDescendants() do
-	if d.ClassName == "TextButton" and d.Text == "" then
+	if d.ClassName == "TextButton" and d.Text == "" and d.Name ~= "Close" then
 		card = d
 		break
 	end
@@ -167,7 +168,7 @@ for _, entry in { { "LOADOUT & OUTFITS", "FLASHLIGHT" }, { "DAILY MISSIONS", nil
 	if entry[2] then
 		click(findButton(pause, entry[2]))
 	end
-	click(findButton(pause, "←  BACK"))
+	click(findButton(pause, "BACK"))
 end
 check(click(findButton(pause, "RESUME")), "resume")
 check(not pause.Enabled, "pause menu closed")
@@ -269,13 +270,15 @@ check(results ~= nil, "results screen drawn (Figma 08)")
 check(click(results and results:FindFirstChild("NewStore", true)), "NEW STORE closes the results")
 G.RunUntil(Config.Cycle.WipeResults + 4)
 
--- leave the store (Studio: no lobby place, so back to the test menu)
+-- back to the lobby (Studio: the lobby is on this server)
 key(Enum.KeyCode.P)
-click(findButton(gui("MSL_Pause"), "LEAVE THE STORE"))
-click(findButton(gui("MSL_Pause"), "LEAVE"))
-G.RunUntil(1)
-check(me:GetAttribute("InRun") == false, "returned to the main menu")
-check(gui("MSL_Menu").Enabled, "menu showing again")
+click(findButton(gui("MSL_Pause"), "BACK TO LOBBY"))
+click(findButton(gui("MSL_Pause"), "LOBBY"))
+G.RunUntil(2)
+check(me:GetAttribute("InRun") == false, "returned to the lobby")
+check(lobby.Enabled, "lobby showing again")
+check(me.Character and me.Character:FindFirstChild("HumanoidRootPart") and me.Character.HumanoidRootPart.Anchored, "standing in the lobby lineup again")
+check(UIS.MouseIconEnabled == true, "mouse arrow back in the lobby")
 
 print("client sent:", G.CLIENT_SENT and G.CLIENT_SENT.Input, "inputs,", G.CLIENT_SENT and G.CLIENT_SENT.Build, "builds")
 if #ERRORS > 0 then

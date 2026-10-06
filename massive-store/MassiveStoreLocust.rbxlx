@@ -468,23 +468,17 @@ local Config = {}
 
 Config.GameName = "MASSIVE STORE"
 Config.Subtitle = "LOCUST"
-Config.Version = "2.0.0"
+Config.Version = "2.1.0"
 Config.DataStoreName = "MassiveStoreLocust_v1"
 Config.ServerRegistryName = "MSL_Servers_v1"
 Config.MaxPlayers = 12
 
 --[[
-	Two places in one experience:
-	  Lobby  the start place: menu, party, cosmetics, shop. Teleports you into a store.
-	  Game   the store itself. Every run is a reserved (private) server just for you / your party.
-	Publish both, then put their place ids here (Creator Dashboard -> experience -> Places).
-	While an id is 0 (e.g. in Studio) teleports are skipped with a message.
+	ONE place, two kinds of servers (see ServerScriptService/Main.server):
+	  public servers   = the LOBBY (parking lot, party, shop)
+	  private servers  = a STORE run, reserved by the lobby for you / your party
+	In Studio both run on the same server, so START A RUN puts you straight into the store.
 ]]
-Config.Places = {
-	Lobby = 0,
-	Game = 0,
-}
-
 Config.Party = {
 	MaxSize = 4,
 	InviteTimeout = 30, -- seconds an invite stays valid
@@ -4669,99 +4663,1055 @@ return Zones
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Script" referent="28">
+    <Item class="ModuleScript" referent="28">
       <Properties>
-        <string name="Name">Main</string>
-        <token name="RunContext">0</token>
+        <string name="Name">GameServer</string>
         <string name="Source"><![CDATA[--[[
-	MASSIVE STORE: LOCUST — server entry point (the only server Script).
-	Generates a new store for this server, builds it, then starts every system.
+	GameServer: starts THE STORE on this server — generates a new store from a random seed,
+	builds it and starts every survival system. Used by Main.server when this server is a store
+	(a private server made by the lobby, or Studio where lobby and store share one server).
 ]]
 
 local PhysicsService = game:GetService("PhysicsService")
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-
-Players.CharacterAutoLoads = false
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local StoreLayout = require(Shared.StoreLayout)
 local Net = require(Shared.Net)
 
 local Services = script.Parent:WaitForChild("Services")
-local State = require(Services.State)
-local World = require(Services.World)
-local Prompts = require(Services.Prompts)
-local Data = require(Services.Data)
-local Progress = require(Services.Progress)
-local Survival = require(Services.Survival)
-local Inventory = require(Services.Inventory)
-local Loot = require(Services.Loot)
-local Building = require(Services.Building)
-local Power = require(Services.Power)
-local Carts = require(Services.Carts)
-local Tools = require(Services.Tools)
-local Locust = require(Services.Locust)
-local Defense = require(Services.Defense)
-local Events = require(Services.Events)
-local Infection = require(Services.Infection)
-local Shop = require(Services.Shop)
-local Modes = require(Services.Modes)
-local Director = require(Services.Director)
 
--- collision groups: players walk through each other (co-op in narrow aisles)
-for _, g in { "Players", "Locust" } do
-	pcall(function()
-		PhysicsService:RegisterCollisionGroup(g)
-	end)
-end
-PhysicsService:CollisionGroupSetCollidable("Players", "Players", false)
+local GameServer = {}
 
--- a different store on every server
-local seed = (os.time() * 7 + math.random(1, 1000000)) % 2000000000
-State.Seed = seed
-State.SetAttr("Seed", seed)
-local t0 = os.clock()
-local plan = StoreLayout.Generate(seed)
-State.Plan = plan
-print(("[MassiveStore] layout seed %d: %d cells, %d props, %d loot points (%.2fs)"):format(seed, #plan.CellList, #plan.Props, #plan.LootPoints, os.clock() - t0))
-World.Build(plan)
+-- init(service) starts a service once (the lobby shares Data / Progress / Shop)
+function GameServer.Start(init: (any) -> ())
+	local State = require(Services.State)
+	local World = require(Services.World)
 
-Prompts.Init()
-Data.Init()
-Progress.Init()
-Survival.Init()
-Inventory.Init()
-Loot.Init()
-Building.Init()
-Power.Init()
-Carts.Init()
-Tools.Init()
-Locust.Init()
-Defense.Init()
-Events.Init()
-Infection.Init()
-Shop.Init()
-Modes.Init()
-Director.Init()
+	-- collision groups: players walk through each other (co-op in narrow aisles)
+	for _, g in { "Players", "Locust" } do
+		pcall(function()
+			PhysicsService:RegisterCollisionGroup(g)
+		end)
+	end
+	PhysicsService:CollisionGroupSetCollidable("Players", "Players", false)
 
-Net.Function("GetPlan").OnServerInvoke = function()
-	return { Seed = State.Seed, Gates = State.GatesOpen }
+	-- a different store on every server
+	local seed = (os.time() * 7 + math.random(1, 1000000)) % 2000000000
+	State.Seed = seed
+	State.SetAttr("Seed", seed)
+	local t0 = os.clock()
+	local plan = StoreLayout.Generate(seed)
+	State.Plan = plan
+	print(("[MassiveStore] layout seed %d: %d cells, %d props, %d loot points (%.2fs)"):format(seed, #plan.CellList, #plan.Props, #plan.LootPoints, os.clock() - t0))
+	World.Build(plan)
+
+	for _, name in {
+		"Prompts",
+		"Data",
+		"Progress",
+		"Survival",
+		"Inventory",
+		"Loot",
+		"Building",
+		"Power",
+		"Carts",
+		"Tools",
+		"Locust",
+		"Defense",
+		"Events",
+		"Infection",
+		"Shop",
+		"Modes",
+		"Director",
+	} do
+		init(require(Services[name]))
+	end
+
+	Net.Function("GetPlan").OnServerInvoke = function()
+		return { Seed = State.Seed, Gates = State.GatesOpen }
+	end
+	if RunService:IsStudio() then
+		print("[MassiveStore] store ready · mode " .. State.Mode)
+	end
 end
 
-State.SetAttr("ServerReady", true)
-if RunService:IsStudio() then
-	print("[MassiveStore] server ready · mode " .. State.Mode)
-end
+return GameServer
 ]]></string>
       </Properties>
     </Item>
     <Item class="Folder" referent="29">
       <Properties>
-        <string name="Name">Services</string>
+        <string name="Name">Lobby</string>
       </Properties>
       <Item class="ModuleScript" referent="30">
+        <Properties>
+          <string name="Name">LobbyServer</string>
+          <string name="Source"><![CDATA[--[[
+	LobbyServer: the lobby part of the place — profile, party, cosmetics, shop, missions.
+	Nothing here is a run. In Studio ("Both") the store runs on the same server, so a launch
+	puts the party straight into it instead of teleporting.
+]]
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Net = require(Shared.Net)
+
+local Services = script.Parent.Parent:WaitForChild("Services")
+
+local LobbyServer = {}
+
+function LobbyServer.Start(init: (any) -> (), role: string)
+	local State = require(Services.State)
+	local Data = require(Services.Data)
+	local Progress = require(Services.Progress)
+	local Shop = require(Services.Shop)
+	local Party = require(script.Parent.Party)
+	local LobbyWorld = require(script.Parent.LobbyWorld)
+
+	LobbyWorld.Build()
+	init(Data)
+	init(Progress)
+	init(Shop)
+	Party.Init()
+	LobbyWorld.Init(Party, Shop)
+
+	-- outfits / titles need the profile: re-apply once it is loaded
+	Data.Loaded:Connect(function(player)
+		if not player:GetAttribute("InRun") then
+			Shop.Apply(player)
+		end
+	end)
+
+	if role == "Both" then
+		-- Studio: the store is on this server — walk the party in
+		local Modes = require(Services.Modes)
+		Party.LocalLaunch = function(going: { Player }, mode: string)
+			local anyoneIn = false
+			for _, p in game:GetService("Players"):GetPlayers() do
+				if p:GetAttribute("InRun") then
+					anyoneIn = true
+				end
+			end
+			if not anyoneIn and not State.RunActive then
+				Modes.Set(mode)
+			elseif State.Mode ~= mode then
+				for _, p in going do
+					State.Notify(p, "Studio: this server's store already runs " .. State.ModeInfo.Name .. " — joining it.", "Info")
+				end
+			end
+			for _, p in going do
+				Modes.Enter(p)
+			end
+		end
+	else
+		Net.Function("GetPlan").OnServerInvoke = function()
+			return nil
+		end
+	end
+end
+
+return LobbyServer
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="31">
+        <Properties>
+          <string name="Name">LobbyWorld</string>
+          <string name="Source"><![CDATA[--[[
+	LobbyWorld: the lobby is the MASSIVE STORE parking lot at night.
+	Every party gets its own "pad": a slice of the store front (glowing sign, sliding doors with
+	the lit store behind, cart corral, lamp posts) with the party members lined up in front of it.
+	The client camera looks at your pad (Workspace.Lobby.Pads.Pad<n>, attribute Cam).
+]]
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared.Config)
+local Models = require(Shared.Models)
+
+local LobbyWorld = {}
+
+local SPACING = 160
+-- far away from the store (in Studio both live on the same server)
+local ORIGIN = Vector3.new(6000, 0, 6000)
+local SLOTS = {
+	CFrame.new(0, 0, 0),
+	CFrame.new(-4.6, 0, 1.4) * CFrame.Angles(0, math.rad(-12), 0),
+	CFrame.new(4.6, 0, 1.4) * CFrame.Angles(0, math.rad(12), 0),
+	CFrame.new(-9, 0, 3) * CFrame.Angles(0, math.rad(-20), 0),
+	CFrame.new(9, 0, 3) * CFrame.Angles(0, math.rad(20), 0),
+	CFrame.new(0, 0, 4.5),
+}
+
+local root: Folder
+local pads: { [number]: CFrame } = {}
+
+local function part(parent: Instance, size: Vector3, cf: CFrame, color: string, material: Enum.Material?, props): Part
+	local p = Instance.new("Part")
+	p.Anchored = true
+	p.Size = size
+	p.CFrame = cf
+	p.Color = Color3.fromHex(color)
+	p.Material = material or Enum.Material.SmoothPlastic
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	if props then
+		for k, v in props do
+			(p :: any)[k] = v
+		end
+	end
+	p.Parent = parent
+	return p
+end
+
+local function signText(p: BasePart, face: Enum.NormalId, text: string, color: Color3, bg: Color3?, font: Enum.Font?)
+	local sg = Instance.new("SurfaceGui")
+	sg.Face = face
+	sg.LightInfluence = 0
+	sg.Brightness = 2.2
+	sg.PixelsPerStud = 40
+	sg.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	local t = Instance.new("TextLabel")
+	t.Size = UDim2.fromScale(1, 1)
+	t.BackgroundTransparency = if bg then 0 else 1
+	t.BackgroundColor3 = bg or Color3.new()
+	t.TextScaled = true
+	t.Font = font or Enum.Font.Oswald
+	t.TextColor3 = color
+	t.Text = text
+	t.Parent = sg
+	sg.Parent = p
+	return sg
+end
+
+-- one store-front slice. O = lineup centre on the ground, LookVector towards the camera.
+local function buildPad(index: number, O: CFrame)
+	local model = Instance.new("Model")
+	model.Name = "Pad" .. index
+	local function L(x, y, z)
+		return O * CFrame.new(x, y, -z)
+	end
+	-- the camera: in front of the lineup, a bit low, looking slightly up at the sign
+	local camCF = CFrame.lookAt(L(0, 4.6, 19).Position, L(0, 4.2, 0).Position)
+	model:SetAttribute("Cam", camCF)
+	model:SetAttribute("Origin", O)
+	pcall(function()
+		-- the whole pad is always on every client (StreamingEnabled)
+		(model :: any).ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+	end)
+
+	-- asphalt with parking lines
+	part(model, Vector3.new(SPACING, 1, SPACING), L(0, -0.5, 10), "1b1c1f", Enum.Material.Asphalt)
+	for i = -3, 3 do
+		part(model, Vector3.new(0.4, 0.05, 14), L(i * 10 + 5, 0.03, 14), "d8d2b8", Enum.Material.SmoothPlastic, { CanCollide = false })
+	end
+	-- sidewalk + curb in front of the store
+	part(model, Vector3.new(SPACING, 0.7, 12), L(0, 0.35, -10), "5d5f63", Enum.Material.Concrete)
+	part(model, Vector3.new(SPACING, 0.75, 0.6), L(0, 0.38, -4), "c9a227", Enum.Material.Concrete)
+
+	-- the store facade
+	local wallZ = -16
+	part(model, Vector3.new(SPACING, 34, 2), L(0, 17, wallZ), "2b2e33", Enum.Material.Concrete)
+	part(model, Vector3.new(SPACING, 3, 3), L(0, 34.5, wallZ + 0.5), "c4161c", Enum.Material.Metal)
+	-- entrance: dark glass + warm lit interior
+	part(model, Vector3.new(30, 14, 0.6), L(0, 7.4, wallZ + 1.2), "8fb7c9", Enum.Material.Glass, { Transparency = 0.55, Reflectance = 0.25, CanCollide = false })
+	local glow = part(model, Vector3.new(30, 14, 0.4), L(0, 7.4, wallZ - 0.4), "ffe8b0", Enum.Material.Neon, { Transparency = 0.15, CanCollide = false })
+	local inside = Instance.new("SurfaceLight")
+	inside.Face = Enum.NormalId.Back
+	inside.Brightness = 3
+	inside.Range = 26
+	inside.Angle = 120
+	inside.Color = Color3.fromHex("ffe2a8")
+	inside.Parent = glow
+	for _, x in { -15.5, 15.5, 0 } do
+		part(model, Vector3.new(0.8, 14.6, 1), L(x, 7.4, wallZ + 1.4), "9aa0a8", Enum.Material.Metal)
+	end
+	part(model, Vector3.new(32, 0.8, 1.2), L(0, 14.9, wallZ + 1.4), "9aa0a8", Enum.Material.Metal)
+	-- shelf silhouettes behind the glass
+	for i = -2, 2 do
+		part(model, Vector3.new(3, 9, 6), L(i * 6, 4.5, wallZ - 6), "121316", Enum.Material.Metal, { CanCollide = false })
+	end
+	-- the big sign
+	local sign = part(model, Vector3.new(58, 8, 1), L(0, 24, wallZ + 1.6), "111111", Enum.Material.SmoothPlastic)
+	signText(sign, Enum.NormalId.Back, "MASSIVE STORE", Color3.fromHex("ffc61a"))
+	local signLight = Instance.new("SurfaceLight")
+	signLight.Face = Enum.NormalId.Back
+	signLight.Color = Color3.fromHex("ffc61a")
+	signLight.Brightness = 1.2
+	signLight.Range = 18
+	signLight.Parent = sign
+	local open = part(model, Vector3.new(9, 2.4, 0.4), L(-24, 11, wallZ + 1.3), "c4161c", Enum.Material.Neon)
+	signText(open, Enum.NormalId.Back, "OPEN 24/7", Color3.new(1, 1, 1), nil, Enum.Font.Oswald)
+	local loc = part(model, Vector3.new(14, 3, 0.4), L(24, 11, wallZ + 1.3), "1a1a1a", Enum.Material.SmoothPlastic)
+	signText(loc, Enum.NormalId.Back, "NO EXIT AFTER DARK", Color3.fromHex("ff5a5a"), nil, Enum.Font.Oswald)
+
+	-- lamp posts with cones of light
+	for _, x in { -22, 22 } do
+		part(model, Vector3.new(0.8, 22, 0.8), L(x, 11, 6), "3a3d42", Enum.Material.Metal)
+		part(model, Vector3.new(5, 0.6, 1.6), L(x, 22, 6), "3a3d42", Enum.Material.Metal)
+		local bulb = part(model, Vector3.new(3.6, 0.3, 1.2), L(x, 21.6, 6), "fff1c8", Enum.Material.Neon, { CanCollide = false })
+		local spot = Instance.new("SpotLight")
+		spot.Face = Enum.NormalId.Bottom
+		spot.Angle = 75
+		spot.Range = 34
+		spot.Brightness = 2.4
+		spot.Color = Color3.fromHex("ffe7b8")
+		spot.Shadows = true
+		spot.Parent = bulb
+	end
+	-- key light on the lineup (so outfits read well)
+	local key = part(model, Vector3.new(1, 1, 1), L(-6, 12, 12), "000000", Enum.Material.SmoothPlastic, { Transparency = 1, CanCollide = false })
+	key.CFrame = CFrame.lookAt(key.Position, L(0, 2, 0).Position)
+	local keyLight = Instance.new("SpotLight")
+	keyLight.Face = Enum.NormalId.Front
+	keyLight.Angle = 50
+	keyLight.Range = 30
+	keyLight.Brightness = 1.6
+	keyLight.Color = Color3.fromHex("fff4dc")
+	keyLight.Parent = key
+	-- red rim light from inside the store (something is watching)
+	local rim = part(model, Vector3.new(1, 1, 1), L(8, 5, -10), "000000", Enum.Material.SmoothPlastic, { Transparency = 1, CanCollide = false })
+	local rimLight = Instance.new("PointLight")
+	rimLight.Color = Color3.fromHex("ff2a2a")
+	rimLight.Range = 14
+	rimLight.Brightness = 0.8
+	rimLight.Parent = rim
+
+	-- cart corral + a few carts
+	for i = 0, 2 do
+		local cart = Models.Cart()
+		for _, p in cart:GetDescendants() do
+			if p:IsA("BasePart") then
+				p.Anchored = true
+				p.CanCollide = false
+			end
+		end
+		cart:PivotTo(L(-30 + i * 1.6, 0.85, -6 + i * 0.4) * CFrame.Angles(0, math.rad(90), 0))
+		cart.Parent = model
+	end
+	part(model, Vector3.new(0.3, 3.4, 10), L(-28.5, 1.7, -6), "c9a227", Enum.Material.Metal)
+	part(model, Vector3.new(0.3, 3.4, 10), L(-33, 1.7, -6), "c9a227", Enum.Material.Metal)
+	-- bollards
+	for _, x in { -12, -6, 6, 12 } do
+		part(model, Vector3.new(1, 3, 1), L(x, 1.5, -5), "c9a227", Enum.Material.Metal, { Shape = Enum.PartType.Block })
+	end
+	-- a lonely car
+	local car = Instance.new("Model")
+	car.Name = "Car"
+	part(car, Vector3.new(7, 2.4, 15), L(30, 1.9, 16), "5b1f1f", Enum.Material.Metal)
+	part(car, Vector3.new(6.4, 2.2, 8), L(30, 4.2, 15), "3a1414", Enum.Material.Metal)
+	part(car, Vector3.new(6.2, 1.8, 0.2), L(30, 4.2, 19.1), "1c2630", Enum.Material.Glass, { Transparency = 0.3 })
+	for _, x in { -3.2, 3.2 } do
+		for _, z in { 11, 21 } do
+			part(car, Vector3.new(1, 2.6, 2.6), L(30 + x, 1.3, z), "111111", Enum.Material.Rubber, { Shape = Enum.PartType.Cylinder })
+		end
+	end
+	car.Parent = model
+
+	model.Parent = root:FindFirstChild("Pads")
+	pads[index] = O
+	return model
+end
+
+function LobbyWorld.Build()
+	root = Instance.new("Folder")
+	root.Name = "Lobby"
+	local padsFolder = Instance.new("Folder")
+	padsFolder.Name = "Pads"
+	padsFolder.Parent = root
+	root.Parent = Workspace
+	local n = Config.Party.Pads
+	local cols = math.ceil(math.sqrt(n + 1))
+	for i = 0, n do
+		local cx = (i % cols) * SPACING
+		local cz = math.floor(i / cols) * SPACING
+		buildPad(i, CFrame.new(ORIGIN + Vector3.new(cx, 0, cz)))
+	end
+end
+
+function LobbyWorld.PadCFrame(index: number): CFrame
+	return pads[index] or pads[0]
+end
+
+-- stand the party in a line in front of their store front
+function LobbyWorld.Place(party)
+	if not party or not party.Members then
+		return
+	end
+	local O = LobbyWorld.PadCFrame(party.Pad or 0)
+	local order = { party.Leader }
+	for _, p in party.Members do
+		if p ~= party.Leader then
+			table.insert(order, p)
+		end
+	end
+	for i, p in order do
+		-- players in the store (Studio) aren't in the lineup
+		local char = p and not p:GetAttribute("InRun") and p.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if hrp and hum then
+			local slot = SLOTS[i] or SLOTS[#SLOTS]
+			local height = hum.HipHeight + (hrp :: BasePart).Size.Y / 2
+			if hum.RigType == Enum.HumanoidRigType.R6 then
+				height = 3
+			end
+			hrp.Anchored = true
+			char:PivotTo(O * slot * CFrame.new(0, height, 0))
+		end
+	end
+end
+
+-- lobby avatars: loaded by the lobby (the store controls characters itself, so
+-- Players.CharacterAutoLoads is off) — on join and whenever someone comes back from the store
+local function ensureCharacter(player: Player)
+	if not player.Parent or player:GetAttribute("InRun") or player:GetAttribute("Teleporting") then
+		return
+	end
+	if not player.Character or not player.Character.Parent then
+		pcall(function()
+			player:LoadCharacter()
+		end)
+	end
+end
+
+function LobbyWorld.Init(Party, Shop)
+	Party.Changed:Connect(function(party)
+		LobbyWorld.Place(party)
+	end)
+	local function hook(player: Player)
+		player.CharacterAdded:Connect(function(char)
+			if player:GetAttribute("InRun") then
+				return
+			end
+			char:WaitForChild("HumanoidRootPart", 10)
+			char:WaitForChild("Humanoid", 10)
+			task.wait()
+			if player:GetAttribute("InRun") then
+				return
+			end
+			LobbyWorld.Place(Party.Of(player))
+			if Shop then
+				Shop.Apply(player)
+			end
+		end)
+		player:GetAttributeChangedSignal("InRun"):Connect(function()
+			if not player:GetAttribute("InRun") then
+				task.delay(0.3, ensureCharacter, player)
+			end
+		end)
+		task.spawn(ensureCharacter, player)
+	end
+	Players.PlayerAdded:Connect(hook)
+	for _, p in Players:GetPlayers() do
+		hook(p)
+	end
+end
+
+return LobbyWorld
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="32">
+        <Properties>
+          <string name="Name">Party</string>
+          <string name="Source"><![CDATA[--[[
+	Party (lobby place): groups of up to Config.Party.MaxSize players who go into a store together.
+
+	Everybody is always in a party (alone = a party of one). In a party you can
+	  - invite players in this lobby server (they get a JOIN / NO toast)
+	  - invite Roblox friends (client: SocialService game invite carrying the party code as
+	    LaunchData; when they arrive in this server they join your party automatically)
+	  - join a party by its code (# K7Q-2M)
+	  - ready up; the leader picks the rules (SURVIVAL / INFECTION / HARDCORE) and launches
+
+	Launch reserves a brand-new private server of THIS place (private servers run the store) and
+	teleports the whole party
+	there in ONE TeleportAsync call (so they land together), with TeleportData
+	  { Mode, PartyKey, Leader, Members, Rules, Solo }
+	SOLO launch: only you go, the party stays here.
+	When the party comes back from a store with the same PartyKey it is rebuilt automatically.
+]]
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared.Config)
+local Net = require(Shared.Net)
+local PartyRules = require(Shared.PartyRules)
+local Signal = require(Shared.Signal)
+
+local Services = script.Parent.Parent:WaitForChild("Services")
+local State = require(Services.State)
+local Data = require(Services.Data)
+local RateLimiter = require(Services.RateLimiter)
+
+local Party = {}
+Party.Changed = Signal.new() -- (party) members / leader changed: the world moves the lineup
+
+local parties: { [number]: any } = {}
+local byPlayer: { [Player]: any } = {}
+local byCode: { [string]: any } = {}
+local byKey: { [string]: any } = {} -- PartyKey from a returning teleport
+local nextId = 0
+local rng = Random.new()
+local limiter = RateLimiter.new(12, 4)
+local launchLimiter = RateLimiter.new(2, 5)
+
+local MAX = Config.Party.MaxSize
+
+--============================ STATE ============================--
+local function memberInfo(party, p: Player)
+	local d = Data.Get(p)
+	return {
+		UserId = p.UserId,
+		Name = p.DisplayName,
+		Level = Data.Level(p),
+		Title = d and d.Equipped.Title or "Shopper",
+		Ready = party.Ready[p] == true or party.Leader == p,
+		Leader = party.Leader == p,
+	}
+end
+
+function Party.Snapshot(party)
+	local members = {}
+	for _, p in party.Members do
+		table.insert(members, memberInfo(party, p))
+	end
+	return {
+		Id = party.Id,
+		Code = party.Code,
+		Leader = party.Leader and party.Leader.UserId or 0,
+		Max = MAX,
+		Rules = party.Rules,
+		Members = members,
+		Launching = party.Launching,
+		Pad = party.Pad,
+	}
+end
+
+local function push(party)
+	if not parties[party.Id] then
+		return
+	end
+	local snap = Party.Snapshot(party)
+	for _, p in party.Members do
+		p:SetAttribute("PartyId", party.Id)
+		p:SetAttribute("PartySize", #party.Members)
+		p:SetAttribute("PartyLeader", party.Leader == p)
+		p:SetAttribute("Pad", party.Pad or 0)
+		Net.Event("Party"):FireClient(p, snap)
+	end
+	Party.Changed:Fire(party)
+end
+Party.Push = push
+
+local usedPads: { [number]: boolean } = {}
+local function takePad(): number
+	for i = 1, Config.Party.Pads do
+		if not usedPads[i] then
+			usedPads[i] = true
+			return i
+		end
+	end
+	return 0 -- lobby is very full: share the overflow pad
+end
+
+local function create(leader: Player, key: string?)
+	nextId += 1
+	local code = PartyRules.NewCode(rng)
+	while byCode[code] do
+		code = PartyRules.NewCode(rng)
+	end
+	local party = {
+		Id = nextId,
+		Code = code,
+		Key = key,
+		Leader = leader,
+		Members = { leader },
+		Ready = {},
+		Rules = "Survival",
+		Launching = false,
+		Invites = {}, -- [Player] = expiry (os.clock)
+		Pad = takePad(),
+	}
+	parties[party.Id] = party
+	byCode[code] = party
+	if key then
+		byKey[key] = party
+	end
+	byPlayer[leader] = party
+	return party
+end
+
+local function disband(party)
+	parties[party.Id] = nil
+	byCode[party.Code] = nil
+	if party.Key and byKey[party.Key] == party then
+		byKey[party.Key] = nil
+	end
+	if party.Pad and party.Pad > 0 then
+		usedPads[party.Pad] = nil
+	end
+	Party.Changed:Fire(party)
+end
+
+-- take a player out of their party (the party survives with the others)
+local function remove(player: Player)
+	local party = byPlayer[player]
+	if not party then
+		return
+	end
+	byPlayer[player] = nil
+	local i = table.find(party.Members, player)
+	if i then
+		table.remove(party.Members, i)
+	end
+	party.Ready[player] = nil
+	if #party.Members == 0 then
+		disband(party)
+		return
+	end
+	if party.Leader == player then
+		party.Leader = party.Members[1]
+	end
+	push(party)
+end
+
+local function soloParty(player: Player)
+	remove(player)
+	local party = create(player)
+	push(party)
+	return party
+end
+
+local function join(player: Player, party): (boolean, string?)
+	if byPlayer[player] == party then
+		return false, "Already in this party"
+	end
+	if party.Launching then
+		return false, "That party is entering a store"
+	end
+	if #party.Members >= MAX then
+		return false, "That party is full"
+	end
+	remove(player)
+	table.insert(party.Members, player)
+	byPlayer[player] = party
+	party.Invites[player] = nil
+	push(party)
+	for _, p in party.Members do
+		if p ~= player then
+			State.Notify(p, player.DisplayName .. " joined the party", "Good")
+		end
+	end
+	return true
+end
+
+function Party.Of(player: Player)
+	return byPlayer[player]
+end
+
+function Party.All()
+	return parties
+end
+
+--============================ LAUNCH ============================--
+-- Studio sets this (the store runs on the same server): walk the players in, no teleport
+Party.LocalLaunch = nil :: ((going: { Player }, mode: string) -> ())?
+
+function Party.Launch(player: Player, solo: boolean, soloRules: string?): (boolean, string?)
+	local party = byPlayer[player]
+	if not party or party.Launching then
+		return false, "Already launching"
+	end
+	local going: { Player }
+	if solo then
+		going = { player }
+	else
+		if party.Leader ~= player then
+			return false, "Only the party leader can start"
+		end
+		for _, p in party.Members do
+			if p ~= party.Leader and not party.Ready[p] then
+				return false, p.DisplayName .. " is not ready"
+			end
+		end
+		going = table.clone(party.Members)
+	end
+	local rules = party.Rules
+	if solo and soloRules and table.find(Config.Party.LobbyModes, soloRules) then
+		rules = soloRules
+	end
+	local mode, why = PartyRules.Resolve(rules, solo, #going)
+	if not mode then
+		return false, why
+	end
+	if Party.LocalLaunch then
+		if not solo then
+			for _, p in party.Members do
+				party.Ready[p] = nil
+			end
+			push(party)
+		end
+		Party.LocalLaunch(going, mode)
+		return true
+	end
+	if RunService:IsStudio() then
+		return false, "Teleports don't work in Studio."
+	end
+
+	party.Launching = not solo
+	if not solo then
+		push(party)
+	end
+	local userIds = {}
+	for _, p in going do
+		table.insert(userIds, p.UserId)
+		p:SetAttribute("Teleporting", true)
+		Net.Event("Teleporting"):FireClient(p, { Mode = mode, Solo = solo, Members = #going })
+	end
+
+	local function fail(msg: string)
+		party.Launching = false
+		for _, p in going do
+			if p.Parent then
+				p:SetAttribute("Teleporting", false)
+				Net.Event("Teleporting"):FireClient(p, { Cancel = true, Message = msg })
+			end
+		end
+		if parties[party.Id] then
+			push(party)
+		end
+	end
+
+	task.spawn(function()
+		local code
+		for attempt = 1, 3 do
+			local okR, res = pcall(function()
+				return TeleportService:ReserveServer(game.PlaceId)
+			end)
+			if okR and res then
+				code = res
+				break
+			end
+			task.wait(attempt)
+		end
+		if not code then
+			fail("Couldn't open a store right now. Try again!")
+			return
+		end
+		local options = Instance.new("TeleportOptions")
+		options.ReservedServerAccessCode = code
+		options:SetTeleportData({
+			Mode = mode,
+			Rules = rules,
+			Solo = solo,
+			PartyKey = if solo then nil else (game.JobId .. ":" .. party.Id),
+			Leader = if solo then player.UserId else party.Leader.UserId,
+			Members = userIds,
+		})
+		local present = {}
+		for _, p in going do
+			if p.Parent then
+				table.insert(present, p)
+			end
+		end
+		local okT, errT = pcall(function()
+			TeleportService:TeleportAsync(game.PlaceId, present, options)
+		end)
+		if not okT then
+			fail("Teleport failed: " .. tostring(errT))
+		end
+	end)
+	return true
+end
+
+--============================ ACTIONS ============================--
+local function byUserId(id: any): Player?
+	if type(id) ~= "number" then
+		return nil
+	end
+	return Players:GetPlayerByUserId(id)
+end
+
+local ACTIONS = {}
+
+function ACTIONS.Invite(player, req)
+	local party = byPlayer[player]
+	local target = byUserId(req.UserId)
+	if not party or not target or target == player then
+		return
+	end
+	if byPlayer[target] == party then
+		State.Notify(player, target.DisplayName .. " is already in your party", "Info")
+		return
+	end
+	if #party.Members >= MAX then
+		State.Notify(player, "Your party is full", "Warn")
+		return
+	end
+	local expiry = party.Invites[target]
+	if expiry and expiry > os.clock() then
+		State.Notify(player, "Invite already sent", "Info")
+		return
+	end
+	party.Invites[target] = os.clock() + Config.Party.InviteTimeout
+	Net.Event("PartyInvite"):FireClient(target, {
+		PartyId = party.Id,
+		From = player.DisplayName,
+		FromUserId = player.UserId,
+		Size = #party.Members,
+		Timeout = Config.Party.InviteTimeout,
+	})
+	State.Notify(player, "Invite sent to " .. target.DisplayName, "Good")
+end
+
+function ACTIONS.Accept(player, req)
+	local party = type(req.PartyId) == "number" and parties[req.PartyId]
+	if not party then
+		State.Notify(player, "That party doesn't exist any more", "Warn")
+		return
+	end
+	local expiry = party.Invites[player]
+	if not expiry or expiry < os.clock() then
+		State.Notify(player, "That invite expired", "Warn")
+		return
+	end
+	local ok, why = join(player, party)
+	if not ok and why then
+		State.Notify(player, why, "Warn")
+	end
+end
+
+function ACTIONS.Decline(player, req)
+	local party = type(req.PartyId) == "number" and parties[req.PartyId]
+	if party and party.Invites[player] then
+		party.Invites[player] = nil
+		State.Notify(party.Leader, player.DisplayName .. " declined the invite", "Info")
+	end
+end
+
+function ACTIONS.JoinCode(player, req)
+	local code = type(req.Code) == "string" and string.upper(string.gsub(req.Code, "[^%w]", ""))
+	if not code or #code ~= 6 then
+		State.Notify(player, "Codes look like K7Q-2M4", "Warn")
+		return
+	end
+	local party = byCode[string.sub(code, 1, 3) .. "-" .. string.sub(code, 4, 6)]
+	if not party then
+		State.Notify(player, "No party with that code in this lobby", "Warn")
+		return
+	end
+	local ok, why = join(player, party)
+	if not ok and why then
+		State.Notify(player, why, "Warn")
+	end
+end
+
+function ACTIONS.Leave(player)
+	local party = byPlayer[player]
+	if party and #party.Members > 1 and not party.Launching then
+		soloParty(player)
+		State.Notify(player, "You left the party", "Info")
+		for _, p in party.Members do
+			State.Notify(p, player.DisplayName .. " left the party", "Info")
+		end
+	end
+end
+
+function ACTIONS.Kick(player, req)
+	local party = byPlayer[player]
+	local target = byUserId(req.UserId)
+	if party and target and party.Leader == player and target ~= player and byPlayer[target] == party and not party.Launching then
+		soloParty(target)
+		State.Notify(target, "You were removed from the party", "Warn")
+	end
+end
+
+function ACTIONS.Promote(player, req)
+	local party = byPlayer[player]
+	local target = byUserId(req.UserId)
+	if party and target and party.Leader == player and byPlayer[target] == party then
+		party.Leader = target
+		party.Ready[player] = true
+		push(party)
+	end
+end
+
+function ACTIONS.Ready(player, req)
+	local party = byPlayer[player]
+	if party and not party.Launching then
+		party.Ready[player] = req.Value == true
+		push(party)
+	end
+end
+
+function ACTIONS.SetMode(player, req)
+	local party = byPlayer[player]
+	if party and party.Leader == player and not party.Launching and type(req.Mode) == "string" and table.find(Config.Party.LobbyModes, req.Mode) then
+		party.Rules = req.Mode
+		-- new rules: everybody confirms again
+		table.clear(party.Ready)
+		push(party)
+	end
+end
+
+function ACTIONS.Launch(player, req)
+	if not launchLimiter:Allow(player) then
+		return
+	end
+	local ok, why = Party.Launch(player, req.Solo == true, if type(req.Rules) == "string" then req.Rules else nil)
+	if not ok and why then
+		State.Notify(player, why, "Warn")
+	end
+end
+
+--============================ PLAYERS ============================--
+local function onPlayerAdded(player: Player)
+	local join_ = player:GetJoinData()
+	local td = join_ and join_.TeleportData
+	local launch = join_ and join_.LaunchData
+	-- coming back from a store together: rebuild the party
+	if type(td) == "table" and type(td.PartyKey) == "string" then
+		local party = byKey[td.PartyKey]
+		if party and parties[party.Id] and #party.Members < MAX then
+			join(player, party)
+		else
+			local p = create(player, td.PartyKey)
+			p.Rules = if type(td.Rules) == "string" and table.find(Config.Party.LobbyModes, td.Rules) then td.Rules else "Survival"
+			push(p)
+		end
+		local party2 = byPlayer[player]
+		if party2 and td.Leader == player.UserId then
+			party2.Leader = player
+			push(party2)
+		end
+		return
+	end
+	-- accepted a friend's game invite: LaunchData is their party code
+	if type(launch) == "string" and byCode[launch] then
+		local ok = join(player, byCode[launch])
+		if ok then
+			return
+		end
+	end
+	soloParty(player)
+end
+
+function Party.Init()
+	Net.Event("PartyAction").OnServerEvent:Connect(function(player, req)
+		if not limiter:Allow(player) or type(req) ~= "table" or type(req.Action) ~= "string" then
+			return
+		end
+		local fn = ACTIONS[req.Action]
+		if fn then
+			fn(player, req)
+		end
+	end)
+	Players.PlayerAdded:Connect(onPlayerAdded)
+	for _, p in Players:GetPlayers() do
+		task.spawn(onPlayerAdded, p)
+	end
+	Players.PlayerRemoving:Connect(function(player)
+		remove(player)
+		for _, party in parties do
+			party.Invites[player] = nil
+		end
+	end)
+	TeleportService.TeleportInitFailed:Connect(function(player, _result, message)
+		local party = byPlayer[player]
+		player:SetAttribute("Teleporting", false)
+		Net.Event("Teleporting"):FireClient(player, { Cancel = true, Message = "Teleport failed: " .. tostring(message) })
+		if party then
+			party.Launching = false
+			push(party)
+		end
+	end)
+	-- levels / titles show in the party panel: refresh when profiles change
+	Data.Changed:Connect(function(player)
+		local party = byPlayer[player]
+		if party then
+			push(party)
+		end
+	end)
+	Data.Loaded:Connect(function(player)
+		local party = byPlayer[player]
+		if party then
+			push(party)
+		end
+	end)
+end
+
+return Party
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Script" referent="33">
+      <Properties>
+        <string name="Name">Main</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[--[[
+	MASSIVE STORE: LOCUST — server entry point (the only server Script). ONE place, three roles:
+
+	  Lobby  public servers: the parking lot, parties, cosmetics, shop. START A RUN reserves a
+	         private server of THIS same place and teleports you / your party there.
+	  Game   private (reserved) servers: the store. Arrivals walk straight in.
+	  Both   Roblox Studio (no teleports): lobby and store run on the same server, and
+	         START A RUN drops you straight into the store.
+]]
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+Players.CharacterAutoLoads = false
+
+local Services = script.Parent:WaitForChild("Services")
+local State = require(Services.State)
+
+local function isReserved(): boolean
+	return game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0
+end
+
+local role = if isReserved() then "Game" elseif RunService:IsStudio() then "Both" else "Lobby"
+State.Role = role
+State.SetAttr("Place", role)
+
+local started = {}
+local function init(service)
+	if not started[service] then
+		started[service] = true
+		service.Init()
+	end
+end
+
+if role ~= "Lobby" then
+	require(script.Parent.GameServer).Start(init)
+end
+if role ~= "Game" then
+	require(script.Parent.Lobby.LobbyServer).Start(init, role)
+end
+
+State.SetAttr("ServerReady", true)
+print("[MassiveStore] server ready · " .. role)
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="Folder" referent="34">
+      <Properties>
+        <string name="Name">Services</string>
+      </Properties>
+      <Item class="ModuleScript" referent="35">
         <Properties>
           <string name="Name">Building</string>
           <string name="Source"><![CDATA[--[[
@@ -5480,7 +6430,7 @@ return Building
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="31">
+      <Item class="ModuleScript" referent="36">
         <Properties>
           <string name="Name">Carts</string>
           <string name="Source"><![CDATA[--[[
@@ -5810,7 +6760,7 @@ return Carts
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="32">
+      <Item class="ModuleScript" referent="37">
         <Properties>
           <string name="Name">Data</string>
           <string name="Source"><![CDATA[--[[
@@ -6094,7 +7044,7 @@ return Data
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="33">
+      <Item class="ModuleScript" referent="38">
         <Properties>
           <string name="Name">Defense</string>
           <string name="Source"><![CDATA[--[[
@@ -6226,7 +7176,7 @@ return Defense
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="34">
+      <Item class="ModuleScript" referent="39">
         <Properties>
           <string name="Name">Director</string>
           <string name="Source"><![CDATA[--[[
@@ -6307,7 +7257,7 @@ local function teamText(): string
 	end
 	local body = string.format(team.Def.Text, team.Goal)
 	if team.Done then
-		return "TEAM ✓ " .. body
+		return "TEAM DONE · " .. body
 	end
 	return ("TEAM · %s (%d/%d)"):format(body, math.min(team.Progress, team.Goal), team.Goal)
 end
@@ -6701,7 +7651,7 @@ return Director
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="35">
+      <Item class="ModuleScript" referent="40">
         <Properties>
           <string name="Name">Events</string>
           <string name="Source"><![CDATA[--[[
@@ -6944,7 +7894,7 @@ return Events
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="36">
+      <Item class="ModuleScript" referent="41">
         <Properties>
           <string name="Name">Infection</string>
           <string name="Source"><![CDATA[--[[
@@ -7153,7 +8103,7 @@ return Infection
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="37">
+      <Item class="ModuleScript" referent="42">
         <Properties>
           <string name="Name">Inventory</string>
           <string name="Source"><![CDATA[--[[
@@ -7778,7 +8728,7 @@ return Inventory
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="38">
+      <Item class="ModuleScript" referent="43">
         <Properties>
           <string name="Name">Locust</string>
           <string name="Source"><![CDATA[--[[
@@ -9019,7 +9969,7 @@ return Locust
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="39">
+      <Item class="ModuleScript" referent="44">
         <Properties>
           <string name="Name">Loot</string>
           <string name="Source"><![CDATA[--[[
@@ -9542,7 +10492,7 @@ return Loot
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="40">
+      <Item class="ModuleScript" referent="45">
         <Properties>
           <string name="Name">Modes</string>
           <string name="Source"><![CDATA[--[[
@@ -9556,8 +10506,9 @@ return Loot
 	  BACK TO LOBBY (results screen or pause menu) teleports you back; players leaving together
 	  from the results screen go in one group so the lobby rebuilds their party.
 
-	Public servers of this place (somebody joined it directly) send players to the lobby.
-	In Studio (no teleports) the client shows a STUDIO TEST panel: the first PLAY picks the mode.
+	Lobby and store are the SAME place: public servers are the lobby, private ones the store.
+	In Studio (no teleports) both run on one server: a lobby launch walks you in (the first
+	launch picks the mode) and BACK TO LOBBY puts you back in the parking lot.
 ]]
 
 local HttpService = game:GetService("HttpService")
@@ -9590,8 +10541,9 @@ local function isReserved(): boolean
 end
 Modes.IsReserved = isReserved
 
+-- published: the lobby is a public server of this place; Studio: it's right here
 local function lobbyReady(): boolean
-	return not studio and Config.Places.Lobby ~= 0
+	return not studio
 end
 
 function Modes.Resolve(): string
@@ -9634,8 +10586,8 @@ function Modes.Play(player: Player, mode: string)
 	if not Config.Modes[mode] or player:GetAttribute("InRun") then
 		return
 	end
-	if isReserved() or lobbyReady() then
-		-- real servers: you are already in the right store
+	if isReserved() then
+		-- real stores: you are already in the right one
 		enterHere(player)
 		return
 	end
@@ -9648,12 +10600,12 @@ function Modes.Play(player: Player, mode: string)
 	if not anyoneIn and not State.RunActive then
 		Modes.Set(mode)
 	elseif mode ~= State.Mode then
-		State.Notify(player, "Studio test: this server is running " .. State.ModeInfo.Name .. ". Stop and start again to test another mode.", "Warn")
+		State.Notify(player, "Studio: this server's store already runs " .. State.ModeInfo.Name .. " — joining it.", "Info")
 	end
 	enterHere(player)
 end
 
--- leave the store but stay on this server (Studio / no lobby configured)
+-- leave the store but stay on this server (Studio: back to the lobby part)
 function Modes.ReturnToMenu(player: Player)
 	if not player:GetAttribute("InRun") then
 		return
@@ -9697,7 +10649,7 @@ local function teleportToLobby(group: { Player }, keepParty: boolean)
 		Data.SaveNow(p)
 	end
 	local ok, err = pcall(function()
-		TeleportService:TeleportAsync(Config.Places.Lobby, list, options)
+		TeleportService:TeleportAsync(game.PlaceId, list, options)
 	end)
 	if not ok then
 		for _, p in list do
@@ -9724,8 +10676,8 @@ end
 
 function Modes.BackToLobby(player: Player)
 	if not lobbyReady() then
+		-- Studio: the lobby is on this server — back to the parking lot
 		Modes.ReturnToMenu(player)
-		State.Notify(player, "No lobby in Studio — publish both places and set Config.Places.", "Info")
 		return
 	end
 	if State.Phase == "Results" then
@@ -9756,14 +10708,9 @@ function Modes.Init()
 		end)
 	end
 
-	-- arrivals walk straight into the store (not in Studio: the test panel picks a mode there)
+	-- arrivals in a private store walk straight in (Studio: they start in the lobby)
 	local function arrived(player: Player)
-		if studio and not isReserved() then
-			return
-		end
-		if not isReserved() and lobbyReady() then
-			-- somebody joined the store place directly: send them to the lobby
-			task.delay(2, teleportToLobby, { player }, false)
+		if not isReserved() then
 			return
 		end
 		task.spawn(function()
@@ -9824,7 +10771,7 @@ return Modes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="41">
+      <Item class="ModuleScript" referent="46">
         <Properties>
           <string name="Name">Noise</string>
           <string name="Source"><![CDATA[--[[
@@ -9892,7 +10839,7 @@ return Noise
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="42">
+      <Item class="ModuleScript" referent="47">
         <Properties>
           <string name="Name">Power</string>
           <string name="Source"><![CDATA[--[[
@@ -10389,7 +11336,7 @@ return Power
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="43">
+      <Item class="ModuleScript" referent="48">
         <Properties>
           <string name="Name">Progress</string>
           <string name="Source"><![CDATA[--[[
@@ -10557,7 +11504,7 @@ return Progress
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="44">
+      <Item class="ModuleScript" referent="49">
         <Properties>
           <string name="Name">Prompts</string>
           <string name="Source"><![CDATA[--[[
@@ -10678,7 +11625,7 @@ return Prompts
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="45">
+      <Item class="ModuleScript" referent="50">
         <Properties>
           <string name="Name">RateLimiter</string>
           <string name="Source"><![CDATA[-- RateLimiter: stops a client from spamming a remote.
@@ -10717,7 +11664,7 @@ return RateLimiter
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="46">
+      <Item class="ModuleScript" referent="51">
         <Properties>
           <string name="Name">Shop</string>
           <string name="Source"><![CDATA[--[[
@@ -11065,7 +12012,7 @@ return Shop
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="47">
+      <Item class="ModuleScript" referent="52">
         <Properties>
           <string name="Name">State</string>
           <string name="Source"><![CDATA[--[[
@@ -11153,7 +12100,7 @@ return State
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="48">
+      <Item class="ModuleScript" referent="53">
         <Properties>
           <string name="Name">Survival</string>
           <string name="Source"><![CDATA[--[[
@@ -11869,7 +12816,7 @@ return Survival
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="49">
+      <Item class="ModuleScript" referent="54">
         <Properties>
           <string name="Name">Tools</string>
           <string name="Source"><![CDATA[--[[
@@ -12352,7 +13299,7 @@ return Tools
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="50">
+      <Item class="ModuleScript" referent="55">
         <Properties>
           <string name="Name">World</string>
           <string name="Source"><![CDATA[--[[
@@ -13085,7 +14032,7 @@ return World
       </Item>
     </Item>
   </Item>
-  <Item class="SoundService" referent="51">
+  <Item class="SoundService" referent="56">
     <Properties>
       <string name="Name">SoundService</string>
       <token name="AmbientReverb">11</token>
@@ -13093,13 +14040,13 @@ return World
       <float name="RolloffScale">1</float>
     </Properties>
   </Item>
-  <Item class="StarterGui" referent="52">
+  <Item class="StarterGui" referent="57">
     <Properties>
       <string name="Name">StarterGui</string>
       <bool name="ResetPlayerGuiOnSpawn">false</bool>
     </Properties>
   </Item>
-  <Item class="StarterPlayer" referent="53">
+  <Item class="StarterPlayer" referent="58">
     <Properties>
       <string name="Name">StarterPlayer</string>
       <float name="CameraMaxZoomDistance">16</float>
@@ -13109,30 +14056,30 @@ return World
       <float name="CharacterWalkSpeed">14</float>
       <bool name="EnableMouseLockOption">false</bool>
     </Properties>
-    <Item class="StarterCharacterScripts" referent="54">
+    <Item class="StarterCharacterScripts" referent="59">
       <Properties>
         <string name="Name">StarterCharacterScripts</string>
       </Properties>
-      <Item class="LocalScript" referent="55">
+      <Item class="LocalScript" referent="60">
         <Properties>
           <string name="Name">Animate</string>
         </Properties>
       </Item>
-      <Item class="Script" referent="56">
+      <Item class="Script" referent="61">
         <Properties>
           <string name="Name">Health</string>
         </Properties>
       </Item>
     </Item>
-    <Item class="StarterPlayerScripts" referent="57">
+    <Item class="StarterPlayerScripts" referent="62">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="58">
+      <Item class="Folder" referent="63">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="ModuleScript" referent="59">
+        <Item class="ModuleScript" referent="64">
           <Properties>
             <string name="Name">Atmosphere</string>
             <string name="Source"><![CDATA[--[[
@@ -13162,16 +14109,20 @@ local bloom = Lighting:FindFirstChild("Bloom") :: BloomEffect?
 
 local PROFILES = {
 	Day = { Ambient = Color3.new(0.36, 0.355, 0.35), Fog = Color3.new(0.38, 0.38, 0.39), FogStart = 160, FogEnd = 720, Bright = 0.02, Contrast = 0.06, Sat = -0.05, Tint = Color3.new(1, 0.99, 0.96), Bloom = 0.45 },
-	Dusk = { Ambient = Color3.new(0.17, 0.15, 0.15), Fog = Color3.new(0.12, 0.09, 0.08), FogStart = 80, FogEnd = 420, Bright = 0, Contrast = 0.1, Sat = -0.15, Tint = Color3.new(1, 0.9, 0.84), Bloom = 0.6 },
-	Night = { Ambient = Color3.new(0.034, 0.034, 0.045), Fog = Color3.new(0.008, 0.008, 0.012), FogStart = 18, FogEnd = 250, Bright = -0.02, Contrast = 0.16, Sat = -0.35, Tint = Color3.new(0.88, 0.92, 1), Bloom = 0.8 },
-	Outage = { Ambient = Color3.new(0.02, 0.02, 0.026), Fog = Color3.new(0.005, 0.005, 0.008), FogStart = 10, FogEnd = 200, Bright = -0.03, Contrast = 0.18, Sat = -0.45, Tint = Color3.new(0.85, 0.9, 1), Bloom = 0.8 },
+	Dusk = { Ambient = Color3.new(0.2, 0.18, 0.18), Fog = Color3.new(0.12, 0.09, 0.08), FogStart = 80, FogEnd = 420, Bright = 0, Contrast = 0.1, Sat = -0.15, Tint = Color3.new(1, 0.9, 0.84), Bloom = 0.6 },
+	-- night: dark and scary, but you can still make out aisles, shelves and shapes
+	Night = { Ambient = Color3.new(0.12, 0.125, 0.15), Fog = Color3.new(0.03, 0.032, 0.045), FogStart = 45, FogEnd = 340, Bright = 0.03, Contrast = 0.12, Sat = -0.25, Tint = Color3.new(0.9, 0.94, 1), Bloom = 0.75 },
+	Outage = { Ambient = Color3.new(0.085, 0.085, 0.105), Fog = Color3.new(0.02, 0.02, 0.03), FogStart = 30, FogEnd = 280, Bright = 0.02, Contrast = 0.14, Sat = -0.35, Tint = Color3.new(0.88, 0.92, 1), Bloom = 0.8 },
 	Menu = { Ambient = Color3.new(0.05, 0.05, 0.06), Fog = Color3.new(0.01, 0.01, 0.014), FogStart = 10, FogEnd = 220, Bright = 0, Contrast = 0.15, Sat = -0.25, Tint = Color3.new(0.92, 0.94, 1), Bloom = 0.9 },
 }
+-- the parking lot in front of the store (lobby part of the place)
+PROFILES.Lobby = { Ambient = Color3.new(0.17, 0.17, 0.21), Fog = Color3.new(0.04, 0.045, 0.06), FogStart = 70, FogEnd = 320, Bright = 0.03, Contrast = 0.12, Sat = -0.08, Tint = Color3.new(0.96, 0.97, 1), Bloom = 0.85 }
 PROFILES.Dawn = PROFILES.Dusk
 PROFILES.Waiting = PROFILES.Day
 PROFILES.Results = PROFILES.Night
 
 local menu = true
+local lobby = false
 local brightnessSetting = 0
 local shakeEnabled = true
 local lights: { [BasePart]: any } = {}
@@ -13288,6 +14239,14 @@ function Atmosphere.SetMenu(on: boolean)
 	end
 end
 
+-- in the lobby the store's lights stay as they are and the parking-lot profile is used
+function Atmosphere.SetLobby(on: boolean)
+	lobby = on
+	if on then
+		menu = true
+	end
+end
+
 function Atmosphere.SetBrightness(v: number)
 	brightnessSetting = v
 end
@@ -13315,7 +14274,9 @@ end
 local function lerpLighting(dt: number)
 	local phase = ReplicatedStorage:GetAttribute("Phase") or "Waiting"
 	local key = phase
-	if menu then
+	if lobby then
+		key = "Lobby"
+	elseif menu then
 		key = "Menu"
 	elseif ReplicatedStorage:GetAttribute("Outage") then
 		key = "Outage"
@@ -13460,7 +14421,7 @@ return Atmosphere
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="60">
+        <Item class="ModuleScript" referent="65">
           <Properties>
             <string name="Name">Audio</string>
             <string name="Source"><![CDATA[--[[
@@ -13840,7 +14801,7 @@ return Audio
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="61">
+        <Item class="ModuleScript" referent="66">
           <Properties>
             <string name="Name">BuildUI</string>
             <string name="Source"><![CDATA[--[[
@@ -13978,12 +14939,12 @@ local function refreshCards()
 				UI.text(swatch, Buildables.TierInfo[def.Tier].Name, 10, Color3.new(1, 1, 1), UI.Caps, { Position = UDim2.fromOffset(6, 0), Size = UDim2.new(1, -6, 1, 0), TextStrokeTransparency = 0.4 })
 			end
 			UI.text(card, def.Name, 13, C.Text, UI.Bold, { Size = UDim2.new(1, 0, 0, 16), LayoutOrder = 2, TextTruncate = Enum.TextTruncate.AtEnd })
-			UI.text(card, ("HP %d%s"):format(def.HP, if def.Power then (" · ⚡%d"):format(def.Power) elseif def.Slots then (" · %d slots"):format(def.Slots) else ""), 10, C.Muted, UI.Mono, { Size = UDim2.new(1, 0, 0, 13), LayoutOrder = 3 })
+			UI.text(card, ("HP %d%s"):format(def.HP, if def.Power then (" · PWR %d"):format(def.Power) elseif def.Slots then (" · %d slots"):format(def.Slots) else ""), 10, C.Muted, UI.Mono, { Size = UDim2.new(1, 0, 0, 13), LayoutOrder = 3 })
 			costLine(card, def.Cost, 4)
 			if reason then
 				local lock = make("Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.35, Size = UDim2.fromScale(1, 1), ZIndex = 8 }, card)
 				UI.corner(lock, 8)
-				UI.text(lock, "🔒 " .. reason, 13, C.Accent, UI.Title, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 9 })
+				UI.iconLabel(lock, "lock", reason, 13, C.Accent, UI.Title, 9)
 			end
 			card.MouseEnter:Connect(function()
 				stroke.Color = tierColor
@@ -14007,7 +14968,7 @@ local function buildMenu()
 	menu = UI.panel(root, { Name = "BuildMenu", AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -96), Size = UDim2.fromOffset(820, 330), Visible = false }, 14)
 	UI.text(menu, "BUILD", 22, C.Text, UI.Title, { Position = UDim2.fromOffset(18, 12), Size = UDim2.fromOffset(120, 26) })
 	UI.text(menu, "Materials come from your inventory and the cart you push", 11, C.Muted, UI.Bold, { Position = UDim2.fromOffset(110, 20), Size = UDim2.fromOffset(400, 14) })
-	local close = UI.button(menu, { Text = "✕", Size = UDim2.fromOffset(32, 32), Position = UDim2.new(1, -46, 0, 10) })
+	local close = UI.button(menu, { Text = "", Icon = "close", Name = "Close", Size = UDim2.fromOffset(32, 32), Position = UDim2.new(1, -46, 0, 10) })
 	close.Activated:Connect(function()
 		BuildUI.Toggle(false)
 	end)
@@ -14398,7 +15359,7 @@ return BuildUI
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="62">
+        <Item class="ModuleScript" referent="67">
           <Properties>
             <string name="Name">CameraFX</string>
             <string name="Source"><![CDATA[--[[
@@ -14469,7 +15430,10 @@ local function setMode(m: string)
 	label.Visible = m == "Spectate"
 end
 
-local function update()
+local fovBoost = 0
+local lastPos: Vector3? = nil
+local function update(dt: number)
+	dt = dt or 1 / 60
 	if ClientState.MenuOpen then
 		return
 	end
@@ -14502,9 +15466,21 @@ local function update()
 		return
 	end
 	setMode("Default")
-	if cam.FieldOfView ~= 70 and mode == "Default" then
-		cam.FieldOfView = 70
+	-- sprinting widens the view (feels faster), smoothly in and out
+	local char = player.Character
+	local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local speed = 0
+	if root then
+		if lastPos and dt > 0 then
+			local d = root.Position - lastPos
+			speed = Vector3.new(d.X, 0, d.Z).Magnitude / dt
+		end
+		lastPos = root.Position
 	end
+	local sprinting = (player:GetAttribute("Sprinting") == true or UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)) and speed > 6 and speed < 80
+	local target = if sprinting then 14 else 0
+	fovBoost += (target - fovBoost) * math.clamp(dt * 7, 0, 1)
+	cam.FieldOfView = 70 + fovBoost
 end
 
 local function updateHighlights()
@@ -14576,7 +15552,7 @@ return CameraFX
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="63">
+        <Item class="ModuleScript" referent="68">
           <Properties>
             <string name="Name">CharacterAnimator</string>
             <string name="Source"><![CDATA[--[[
@@ -15106,7 +16082,7 @@ return CharacterAnimator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="64">
+        <Item class="ModuleScript" referent="69">
           <Properties>
             <string name="Name">ClientState</string>
             <string name="Source"><![CDATA[--[[
@@ -15234,7 +16210,7 @@ return ClientState
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="65">
+        <Item class="ModuleScript" referent="70">
           <Properties>
             <string name="Name">Controls</string>
             <string name="Source"><![CDATA[--[[
@@ -15516,7 +16492,7 @@ return Controls
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="66">
+        <Item class="ModuleScript" referent="71">
           <Properties>
             <string name="Name">HUD</string>
             <string name="Source"><![CDATA[--[[
@@ -15749,7 +16725,8 @@ local function buildOverlays()
 	for i = 0, 40 do
 		make("Frame", { BackgroundColor3 = Color3.fromHex("0b2a0b"), BackgroundTransparency = 0.85, BorderSizePixel = 0, Position = UDim2.fromScale(0, i / 40), Size = UDim2.new(1, 0, 0, 1) }, nv)
 	end
-	UI.text(nv, "NV ● REC", 14, C.Good, UI.Mono, { Position = UDim2.new(1, -140, 1, -40), Size = UDim2.fromOffset(120, 20) })
+	local rec = make("Frame", { BackgroundTransparency = 1, Position = UDim2.new(1, -150, 1, -42), Size = UDim2.fromOffset(130, 22) }, nv)
+	UI.iconLabel(rec, "dot", "NV  REC", 14, C.Good, UI.Mono)
 	refs.NV = nv
 end
 
@@ -15781,6 +16758,11 @@ local TOAST_COLORS = {
 	Mission = C.Purple,
 	Legendary = Color3.fromHex("ffb31a"),
 }
+
+-- set by Main: in the lobby part of the place the lobby shows notifications instead
+HUD.ShouldToast = function(): boolean
+	return true
+end
 
 function HUD.Toast(text: string, kind: string?)
 	kind = kind or "Info"
@@ -16228,7 +17210,7 @@ local function updateWhere()
 	refs.Objective.Where.Text = if zone and zone.Name ~= "" then zone.Name else ""
 	refs.Objective.Text.Text = ClientState.Objective ~= "" and ClientState.Objective or "Explore the store"
 	refs.Objective.Team.Text = ClientState.TeamObjective or ""
-	refs.Objective.Team.TextColor3 = if string.find(ClientState.TeamObjective or "", "✓") then C.Good else C.Purple
+	refs.Objective.Team.TextColor3 = if string.find(ClientState.TeamObjective or "", "TEAM DONE", 1, true) then C.Good else C.Purple
 end
 
 function HUD.SetVisible(on: boolean)
@@ -16272,7 +17254,11 @@ function HUD.Init()
 	buildBanner()
 	buildHints()
 
-	Net.Event("Notify").OnClientEvent:Connect(HUD.Toast)
+	Net.Event("Notify").OnClientEvent:Connect(function(text, kind)
+		if HUD.ShouldToast() then
+			HUD.Toast(text, kind)
+		end
+	end)
 	Net.Event("Banner").OnClientEvent:Connect(HUD.Banner)
 	Net.Event("Event").OnClientEvent:Connect(HUD.Event)
 	Net.Event("XP").OnClientEvent:Connect(HUD.XP)
@@ -16298,7 +17284,7 @@ return HUD
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="67">
+        <Item class="ModuleScript" referent="72">
           <Properties>
             <string name="Name">InventoryUI</string>
             <string name="Source"><![CDATA[--[[
@@ -16461,8 +17447,8 @@ local function showDetails(slot)
 	end
 	local buttons = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = 6 }, details)
 	UI.list(buttons, 6)
-	local function btn(text, style, fn)
-		local b = UI.button(buttons, { Text = text, Style = style, Size = UDim2.new(1, 0, 0, 34), TextSize = 14 })
+	local function btn(text, style, fn, icon)
+		local b = UI.button(buttons, { Text = text, Icon = icon, Style = style, Size = UDim2.new(1, 0, 0, 34), TextSize = 14 })
 		b.Activated:Connect(fn)
 	end
 	if item.Use or item.Tool or item.Category == "Battery" or item.Category == "Fuel" then
@@ -16471,9 +17457,9 @@ local function showDetails(slot)
 		end)
 	end
 	if ClientState.Container then
-		btn("STORE  →", "Good", function()
+		btn("STORE", "Good", function()
 			invAction({ Action = "Store", Slot = slot })
-		end)
+		end, "arrow")
 	end
 	btn("DROP", "Dark", function()
 		invAction({ Action = "Drop", Slot = slot })
@@ -16509,7 +17495,7 @@ local function buildPanel()
 	panel = UI.panel(root, { Name = "Inventory", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.47), Size = UDim2.fromOffset(640, 420), Visible = false }, 14)
 	UI.text(panel, "INVENTORY", 22, C.Text, UI.Title, { Position = UDim2.fromOffset(20, 14), Size = UDim2.fromOffset(300, 26) })
 	local hint = UI.text(panel, "Click an item, then click a slot to move it · [Tab] close", 11, C.Muted, UI.Bold, { Position = UDim2.fromOffset(20, 40), Size = UDim2.fromOffset(400, 14) })
-	local close = UI.button(panel, { Text = "✕", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -48, 0, 12), TextSize = 16 })
+	local close = UI.button(panel, { Text = "", Icon = "close", Name = "Close", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -48, 0, 12), TextSize = 16 })
 	close.Activated:Connect(function()
 		InventoryUI.Toggle(false)
 	end)
@@ -16679,7 +17665,7 @@ return InventoryUI
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="68">
+        <Item class="ModuleScript" referent="73">
           <Properties>
             <string name="Name">LocustAnimator</string>
             <string name="Source"><![CDATA[--[[
@@ -16918,7 +17904,7 @@ return LocustAnimator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="69">
+        <Item class="ModuleScript" referent="74">
           <Properties>
             <string name="Name">MapUI</string>
             <string name="Source"><![CDATA[--[[
@@ -17157,7 +18143,7 @@ function MapUI.Init()
 			updateMarkers()
 		end)
 	end
-	local close = UI.button(frame, { Text = "✕", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -40, 1, -60), AnchorPoint = Vector2.new(1, 0) })
+	local close = UI.button(frame, { Text = "", Icon = "close", Name = "Close", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -40, 1, -60), AnchorPoint = Vector2.new(1, 0) })
 	close.Activated:Connect(function()
 		MapUI.Toggle(false)
 	end)
@@ -17203,7 +18189,7 @@ return MapUI
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="70">
+        <Item class="ModuleScript" referent="75">
           <Properties>
             <string name="Name">Menu</string>
             <string name="Source"><![CDATA[--[[
@@ -17242,8 +18228,6 @@ local gui, root -- arrival
 local pauseGui, pauseRoot, pausePanel, pageFrame, pageContent, confirmBox, menuButton
 local toastFn = function(_t, _k) end
 
-local studio = RunService:IsStudio()
-local lobbyReady = Config.Places.Lobby ~= 0 and not studio
 
 --============================ LOGO ============================--
 local function logo(parent: Instance, pos: UDim2)
@@ -17259,32 +18243,21 @@ local function logo(parent: Instance, pos: UDim2)
 end
 Menu.Logo = logo
 
---============================ ARRIVAL / STUDIO TEST ============================--
+--============================ ARRIVAL ============================--
+-- only on a private store server, for the moment before the server walks you in
 local function buildArrival()
 	gui, root = UI.screen("MSL_Menu", 10)
 	local shade = make("Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Size = UDim2.new(0, 760, 1, 0) }, root)
 	make("UIGradient", { Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(0.6, 0.4), NumberSequenceKeypoint.new(1, 1) }) }, shade)
 	logo(root, UDim2.fromOffset(64, 52))
-	local col = make("Frame", { Name = "Modes", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 250), Size = UDim2.fromOffset(380, 420) }, root)
+	local col = make("Frame", { Name = "Arrival", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 250), Size = UDim2.fromOffset(380, 420) }, root)
 	UI.list(col, 10)
-	if studio or not lobbyReady then
-		UI.text(col, "STUDIO TEST  ·  PICK A MODE", 11, C.Accent, UI.Mono, { Size = UDim2.new(1, 0, 0, 16), LayoutOrder = 0 })
-		for i, id in Config.ModeOrder do
-			local m = Config.Modes[id]
-			local b = UI.button(col, { Name = "Play" .. id, Text = "PLAY " .. m.Name, Sub = m.Desc, Style = if i == 1 then "Primary" else "Dark", Accent = i ~= 1, Size = UDim2.fromOffset(380, if i == 1 then 72 else 60), TextSize = if i == 1 then 28 else 22, LayoutOrder = i })
-			b.Activated:Connect(function()
-				Net.Event("Play"):FireServer(id)
-			end)
-		end
-		UI.text(col, "Published games start in the LOBBY place (party, shop, outfits) and teleport here. Set Config.Places to link them.", 11, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 44), TextWrapped = true, LayoutOrder = 20 })
-	else
-		UI.text(col, "ENTERING THE STORE...", 30, C.Text, UI.Title, { Size = UDim2.new(1, 0, 0, 40), LayoutOrder = 1 })
-		UI.text(col, "Your store is being stocked. Stay close to your party.", 13, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 20), LayoutOrder = 2 })
-		local back = UI.button(col, { Text = "BACK TO LOBBY", Accent = true, Size = UDim2.fromOffset(380, 56), LayoutOrder = 3 })
-		back.Activated:Connect(function()
-			Net.Event("Lobby"):FireServer("Return")
-		end)
-	end
+	UI.text(col, "ENTERING THE STORE...", 30, C.Text, UI.Title, { Size = UDim2.new(1, 0, 0, 40), LayoutOrder = 1 })
+	UI.text(col, "Your store is being stocked. Stay close to your party.", 13, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 20), LayoutOrder = 2 })
+	local back = UI.button(col, { Text = "BACK TO LOBBY", Accent = true, Size = UDim2.fromOffset(380, 56), LayoutOrder = 3 })
+	back.Activated:Connect(function()
+		Net.Event("Lobby"):FireServer("Return")
+	end)
 end
 
 --============================ PAUSE MENU ============================--
@@ -17304,7 +18277,7 @@ function Menu.TogglePause(on: boolean?)
 	if on == nil then
 		on = not pauseGui.Enabled
 	end
-	if on and not ClientState.InRun() then
+	if (on and not ClientState.InRun()) or on == pauseGui.Enabled then
 		return
 	end
 	pauseGui.Enabled = on
@@ -17334,14 +18307,14 @@ local function buildPause()
 			openPage(def[3])
 		end)
 	end
-	local leave = UI.button(col, { Text = if lobbyReady then "BACK TO LOBBY" else "LEAVE THE STORE", Sub = "Your supplies drop in a bag where you stand", Style = "Danger", Size = UDim2.fromOffset(380, 56), LayoutOrder = 9 })
+	local leave = UI.button(col, { Text = "BACK TO LOBBY", Sub = "Your supplies drop in a bag where you stand", Style = "Danger", Size = UDim2.fromOffset(380, 56), LayoutOrder = 9 })
 	leave.Activated:Connect(function()
 		confirmBox.Visible = true
 	end)
 
 	-- page host
 	pageFrame = make("Frame", { Name = "Page", BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), Visible = false }, pauseRoot)
-	local back = UI.button(pageFrame, { Text = "←  BACK", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
+	local back = UI.button(pageFrame, { Name = "Back", Text = "BACK", Icon = "back", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
 	back.Activated:Connect(function()
 		closePage()
 		pausePanel.Visible = true
@@ -17353,7 +18326,7 @@ local function buildPause()
 	UI.stroke(confirmBox, C.Danger, 1, 0.4)
 	UI.text(confirmBox, "LEAVE THE STORE?", 30, C.Text, UI.Title, { Position = UDim2.fromOffset(0, 18), Size = UDim2.new(1, 0, 0, 36), TextXAlignment = Enum.TextXAlignment.Center })
 	UI.text(confirmBox, "You'll drop your supplies in a bag where you stand.\nXP, credits and missions are kept.", 12, C.Muted, UI.Body, { Position = UDim2.fromOffset(20, 60), Size = UDim2.new(1, -40, 0, 40), TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true })
-	local yes = UI.button(confirmBox, { Text = if lobbyReady then "LOBBY" else "LEAVE", Style = "Danger", Size = UDim2.fromOffset(190, 52), Position = UDim2.new(0.5, -200, 1, -72), TextSize = 22 })
+	local yes = UI.button(confirmBox, { Text = "LOBBY", Style = "Danger", Size = UDim2.fromOffset(190, 52), Position = UDim2.new(0.5, -200, 1, -72), TextSize = 22 })
 	local no = UI.button(confirmBox, { Text = "STAY", Style = "Primary", Size = UDim2.fromOffset(190, 52), Position = UDim2.new(0.5, 10, 1, -72), TextSize = 22 })
 	no.Activated:Connect(function()
 		confirmBox.Visible = false
@@ -17420,6 +18393,16 @@ function Menu.Hide()
 	Audio.SetMenu(false)
 end
 
+-- in the lobby part of the place (Studio, or after leaving the store): no store UI at all
+function Menu.HideForLobby()
+	ClientState.MenuOpen = true -- blocks store controls
+	gui.Enabled = false
+	menuButton.Visible = false
+	Menu.TogglePause(false)
+	MenuScene.Stop()
+	Audio.SetMenu(true)
+end
+
 function Menu.Init(toast)
 	toastFn = toast or toastFn
 	Pages.Toast = toastFn
@@ -17449,7 +18432,7 @@ return Menu
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="71">
+        <Item class="ModuleScript" referent="76">
           <Properties>
             <string name="Name">MenuScene</string>
             <string name="Source"><![CDATA[--[[
@@ -17682,7 +18665,7 @@ return MenuScene
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="72">
+        <Item class="ModuleScript" referent="77">
           <Properties>
             <string name="Name">Pages</string>
             <string name="Source"><![CDATA[--[[
@@ -17906,13 +18889,13 @@ local function buy(c)
 end
 
 local function priceButton(parent: Instance, c, owned: boolean, size: UDim2, pos: UDim2)
-	local label, style = ("● %s"):format(Util.Commas(c.Price or 0)), "Primary"
+	local label, style, icon = Util.Commas(c.Price or 0), "Primary", "coin"
 	if owned then
-		label, style = "OWNED", "Good"
+		label, style, icon = "OWNED", "Good", "check"
 	elseif c.Level then
-		label, style = "LEVEL " .. c.Level, "Dark"
+		label, style, icon = "LEVEL " .. c.Level, "Dark", "lock"
 	end
-	local b = UI.button(parent, { Text = label, Style = style, Size = size, Position = pos, TextSize = 15 })
+	local b = UI.button(parent, { Text = label, Icon = icon, Style = style, Size = size, Position = pos, TextSize = 15 })
 	b.Activated:Connect(function()
 		if not owned and not c.Level then
 			buy(c)
@@ -18075,7 +19058,7 @@ local function stepRow(parent, key: string, label: string, sub: string, order: n
 	UI.text(row, sub, 11, C.Muted, UI.Body, { Position = UDim2.fromOffset(20, 36), Size = UDim2.new(1, -260, 0, 16) })
 	local valueLabel = UI.text(row, fmt:format(value), 16, C.Accent, UI.Mono, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -66, 0, 0), Size = UDim2.fromOffset(70, 64), TextXAlignment = Enum.TextXAlignment.Center })
 	for i, delta in { -step, step } do
-		local b = UI.button(row, { Text = if delta < 0 then "−" else "+", Size = UDim2.fromOffset(40, 38), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, if i == 1 then -140 else -16, 0.5, 0), TextSize = 20 })
+		local b = UI.button(row, { Text = "", Icon = if delta < 0 then "minus" else "plus", Name = if delta < 0 then "Minus" else "Plus", Size = UDim2.fromOffset(40, 38), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, if i == 1 then -140 else -16, 0.5, 0), TextSize = 20 })
 		b.Activated:Connect(function()
 			value = math.clamp(value + delta, min, max)
 			valueLabel.Text = fmt:format(value)
@@ -18154,7 +19137,7 @@ return Pages
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="73">
+        <Item class="ModuleScript" referent="78">
           <Properties>
             <string name="Name">PromptUI</string>
             <string name="Source"><![CDATA[--[[
@@ -18315,7 +19298,7 @@ return PromptUI
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="74">
+        <Item class="ModuleScript" referent="79">
           <Properties>
             <string name="Name">ShelfDresser</string>
             <string name="Source"><![CDATA[--[[
@@ -18528,7 +19511,7 @@ return ShelfDresser
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="75">
+        <Item class="ModuleScript" referent="80">
           <Properties>
             <string name="Name">TeleportScreen</string>
             <string name="Source"><![CDATA[--[[
@@ -18666,7 +19649,7 @@ return TeleportScreen
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="76">
+        <Item class="ModuleScript" referent="81">
           <Properties>
             <string name="Name">UI</string>
             <string name="Source"><![CDATA[--[[
@@ -18819,8 +19802,131 @@ function UI.panel(parent: Instance, props, radius: number?): Frame
 	return f
 end
 
+--============================ ICONS ============================--
 --[[
-	button(parent, { Text, Sub, Key, Size, Position, AnchorPoint, Style = "Primary"|"Dark"|"Ghost"|"Danger"|"Good",
+	Vector icons drawn from frames (crisp at any UI scale, no font glyphs / emoji):
+	close, check, back, arrow, enter, gear, warn, lock, bolt, coin, dot, ring, plus, minus
+	UI.icon(parent, name, size, color, props?) -> Frame
+]]
+function UI.icon(parent: Instance, name: string, size: number, color: Color3, props): Frame
+	local holder = make("Frame", { Name = "Icon_" .. name, BackgroundTransparency = 1, Size = UDim2.fromOffset(size, size), ZIndex = 4 }, parent)
+	local z = holder.ZIndex + 1
+	local function bar(x, y, w, h, rot, c): Frame
+		local f = make("Frame", {
+			BackgroundColor3 = c or color,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(x, y),
+			Size = UDim2.fromScale(w, h),
+			Rotation = rot or 0,
+			ZIndex = z,
+		}, holder)
+		UI.corner(f, math.max(1, math.floor(size * h * 0.5)))
+		return f
+	end
+	local function circle(x, y, d, filled, thick): Frame
+		local f = make("Frame", {
+			BackgroundColor3 = color,
+			BackgroundTransparency = if filled then 0 else 1,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(x, y),
+			Size = UDim2.fromScale(d, d),
+			ZIndex = z,
+		}, holder)
+		UI.corner(f)
+		if not filled then
+			UI.stroke(f, color, thick or math.max(1.5, size * 0.12), 0)
+		end
+		return f
+	end
+	local t = 0.14 -- stroke thickness (fraction of the icon)
+	if name == "close" then
+		bar(0.5, 0.5, 0.95, t, 45)
+		bar(0.5, 0.5, 0.95, t, -45)
+	elseif name == "check" then
+		bar(0.34, 0.62, 0.42, t, 45)
+		bar(0.6, 0.47, 0.72, t, -50)
+	elseif name == "back" or name == "arrow" then
+		local s = if name == "back" then 1 else -1
+		bar(0.52, 0.5, 0.78, t, 0)
+		bar(0.5 - s * 0.22, 0.35, 0.44, t, s * -42)
+		bar(0.5 - s * 0.22, 0.65, 0.44, t, s * 42)
+	elseif name == "enter" then
+		bar(0.78, 0.36, t, 0.5, 0)
+		bar(0.5, 0.6, 0.6, t, 0)
+		bar(0.27, 0.48, 0.32, t, -42)
+		bar(0.27, 0.72, 0.32, t, 42)
+	elseif name == "gear" then
+		for i = 0, 3 do
+			bar(0.5, 0.5, 0.92, 0.2, i * 45)
+		end
+		circle(0.5, 0.5, 0.66, true)
+		local hole = circle(0.5, 0.5, 0.3, true)
+		hole.BackgroundColor3 = C.Ink
+		hole.BackgroundTransparency = 0
+		hole.Name = "Hole"
+	elseif name == "warn" then
+		circle(0.5, 0.5, 0.9, false)
+		bar(0.5, 0.42, t, 0.36, 0)
+		circle(0.5, 0.72, 0.14, true)
+	elseif name == "lock" then
+		local body = bar(0.5, 0.66, 0.74, 0.5, 0)
+		UI.corner(body, math.max(2, math.floor(size * 0.1)))
+		local shackle = circle(0.5, 0.38, 0.5, false, math.max(1.5, size * 0.11))
+		shackle.ZIndex = z - 1
+		bar(0.5, 0.66, 0.12, 0.2, 0, C.Ink)
+	elseif name == "bolt" then
+		bar(0.56, 0.3, 0.2, 0.5, 25)
+		bar(0.44, 0.7, 0.2, 0.5, 25)
+		bar(0.5, 0.5, 0.5, 0.14, 0)
+	elseif name == "coin" then
+		circle(0.5, 0.5, 0.9, true)
+		local inner = circle(0.5, 0.5, 0.56, false, math.max(1, size * 0.08))
+		local st = inner:FindFirstChildOfClass("UIStroke")
+		if st then
+			st.Color = color:Lerp(Color3.new(0, 0, 0), 0.35)
+		end
+	elseif name == "dot" then
+		circle(0.5, 0.5, 0.7, true)
+	elseif name == "ring" then
+		circle(0.5, 0.5, 0.62, false, math.max(1, size * 0.1))
+	elseif name == "plus" then
+		bar(0.5, 0.5, 0.8, t, 0)
+		bar(0.5, 0.5, t, 0.8, 0)
+	elseif name == "minus" then
+		bar(0.5, 0.5, 0.8, t, 0)
+	end
+	if props then
+		for k, v in props do
+			(holder :: any)[k] = v
+		end
+	end
+	return holder
+end
+
+-- a horizontal row: icon + label, centred in `parent` (for buttons / tags)
+function UI.iconLabel(parent: Instance, iconName: string, text: string, textSize: number, color: Color3, font: Font?, z: number?): Frame
+	local row = make("Frame", { Name = "Content", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromScale(1, 1), ZIndex = z or 3 }, parent)
+	local l = UI.list(row, math.floor(textSize * 0.45), true, Enum.HorizontalAlignment.Center)
+	l.VerticalAlignment = Enum.VerticalAlignment.Center
+	local ic = UI.icon(row, iconName, math.floor(textSize * 0.85), color)
+	ic.LayoutOrder = 1
+	ic.ZIndex = (z or 3) + 1
+	if text ~= "" then
+		UI.text(row, text, textSize, color, font or UI.Title, {
+			Name = "Label",
+			Size = UDim2.fromOffset(0, textSize + 4),
+			AutomaticSize = Enum.AutomaticSize.X,
+			LayoutOrder = 2,
+			ZIndex = (z or 3) + 1,
+		})
+	end
+	return row
+end
+
+--[[
+	button(parent, { Text, Sub, Key, KeyIcon, Icon, Size, Position, AnchorPoint, Style = "Primary"|"Dark"|"Ghost"|"Danger"|"Good",
 	                 Accent (yellow left bar), TextSize, LayoutOrder, Font, Radius })
 	Figma: primary = sign yellow with black Oswald caps; dark = glass panel with a thin outline,
 	optional yellow accent bar, sub line and a keycap on the right.
@@ -18848,7 +19954,7 @@ function UI.button(parent: Instance, opts): TextButton
 		Position = opts.Position or UDim2.new(),
 		AnchorPoint = opts.AnchorPoint or Vector2.zero,
 		FontFace = opts.Font or UI.Title,
-		Text = if hasSub or opts.Accent then "" else (opts.Text or ""),
+		Text = if hasSub or opts.Accent or opts.Icon then "" else (opts.Text or ""),
 		TextSize = opts.TextSize or 18,
 		TextColor3 = fg,
 		LayoutOrder = opts.LayoutOrder or 0,
@@ -18871,7 +19977,7 @@ function UI.button(parent: Instance, opts): TextButton
 		UI.text(b, opts.Text or "", opts.TextSize or 22, fg, opts.Font or UI.Title, {
 			Name = "Label",
 			Position = UDim2.new(0, pad, 0, if hasSub then 4 else 0),
-			Size = UDim2.new(1, -pad - (if opts.Key then 56 else 12), if hasSub then 0.6 else 1, if hasSub then -4 else 0),
+			Size = UDim2.new(1, -pad - (if opts.Key or opts.KeyIcon then 56 else 12), if hasSub then 0.6 else 1, if hasSub then -4 else 0),
 			ZIndex = z,
 			TextYAlignment = if hasSub then Enum.TextYAlignment.Bottom else Enum.TextYAlignment.Center,
 		})
@@ -18879,13 +19985,17 @@ function UI.button(parent: Instance, opts): TextButton
 			UI.text(b, opts.Sub, 11, if style == "Primary" then Color3.fromHex("3d3000") else C.Muted, UI.Semi, {
 				Name = "Sub",
 				Position = UDim2.new(0, pad, 0.6, 0),
-				Size = UDim2.new(1, -pad - (if opts.Key then 56 else 12), 0.4, -6),
+				Size = UDim2.new(1, -pad - (if opts.Key or opts.KeyIcon then 56 else 12), 0.4, -6),
 				TextYAlignment = Enum.TextYAlignment.Top,
 				ZIndex = z,
 			})
 		end
 	end
-	if opts.Key then
+	if opts.Icon and not hasSub and not opts.Accent then
+		-- icon (+ optional text) centred on the button
+		UI.iconLabel(b, opts.Icon, opts.Text or "", opts.TextSize or 18, fg, opts.Font or UI.Title, z)
+	end
+	if opts.Key or opts.KeyIcon then
 		local kc = make("Frame", {
 			Name = "Keycap",
 			AnchorPoint = Vector2.new(1, 0.5),
@@ -18897,7 +20007,18 @@ function UI.button(parent: Instance, opts): TextButton
 			ZIndex = z,
 		}, b)
 		UI.corner(kc, 4)
-		UI.text(kc, opts.Key, 12, if style == "Primary" then C.Accent else C.Text, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+		local kcColor = if style == "Primary" then C.Accent else C.Text
+		if opts.KeyIcon then
+			local ic = UI.icon(kc, opts.KeyIcon, 16, kcColor, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5) })
+			ic.ZIndex = z + 1
+			for _, d in ic:GetDescendants() do
+				if d:IsA("GuiObject") then
+					d.ZIndex = z + 2
+				end
+			end
+		else
+			UI.text(kc, opts.Key, 12, kcColor, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+		end
 	end
 	local scale = make("UIScale", {}, b)
 	b.MouseEnter:Connect(function()
@@ -19198,7 +20319,7 @@ return UI
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="77">
+        <Item class="ModuleScript" referent="82">
           <Properties>
             <string name="Name">ViewModel</string>
             <string name="Source"><![CDATA[--[[
@@ -19504,6 +20625,12 @@ local function render(dt: number)
 	if modal then
 		local busy = ClientState.Busy
 		modal.Visible = ClientState.MenuOpen or busy.Inventory == true or busy.Container == true or busy.Map == true or busy.Confirm == true or busy.Pause == true or busy.Results == true or busy.BuildMenu == true
+		-- first person: no mouse arrow in the middle of the screen (the HUD has a crosshair);
+		-- it comes back whenever a window frees the mouse or you're not in the store
+		local locked = inRunAlive and not modal.Visible and not player:GetAttribute("Hidden")
+		if UserInputService.MouseIconEnabled ~= not locked then
+			UserInputService.MouseIconEnabled = not locked
+		end
 	end
 	local char = player.Character
 	local head = char and char:FindFirstChild("Head")
@@ -19701,17 +20828,818 @@ return ViewModel
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="78">
+      <Item class="Folder" referent="83">
         <Properties>
           <string name="Name">Controllers</string>
         </Properties>
       </Item>
-      <Item class="LocalScript" referent="79">
+      <Item class="Folder" referent="84">
+        <Properties>
+          <string name="Name">Lobby</string>
+        </Properties>
+        <Item class="ModuleScript" referent="85">
+          <Properties>
+            <string name="Name">LobbyCamera</string>
+            <string name="Source"><![CDATA[--[[
+	LobbyCamera: a slow cinematic camera on your party's lineup in front of the store.
+	  Main  wide shot, the lineup sits in the gap between the menu and the party panel
+	  Run   pushes in on the store doors
+	  Page  blurred background behind the full-screen pages
+	The mouse adds a little parallax so the scene feels alive.
+]]
+
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local LobbyCamera = {}
+
+local player = Players.LocalPlayer
+local focus = "Main"
+local active = false
+local blur: BlurEffect? = nil
+local current: CFrame? = nil
+
+local OFFSETS = {
+	Main = CFrame.new(0, 0, 0),
+	Run = CFrame.new(0, 1.2, -7) * CFrame.Angles(math.rad(6), 0, 0),
+	Page = CFrame.new(0, 0.5, -3),
+}
+
+local function padCam(): CFrame?
+	local lobby = Workspace:FindFirstChild("Lobby")
+	local pads = lobby and lobby:FindFirstChild("Pads")
+	local pad = pads and pads:FindFirstChild("Pad" .. tostring(player:GetAttribute("Pad") or 0))
+	return pad and pad:GetAttribute("Cam")
+end
+
+function LobbyCamera.SetFocus(name: string)
+	focus = name
+	if blur and active then
+		local want = if name == "Page" then 14 elseif name == "Run" then 4 else 0
+		game:GetService("TweenService"):Create(blur, TweenInfo.new(0.35), { Size = want }):Play()
+	end
+end
+
+function LobbyCamera.SetActive(on: boolean)
+	if active == on then
+		return
+	end
+	active = on
+	current = nil
+	if not on then
+		if blur then
+			blur.Size = 0
+		end
+		local cam = Workspace.CurrentCamera
+		if cam then
+			cam.CameraType = Enum.CameraType.Custom
+			cam.FieldOfView = 70
+		end
+	end
+end
+
+local function step(dt: number)
+	if not active then
+		return
+	end
+	local cam = Workspace.CurrentCamera
+	if not cam then
+		return
+	end
+	local base = padCam()
+	if not base then
+		return
+	end
+	cam.CameraType = Enum.CameraType.Scriptable
+	local vp = cam.ViewportSize
+	local m = UserInputService:GetMouseLocation()
+	local nx = if vp.X > 0 then (m.X / vp.X - 0.5) else 0
+	local ny = if vp.Y > 0 then (m.Y / vp.Y - 0.5) else 0
+	local t = os.clock()
+	local drift = CFrame.new(math.sin(t * 0.21) * 0.35, math.sin(t * 0.33) * 0.15, 0)
+		* CFrame.Angles(math.rad(-ny * 2.2 + math.sin(t * 0.4) * 0.3), math.rad(-nx * 3.5), 0)
+	local target = base * (OFFSETS[focus] or OFFSETS.Main) * drift
+	if not current then
+		current = target
+	end
+	current = (current :: CFrame):Lerp(target, math.clamp(dt * 3, 0, 1))
+	cam.CFrame = current :: CFrame
+	cam.FieldOfView = 50
+end
+
+function LobbyCamera.Init()
+	blur = Instance.new("BlurEffect")
+	blur.Name = "MSL_LobbyBlur"
+	blur.Size = 0
+	blur.Parent = Lighting
+	RunService:BindToRenderStep("MSL_LobbyCamera", Enum.RenderPriority.Camera.Value + 1, step)
+	player:GetAttributeChangedSignal("Pad"):Connect(function()
+		current = nil -- cut to the new pad
+	end)
+end
+
+return LobbyCamera
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="86">
+          <Properties>
+            <string name="Name">LobbyUI</string>
+            <string name="Source"><![CDATA[--[[
+	LobbyUI: the lobby screens from the Figma file "MASSIVE STORE: LOCUST — UI".
+	  01 Lobby — Main Menu     logo, PLAY SOLO / PLAY WITH PARTY / LOADOUT / SHOP / SETTINGS,
+	                           profile chip, PARTY panel, invite toasts, daily missions strip
+	  02 Lobby — Start a Run   SOLO | PARTY, SURVIVAL / INFECTION / HARDCORE cards, launch bar
+	  pages                    LOCKER, SHOP (07), MISSIONS, SETTINGS, CREDITS (Client/Pages)
+	  invite window            players in this lobby, Roblox friends, join by code
+	The server decides everything (Lobby/Party); this only shows state and asks.
+]]
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SocialService = game:GetService("SocialService")
+local UserInputService = game:GetService("UserInputService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared.Config)
+local Cosmetics = require(Shared.Cosmetics)
+local Missions = require(Shared.Missions)
+local Net = require(Shared.Net)
+local PartyRules = require(Shared.PartyRules)
+local Util = require(Shared.Util)
+
+local Client = script.Parent.Parent:WaitForChild("Client")
+local UI = require(Client.UI)
+local ClientState = require(Client.ClientState)
+local Pages = require(Client.Pages)
+local Audio = require(Client.Audio)
+local TeleportScreen = require(Client.TeleportScreen)
+
+local LobbyCamera = require(script.Parent.LobbyCamera)
+
+local LobbyUI = {}
+
+local C = UI.C
+local make = UI.make
+local player = Players.LocalPlayer
+
+local party = nil -- latest snapshot from the server
+local who = "Solo" -- start-a-run toggle
+local soloRules = "Survival" -- a party member going solo picks their own rules
+local gui, root
+local mainFrame, runFrame, pageFrame, pageContent, inviteFrame
+local partyPanel, profileChip, missionStrip, partyButton
+local toastHolder, inviteHolder
+
+local function act(action: string, extra)
+	local req = extra or {}
+	req.Action = action
+	Net.Event("PartyAction"):FireServer(req)
+end
+
+local function isLeader(): boolean
+	return party ~= nil and party.Leader == player.UserId
+end
+
+local function partySize(): number
+	return if party then #party.Members else 1
+end
+
+--============================ TOASTS ============================--
+function LobbyUI.Toast(text: string, kind: string?)
+	local color = C.Accent
+	if kind == "Warn" then
+		color = C.Danger
+	elseif kind == "Good" then
+		color = C.Good
+	end
+	local t = make("Frame", { BackgroundColor3 = C.Panel, BackgroundTransparency = 0.05, Size = UDim2.fromOffset(420, 40), BorderSizePixel = 0 }, toastHolder)
+	UI.corner(t, 6)
+	UI.stroke(t, color, 1, 0.5)
+	make("Frame", { BackgroundColor3 = color, BorderSizePixel = 0, Size = UDim2.new(0, 4, 1, 0), ZIndex = 3 }, t)
+	UI.text(t, text, 13, C.Text, UI.Semi, { Position = UDim2.fromOffset(16, 0), Size = UDim2.new(1, -24, 1, 0), TextTruncate = Enum.TextTruncate.AtEnd })
+	Audio.Play(if kind == "Warn" then "Warn" else "Notify")
+	task.delay(3.5, function()
+		UI.tween(t, 0.3, { BackgroundTransparency = 1 })
+		task.wait(0.3)
+		t:Destroy()
+	end)
+end
+
+--============================ LOGO ============================--
+local function logo(parent: Instance)
+	local box = make("Frame", { Name = "Logo", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 52), Size = UDim2.fromOffset(460, 220) }, parent)
+	UI.text(box, "OPEN 24/7  ·  NO EXIT", 12, C.Accent, UI.Mono, { Position = UDim2.fromOffset(2, 6), Size = UDim2.new(1, 0, 0, 16) })
+	UI.text(box, "MASSIVE STORE", 76, C.Text, UI.Title, { Position = UDim2.fromOffset(-4, 20), Size = UDim2.new(1, 0, 0, 86) })
+	local tag = make("Frame", { BackgroundColor3 = C.Danger, BorderSizePixel = 0, Position = UDim2.fromOffset(0, 112), Size = UDim2.fromOffset(236, 52) }, box)
+	UI.corner(tag, 4)
+	UI.text(tag, "LOCUST", 40, C.Text, UI.Title, { Position = UDim2.fromOffset(18, 0), Size = UDim2.new(1, -40, 1, 0) })
+	local hole = make("Frame", { BackgroundColor3 = C.Bg, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -24, 0.5, 0), Size = UDim2.fromOffset(12, 12), ZIndex = 3 }, tag)
+	UI.corner(hole)
+	UI.text(box, "Survive the nights. Build in the aisles. Don't make a sound.", 13, C.Muted, UI.Body, { Position = UDim2.fromOffset(0, 178), Size = UDim2.fromOffset(400, 36), TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top })
+	-- the sign flickers now and then
+	task.spawn(function()
+		while tag.Parent do
+			task.wait(math.random(30, 80) / 10)
+			for _ = 1, math.random(1, 3) do
+				tag.BackgroundTransparency = 0.6
+				task.wait(0.05)
+				tag.BackgroundTransparency = 0
+				task.wait(0.08)
+			end
+		end
+	end)
+	return box
+end
+
+--============================ PROFILE ============================--
+local function renderProfile()
+	profileChip:ClearAllChildren()
+	UI.corner(profileChip, 8)
+	UI.stroke(profileChip, Color3.new(1, 1, 1), 1, 0.92)
+	local d = ClientState.Data
+	local avatar = make("ImageLabel", { BackgroundColor3 = C.Panel2, Position = UDim2.fromOffset(12, 10), Size = UDim2.fromOffset(44, 44), Image = "", ZIndex = 3 }, profileChip)
+	UI.corner(avatar)
+	UI.stroke(avatar, C.Accent, 3, 0)
+	task.spawn(function()
+		local ok, img = pcall(function()
+			return Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+		end)
+		if ok and img and avatar.Parent then
+			avatar.Image = img
+		end
+	end)
+	local lv = make("Frame", { BackgroundColor3 = C.Accent, BorderSizePixel = 0, Position = UDim2.fromOffset(40, 40), Size = UDim2.fromOffset(24, 18), ZIndex = 4 }, profileChip)
+	UI.corner(lv, 4)
+	UI.text(lv, tostring(d and d.Level or 1), 11, C.Ink, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 5 })
+	UI.text(profileChip, player.DisplayName, 15, C.Text, UI.Bold, { Position = UDim2.fromOffset(72, 10), Size = UDim2.fromOffset(150, 20), TextTruncate = Enum.TextTruncate.AtEnd })
+	local title = d and Cosmetics.Get(d.Equipped and d.Equipped.Title or "")
+	UI.text(profileChip, ("%s · %d XP"):format(if title then string.upper(title.Name) else "SHOPPER", d and d.LevelXP or 0), 10, if title and title.Color then Color3.fromHex(title.Color) else C.Muted, UI.Mono, { Position = UDim2.fromOffset(72, 32), Size = UDim2.fromOffset(150, 14), TextTruncate = Enum.TextTruncate.AtEnd })
+	UI.track(profileChip, C.Accent, (d and d.LevelXP or 0) / math.max(1, d and d.LevelXPNeeded or 100), { Position = UDim2.fromOffset(72, 50), Size = UDim2.fromOffset(150, 3) })
+	local cr = make("Frame", { BackgroundColor3 = C.Panel2, BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(78, 28), ZIndex = 3 }, profileChip)
+	UI.corner(cr, 14)
+	local coin = make("Frame", { BackgroundColor3 = C.Accent, BorderSizePixel = 0, Position = UDim2.fromOffset(6, 6), Size = UDim2.fromOffset(16, 16), ZIndex = 4 }, cr)
+	UI.corner(coin)
+	UI.text(cr, Util.Commas(d and d.Credits or 0), 12, C.Accent, UI.Mono, { Position = UDim2.fromOffset(26, 0), Size = UDim2.new(1, -30, 1, 0), ZIndex = 4 })
+	if d and d.Saving == false then
+		local warn = make("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 2), Size = UDim2.fromOffset(90, 12) }, profileChip)
+		UI.iconLabel(warn, "warn", "NOT SAVING", 9, C.Danger, UI.Mono)
+	end
+end
+
+--============================ PARTY PANEL ============================--
+local function memberRow(parent: Instance, m, y: number)
+	local row = make("Frame", { Name = "Member", BackgroundColor3 = C.Panel2, BorderSizePixel = 0, Position = UDim2.fromOffset(16, y), Size = UDim2.new(1, -32, 0, 58) }, parent)
+	UI.corner(row, 6)
+	local av = make("ImageLabel", { BackgroundColor3 = if m.UserId == player.UserId then C.Accent else C.Info, Position = UDim2.fromOffset(10, 9), Size = UDim2.fromOffset(40, 40), ZIndex = 3 }, row)
+	UI.corner(av)
+	task.spawn(function()
+		local ok, img = pcall(function()
+			return Players:GetUserThumbnailAsync(m.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60)
+		end)
+		if ok and img and av.Parent then
+			av.Image = img
+		end
+	end)
+	UI.text(row, m.Name, 14, C.Text, UI.Bold, { Position = UDim2.fromOffset(60, 10), Size = UDim2.fromOffset(110, 18), TextTruncate = Enum.TextTruncate.AtEnd })
+	local title = Cosmetics.Get(m.Title or "")
+	UI.text(row, ("LV %d · %s"):format(m.Level or 1, if m.UserId == player.UserId then "YOU" else string.upper(title and title.Name or "SHOPPER")), 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(60, 31), Size = UDim2.fromOffset(120, 14), TextTruncate = Enum.TextTruncate.AtEnd })
+	if m.Leader then
+		UI.tag(row, "LEADER", C.Accent, { Position = UDim2.new(1, -116, 0, 10), Size = UDim2.fromOffset(56, 18) })
+	end
+	UI.tag(row, if m.Ready then "READY" else "WAIT", if m.Ready then C.Good else C.Muted, { Position = UDim2.new(1, -56, 0, 20), Size = UDim2.fromOffset(48, 18) })
+	if isLeader() and m.UserId ~= player.UserId then
+		local kick = UI.button(row, { Text = "", Icon = "close", Size = UDim2.fromOffset(22, 18), Position = UDim2.new(1, -116, 0, 32), TextSize = 11, Style = "Danger", Name = "Kick" })
+		kick.Activated:Connect(function()
+			act("Kick", { UserId = m.UserId })
+		end)
+	end
+	return row
+end
+
+local openInvite -- forward
+
+local function renderParty()
+	partyPanel:ClearAllChildren()
+	UI.corner(partyPanel, 8)
+	UI.stroke(partyPanel, Color3.new(1, 1, 1), 1, 0.92)
+	UI.text(partyPanel, "PARTY", 22, C.Text, UI.Title, { Position = UDim2.fromOffset(20, 12), Size = UDim2.fromOffset(80, 28) })
+	UI.text(partyPanel, ("%d / %d"):format(partySize(), Config.Party.MaxSize), 13, C.Accent, UI.Mono, { Position = UDim2.fromOffset(96, 16), Size = UDim2.fromOffset(60, 20) })
+	local code = make("Frame", { BackgroundColor3 = C.Panel2, BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 14), Size = UDim2.fromOffset(100, 26) }, partyPanel)
+	UI.corner(code, 4)
+	UI.text(code, "# " .. (party and party.Code or "------"), 11, C.Muted, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center })
+	make("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.92, BorderSizePixel = 0, Position = UDim2.fromOffset(20, 52), Size = UDim2.new(1, -40, 0, 1) }, partyPanel)
+	local y = 66
+	local members = party and party.Members or {}
+	for _, m in members do
+		memberRow(partyPanel, m, y)
+		y += 66
+	end
+	for _ = #members + 1, Config.Party.MaxSize do
+		local slot = make("TextButton", { Name = "EmptySlot", AutoButtonColor = false, Text = "+  INVITE A FRIEND", FontFace = UI.Mono, TextSize = 12, TextColor3 = C.Muted, BackgroundTransparency = 1, Position = UDim2.fromOffset(16, y), Size = UDim2.new(1, -32, 0, 58) }, partyPanel)
+		UI.corner(slot, 6)
+		UI.stroke(slot, Color3.new(1, 1, 1), 1, 0.8)
+		slot.Activated:Connect(function()
+			openInvite()
+		end)
+		y += 66
+	end
+	local inv = UI.button(partyPanel, { Text = "INVITE FRIENDS", Style = "Primary", Position = UDim2.fromOffset(16, y + 6), Size = UDim2.new(1, -132, 0, 52), TextSize = 18 })
+	inv.Activated:Connect(function()
+		openInvite()
+	end)
+	local solo = partySize() <= 1
+	local second = UI.button(partyPanel, { Text = if solo then "CODE" else "LEAVE", Style = if solo then "Dark" else "Danger", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, y + 6), Size = UDim2.fromOffset(92, 52), TextSize = 18 })
+	second.Activated:Connect(function()
+		if solo then
+			openInvite()
+		else
+			act("Leave")
+		end
+	end)
+	partyPanel.Size = UDim2.fromOffset(316, y + 74)
+	-- the main menu's party button shows readiness
+	if partyButton then
+		local ready = 0
+		for _, m in members do
+			if m.Ready then
+				ready += 1
+			end
+		end
+		local info = Config.Modes[party and party.Rules or "Survival"]
+		local sub = partyButton:FindFirstChild("Sub")
+		if sub then
+			sub.Text = ("%d / %d ready · %s"):format(ready, math.max(1, #members), info and string.lower(info.Name) or "survival")
+		end
+	end
+end
+
+--============================ INVITE TOASTS ============================--
+local function inviteToast(inv)
+	local t = make("Frame", { Name = "Invite", BackgroundColor3 = C.Panel, BackgroundTransparency = 0.03, BorderSizePixel = 0, Size = UDim2.fromOffset(316, 80) }, inviteHolder)
+	UI.corner(t, 8)
+	UI.stroke(t, C.Accent, 1, 0.4)
+	make("Frame", { BackgroundColor3 = C.Accent, BorderSizePixel = 0, Size = UDim2.new(0, 4, 1, 0), ZIndex = 3 }, t)
+	UI.text(t, "PARTY INVITE", 10, C.Accent, UI.Mono, { Position = UDim2.fromOffset(18, 10), Size = UDim2.fromOffset(200, 14) })
+	UI.text(t, ("%s wants you in their party (%d)"):format(inv.From, inv.Size or 1), 12, C.Text, UI.Semi, { Position = UDim2.fromOffset(18, 28), Size = UDim2.fromOffset(200, 32), TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top })
+	local _, fill = UI.track(t, C.Accent, 1, { Position = UDim2.new(0, 18, 1, -10), Size = UDim2.new(1, -36, 0, 2) })
+	UI.tween(fill, inv.Timeout or 30, { Size = UDim2.fromScale(0, 1) }, Enum.EasingStyle.Linear)
+	local yes = UI.button(t, { Text = "JOIN", Style = "Primary", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 10), Size = UDim2.fromOffset(72, 26), TextSize = 13 })
+	local no = UI.button(t, { Text = "NO", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 40), Size = UDim2.fromOffset(72, 24), TextSize = 13 })
+	yes.Activated:Connect(function()
+		act("Accept", { PartyId = inv.PartyId })
+		t:Destroy()
+	end)
+	no.Activated:Connect(function()
+		act("Decline", { PartyId = inv.PartyId })
+		t:Destroy()
+	end)
+	Audio.Play("Notify")
+	task.delay(inv.Timeout or 30, function()
+		if t.Parent then
+			t:Destroy()
+		end
+	end)
+end
+
+--============================ INVITE WINDOW ============================--
+local function renderInvite()
+	inviteFrame:ClearAllChildren()
+	UI.corner(inviteFrame, 10)
+	UI.stroke(inviteFrame, Color3.new(1, 1, 1), 1, 0.9)
+	UI.text(inviteFrame, "INVITE", 30, C.Text, UI.Title, { Position = UDim2.fromOffset(24, 16), Size = UDim2.fromOffset(200, 36) })
+	UI.text(inviteFrame, ("YOUR PARTY CODE  # %s"):format(party and party.Code or "------"), 11, C.Accent, UI.Mono, { Position = UDim2.fromOffset(24, 54), Size = UDim2.fromOffset(300, 14) })
+	local close = UI.button(inviteFrame, { Text = "", Icon = "close", Name = "Close", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 16), Size = UDim2.fromOffset(36, 36), TextSize = 16 })
+	close.Activated:Connect(function()
+		inviteFrame.Visible = false
+		ClientState.SetBusy("Invite", false)
+	end)
+	-- Roblox friends
+	local friends = UI.button(inviteFrame, { Text = "INVITE ROBLOX FRIENDS", Sub = "They join this lobby straight into your party", Style = "Primary", Position = UDim2.fromOffset(24, 80), Size = UDim2.new(1, -48, 0, 64), TextSize = 22 })
+	friends.Activated:Connect(function()
+		local ok, can = pcall(function()
+			return SocialService:CanSendGameInviteAsync(player)
+		end)
+		if not ok or not can then
+			LobbyUI.Toast("Invites aren't available here (Studio or privacy settings).", "Warn")
+			return
+		end
+		local options = Instance.new("ExperienceInviteOptions")
+		options.PromptMessage = "Join my party in MASSIVE STORE: LOCUST!"
+		options.LaunchData = party and party.Code or ""
+		pcall(function()
+			SocialService:PromptGameInvite(player, options)
+		end)
+	end)
+	-- join by code
+	UI.text(inviteFrame, "JOIN A PARTY BY CODE", 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(24, 160), Size = UDim2.fromOffset(300, 14) })
+	local box = make("TextBox", { Name = "CodeBox", BackgroundColor3 = C.Panel2, BorderSizePixel = 0, Position = UDim2.fromOffset(24, 180), Size = UDim2.new(1, -164, 0, 44), FontFace = UI.Mono, TextSize = 18, TextColor3 = C.Text, PlaceholderText = "K7Q-2M4", PlaceholderColor3 = C.Dim, Text = "", ClearTextOnFocus = false }, inviteFrame)
+	UI.corner(box, 6)
+	UI.stroke(box, Color3.new(1, 1, 1), 1, 0.9)
+	local joinB = UI.button(inviteFrame, { Text = "JOIN", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -24, 0, 180), Size = UDim2.fromOffset(104, 44), TextSize = 18 })
+	joinB.Activated:Connect(function()
+		act("JoinCode", { Code = box.Text })
+	end)
+	-- players in this lobby
+	UI.text(inviteFrame, "IN THIS LOBBY", 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(24, 240), Size = UDim2.fromOffset(300, 14) })
+	local list = make("ScrollingFrame", { BackgroundTransparency = 1, BorderSizePixel = 0, Position = UDim2.fromOffset(24, 260), Size = UDim2.new(1, -48, 1, -280), CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 4 }, inviteFrame)
+	UI.list(list, 6)
+	local n = 0
+	for _, p in Players:GetPlayers() do
+		if p ~= player and p:GetAttribute("PartyId") ~= (party and party.Id) then
+			n += 1
+			local row = make("Frame", { BackgroundColor3 = C.Panel2, BorderSizePixel = 0, Size = UDim2.new(1, -8, 0, 46), LayoutOrder = n }, list)
+			UI.corner(row, 6)
+			UI.text(row, p.DisplayName, 14, C.Text, UI.Bold, { Position = UDim2.fromOffset(14, 0), Size = UDim2.new(1, -150, 1, 0) })
+			UI.text(row, ("PARTY OF %d"):format(p:GetAttribute("PartySize") or 1), 9, C.Muted, UI.Mono, { Position = UDim2.new(1, -230, 0, 0), Size = UDim2.fromOffset(90, 46) })
+			local b = UI.button(row, { Text = "INVITE", Style = "Primary", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(100, 32), TextSize = 14 })
+			b.Activated:Connect(function()
+				act("Invite", { UserId = p.UserId })
+				b.Text = "SENT"
+			end)
+		end
+	end
+	if n == 0 then
+		UI.text(list, "Nobody else is in this lobby yet — invite Roblox friends above.", 12, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 30), TextWrapped = true })
+	end
+end
+
+openInvite = function()
+	renderInvite()
+	inviteFrame.Visible = true
+	ClientState.SetBusy("Invite", true)
+end
+
+--============================ START A RUN (Figma 02) ============================--
+-- a row of 5 pips (filled = how dangerous)
+local function pips(parent: Instance, n: number, color: Color3, pos: UDim2)
+	local row = make("Frame", { Name = "Pips", BackgroundTransparency = 1, Position = pos, Size = UDim2.fromOffset(100, 14) }, parent)
+	UI.list(row, 4, true).VerticalAlignment = Enum.VerticalAlignment.Center
+	for i = 1, 5 do
+		UI.icon(row, if i <= n then "dot" else "ring", 13, color, { LayoutOrder = i })
+	end
+	return row
+end
+
+local function modeStats(id: string)
+	local m = Config.Modes[id]
+	local locust = math.clamp(math.floor((m.LocustMult - 0.55) * 6.5 + 0.5), 1, 5)
+	local loot = if m.LootMult < 0.8 then "Scarce" elseif m.LootMult > 1.1 then "Plenty" else "Normal"
+	local death = if m.ReviveNeedsMedkit then "Medkit revive" else "Revive"
+	return { { "LOCUST", locust }, { "LOOT", loot }, { "DEATH", death } }
+end
+
+local renderRun -- forward
+
+local function ownRules(): boolean
+	return who == "Solo" and not isLeader() and partySize() > 1
+end
+
+local function currentRules(): string
+	if ownRules() then
+		return soloRules
+	end
+	return party and party.Rules or "Survival"
+end
+
+
+local function launchSummary(): (string?, string?)
+	local solo = who == "Solo"
+	local size = if solo then 1 else partySize()
+	return PartyRules.Resolve(currentRules(), solo, size)
+end
+
+renderRun = function()
+	runFrame:ClearAllChildren()
+	local rules = currentRules()
+	local leader = isLeader()
+	local canPick = who == "Solo" or leader
+	-- header
+	local back = UI.button(runFrame, { Name = "Back", Text = "BACK", Icon = "back", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
+	back.Activated:Connect(function()
+		LobbyUI.Open("Main")
+	end)
+	UI.text(runFrame, "START A RUN", 40, C.Text, UI.Title, { Position = UDim2.fromOffset(168, 26), Size = UDim2.fromOffset(500, 48) })
+	UI.text(runFrame, "PICK WHO COMES WITH YOU, THEN THE RULES OF THE STORE", 11, C.Muted, UI.Mono, { Position = UDim2.fromOffset(170, 76), Size = UDim2.fromOffset(600, 14) })
+	-- SOLO | PARTY
+	local seg = make("Frame", { BackgroundColor3 = C.Panel, BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -48, 0, 32), Size = UDim2.fromOffset(352, 54) }, runFrame)
+	UI.corner(seg, 8)
+	UI.stroke(seg, Color3.new(1, 1, 1), 1, 0.92)
+	for i, opt in { { "Solo", "SOLO", "private server · just you" }, { "Party", "PARTY", ("%d / %d members"):format(partySize(), Config.Party.MaxSize) } } do
+		local sel = who == opt[1]
+		local b = UI.button(seg, { Text = opt[2], Sub = opt[3], Style = if sel then "Primary" else "Ghost", Position = UDim2.fromOffset(4 + (i - 1) * 174, 4), Size = UDim2.fromOffset(170, 46), TextSize = 18 })
+		if not sel then
+			b.BackgroundTransparency = 1
+		end
+		b.Activated:Connect(function()
+			who = opt[1]
+			if who == "Party" and partySize() <= 1 then
+				LobbyUI.Toast("You're alone — invite friends to play as a party.", "Info")
+			end
+			renderRun()
+		end)
+	end
+	-- mode cards
+	local cards = make("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 120), Size = UDim2.fromOffset(1184, 420) }, runFrame)
+	for i, id in Config.Party.LobbyModes do
+		local m = Config.Modes[id]
+		local col = Color3.fromHex(m.Color)
+		local sel = rules == id
+		local okMode, why = PartyRules.Resolve(id, who == "Solo", if who == "Solo" then 1 else partySize())
+		local cardB = make("TextButton", { Name = "Mode_" .. id, AutoButtonColor = false, Text = "", BackgroundColor3 = C.Panel, BorderSizePixel = 0, Position = UDim2.fromOffset((i - 1) * 400, 0), Size = UDim2.fromOffset(384, 420), ClipsDescendants = true }, cards)
+		UI.corner(cardB, 10)
+		UI.stroke(cardB, if sel then col else Color3.new(1, 1, 1), if sel then 2 else 1, if sel then 0 else 0.92)
+		local art = make("Frame", { BackgroundColor3 = col, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 190) }, cardB)
+		make("UIGradient", { Transparency = NumberSequence.new(0.62, 1), Rotation = 90 }, art)
+		for k = 0, 5 do
+			make("Frame", { BackgroundColor3 = Color3.fromHex("050607"), BackgroundTransparency = 0.25, BorderSizePixel = 0, Position = UDim2.fromOffset(24 + k * 58, 60 + (k % 2) * 14), Size = UDim2.fromOffset(40, 130 - (k % 2) * 14) }, art)
+		end
+		UI.text(art, ("0%d"):format(i), 12, col, UI.Mono, { Position = UDim2.fromOffset(24, 16), Size = UDim2.fromOffset(40, 16) })
+		if sel then
+			UI.tag(art, "SELECTED", col, { Position = UDim2.new(1, -110, 0, 16), Size = UDim2.fromOffset(92, 24), BackgroundTransparency = 0 }):FindFirstChildOfClass("TextLabel").TextColor3 = C.Ink
+		end
+		UI.text(cardB, m.Name, 34, C.Text, UI.Title, { Position = UDim2.fromOffset(24, 202), Size = UDim2.new(1, -48, 0, 40) })
+		UI.text(cardB, m.Desc, 12, C.Muted, UI.Body, { Position = UDim2.fromOffset(24, 250), Size = UDim2.new(1, -48, 0, 54), TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top })
+		make("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.92, BorderSizePixel = 0, Position = UDim2.fromOffset(24, 318), Size = UDim2.new(1, -48, 0, 1) }, cardB)
+		for j, st in modeStats(id) do
+			UI.text(cardB, st[1], 9, C.Muted, UI.Mono, { Position = UDim2.fromOffset(24 + (j - 1) * 116, 334), Size = UDim2.fromOffset(110, 12) })
+			if j == 1 then
+				pips(cardB, st[2], col, UDim2.fromOffset(24, 354))
+			else
+				UI.text(cardB, st[2], 15, C.Text, UI.Heading, { Position = UDim2.fromOffset(24 + (j - 1) * 116, 350), Size = UDim2.fromOffset(110, 22) })
+			end
+		end
+		if not okMode then
+			local veil = make("Frame", { BackgroundColor3 = C.Bg, BackgroundTransparency = 0.35, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), ZIndex = 6 }, cardB)
+			UI.text(veil, string.upper(why or "UNAVAILABLE"), 12, C.Danger, UI.Mono, { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.new(1, -40, 0, 16), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 7 })
+		elseif not canPick then
+			UI.text(cardB, "THE LEADER PICKS", 10, C.Muted, UI.Mono, { Position = UDim2.fromOffset(24, 390), Size = UDim2.fromOffset(200, 14) })
+		end
+		cardB.Activated:Connect(function()
+			if not canPick then
+				LobbyUI.Toast("Only the party leader picks the mode.", "Info")
+				return
+			end
+			if ownRules() then
+				soloRules = id
+				renderRun()
+				return
+			end
+			act("SetMode", { Mode = id })
+		end)
+	end
+	-- launch bar
+	local bar = make("Frame", { BackgroundColor3 = C.Panel, BackgroundTransparency = 0.04, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 564), Size = UDim2.fromOffset(1184, 104) }, runFrame)
+	UI.corner(bar, 10)
+	UI.stroke(bar, Color3.new(1, 1, 1), 1, 0.92)
+	local mode, why = launchSummary()
+	local info = Config.Modes[mode or rules]
+	UI.text(bar, if mode then "READY TO TELEPORT" else "CAN'T START YET", 11, if mode then C.Accent else C.Danger, UI.Mono, { Position = UDim2.fromOffset(28, 18), Size = UDim2.fromOffset(400, 14) })
+	UI.text(bar, ("%s  ·  %s"):format(if who == "Solo" then "Solo" else ("Party of " .. partySize()), info and (string.sub(info.Name, 1, 1) .. string.lower(string.sub(info.Name, 2))) or rules), 22, C.Text, UI.Heading, { Position = UDim2.fromOffset(28, 36), Size = UDim2.fromOffset(560, 28) })
+	UI.text(bar, why or (if who == "Solo" then "A private store server is reserved just for you. You come back here when the run ends." else "Your whole party lands in the same private store. You come back together."), 11, C.Muted, UI.Body, { Position = UDim2.fromOffset(28, 70), Size = UDim2.fromOffset(600, 16) })
+	-- readiness chips (party)
+	if who == "Party" and party then
+		for i, m in party.Members do
+			local chip = make("Frame", { BackgroundColor3 = C.Panel2, BorderSizePixel = 0, Position = UDim2.fromOffset(640 + (i - 1) * 50, 30), Size = UDim2.fromOffset(42, 42) }, bar)
+			UI.corner(chip)
+			UI.stroke(chip, if m.Ready then C.Good else C.Muted, 2, 0)
+			UI.text(chip, string.upper(string.sub(m.Name, 1, 1)), 18, C.Text, UI.Title, { TextXAlignment = Enum.TextXAlignment.Center })
+		end
+	end
+	local goText, goSub, goStyle = "ENTER THE STORE", "into the store", "Primary"
+	local me = nil
+	if party then
+		for _, m in party.Members do
+			if m.UserId == player.UserId then
+				me = m
+			end
+		end
+	end
+	if who == "Party" and not leader then
+		goText = if me and me.Ready then "READY" else "READY UP"
+		goSub = if me and me.Ready then "waiting for the leader" else "tell the leader you're set"
+		goStyle = if me and me.Ready then "Good" else "Primary"
+	elseif who == "Party" then
+		local waiting = 0
+		for _, m in party and party.Members or {} do
+			if not m.Ready then
+				waiting += 1
+			end
+		end
+		if waiting > 0 then
+			goText, goSub, goStyle = "WAITING", ("%d not ready"):format(waiting), "Dark"
+		end
+	end
+	if party and party.Launching then
+		goText, goSub, goStyle = "TELEPORTING...", "hold on", "Dark"
+	end
+	local go = UI.button(bar, { Name = "Launch", Text = goText, Sub = goSub, Style = goStyle, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -24, 0.5, 0), Size = UDim2.fromOffset(300, 64), TextSize = 26 })
+	go.Activated:Connect(function()
+		if who == "Party" and not leader then
+			act("Ready", { Value = not (me and me.Ready) })
+			return
+		end
+		if not mode then
+			LobbyUI.Toast(why or "Can't start", "Warn")
+			return
+		end
+		act("Launch", { Solo = who == "Solo", Rules = rules })
+	end)
+end
+
+--============================ MAIN (Figma 01) ============================--
+local function renderMissions()
+	missionStrip:ClearAllChildren()
+	UI.corner(missionStrip, 6)
+	UI.stroke(missionStrip, Color3.new(1, 1, 1), 1, 0.94)
+	UI.text(missionStrip, "DAILY", 11, C.Accent, UI.Mono, { Position = UDim2.fromOffset(14, 0), Size = UDim2.fromOffset(60, 40) })
+	local d = ClientState.Data
+	local day = Util.DayNumber(os.time())
+	for i, id in Missions.ForDay(day) do
+		if i > 3 then
+			break
+		end
+		local m = Missions.ById[id]
+		local prog = if d and d.Missions and d.Missions.Day == day then d.Missions.Progress[id] or 0 else 0
+		local x = 80 + (i - 1) * 256
+		UI.text(missionStrip, m.Text, 11, C.Text, UI.Semi, { Position = UDim2.fromOffset(x, 4), Size = UDim2.fromOffset(230, 16), TextTruncate = Enum.TextTruncate.AtEnd })
+		UI.track(missionStrip, C.Accent, prog / m.Goal, { Position = UDim2.fromOffset(x, 26), Size = UDim2.fromOffset(220, 4) })
+	end
+	local open = make("TextButton", { BackgroundTransparency = 1, Text = "", Size = UDim2.fromScale(1, 1), ZIndex = 9 }, missionStrip)
+	open.Activated:Connect(function()
+		LobbyUI.Open("Page", "MISSIONS")
+	end)
+end
+
+local function buildMain()
+	mainFrame = make("Frame", { Name = "Main", BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1) }, root)
+	-- readable left side over the 3D scene
+	local fade = make("Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Size = UDim2.new(0, 760, 1, 0) }, mainFrame)
+	make("UIGradient", { Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(0.6, 0.35), NumberSequenceKeypoint.new(1, 1) }) }, fade)
+	logo(mainFrame)
+	local col = make("Frame", { Name = "Buttons", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 292), Size = UDim2.fromOffset(360, 340) }, mainFrame)
+	UI.list(col, 10)
+	local solo = UI.button(col, { Name = "PlaySolo", Text = "PLAY SOLO", Sub = "Your own store. Nobody hears you scream.", KeyIcon = "enter", Style = "Primary", Size = UDim2.fromOffset(360, 72), TextSize = 30, LayoutOrder = 1 })
+	solo.Activated:Connect(function()
+		who = "Solo"
+		LobbyUI.Open("Run")
+	end)
+	partyButton = UI.button(col, { Name = "PlayParty", Text = "PLAY WITH PARTY", Sub = "1 / 1 ready · survival", Key = "P", Accent = true, Size = UDim2.fromOffset(360, 56), LayoutOrder = 2 })
+	partyButton.Activated:Connect(function()
+		who = "Party"
+		LobbyUI.Open("Run")
+		if partySize() <= 1 then
+			openInvite()
+		end
+	end)
+	for i, def in {
+		{ "LOADOUT & OUTFITS", "Cosmetics, flashlight beam, cart paint", "L", "LOCKER" },
+		{ "STORE CREDITS SHOP", "Outfits, titles, effects — cosmetic only", "B", "SHOP" },
+		{ "SETTINGS", "Audio · effects · controls", "gear", "SETTINGS" },
+	} do
+		local b = UI.button(col, { Name = def[4], Text = def[1], Sub = def[2], Key = if def[3] ~= "gear" then def[3] else nil, KeyIcon = if def[3] == "gear" then "gear" else nil, Accent = true, Size = UDim2.fromOffset(360, 56), LayoutOrder = 2 + i })
+		b.Activated:Connect(function()
+			LobbyUI.Open("Page", def[4])
+		end)
+	end
+	-- right column
+	profileChip = make("Frame", { Name = "Profile", BackgroundColor3 = C.Panel, BackgroundTransparency = 0.1, BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -44, 0, 40), Size = UDim2.fromOffset(316, 64) }, mainFrame)
+	partyPanel = make("Frame", { Name = "Party", BackgroundColor3 = C.Panel, BackgroundTransparency = 0.08, BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -44, 0, 120), Size = UDim2.fromOffset(316, 404) }, mainFrame)
+	missionStrip = make("Frame", { Name = "Missions", BackgroundColor3 = C.Panel, BackgroundTransparency = 0.25, BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 64, 1, -32), Size = UDim2.fromOffset(856, 40) }, mainFrame)
+	local credits = make("TextButton", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -44, 1, -40), Size = UDim2.fromOffset(200, 16), Text = "v2.0  ·  LOBBY  ·  CREDITS", FontFace = UI.Mono, TextSize = 10, TextColor3 = C.Muted, TextXAlignment = Enum.TextXAlignment.Right }, mainFrame)
+	credits.Activated:Connect(function()
+		LobbyUI.Open("Page", "CREDITS")
+	end)
+	renderProfile()
+	renderParty()
+	renderMissions()
+end
+
+--============================ NAV ============================--
+local screen = "Main"
+function LobbyUI.Open(name: string, page: string?)
+	screen = name
+	mainFrame.Visible = name == "Main"
+	runFrame.Visible = name == "Run"
+	pageFrame.Visible = name == "Page"
+	if name == "Run" then
+		renderRun()
+	elseif name == "Page" and page then
+		Pages.Render(page, pageContent)
+	else
+		Pages.Close()
+	end
+	LobbyCamera.SetFocus(name)
+	Audio.Play("Open")
+end
+
+local function buildPageHost()
+	pageFrame = make("Frame", { Name = "Page", BackgroundColor3 = C.Bg, BackgroundTransparency = 0.25, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), Visible = false }, root)
+	local back = UI.button(pageFrame, { Name = "Back", Text = "BACK", Icon = "back", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
+	back.Activated:Connect(function()
+		LobbyUI.Open("Main")
+	end)
+	pageContent = make("Frame", { Name = "Content", BackgroundTransparency = 1, Position = UDim2.fromOffset(168, 28), Size = UDim2.new(1, -216, 1, -76) }, pageFrame)
+end
+
+function LobbyUI.Init()
+	gui, root = UI.screen("MSL_Lobby", 2)
+	gui.Enabled = false
+	buildMain()
+	runFrame = make("Frame", { Name = "Run", BackgroundColor3 = C.Bg, BackgroundTransparency = 0.35, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), Visible = false }, root)
+	buildPageHost()
+	inviteFrame = make("Frame", { Name = "InviteWindow", BackgroundColor3 = C.Panel, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(540, 520), Visible = false, ZIndex = 20 }, root)
+	toastHolder = make("Frame", { Name = "Toasts", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 20), Size = UDim2.fromOffset(420, 200) }, root)
+	UI.list(toastHolder, 6, false, Enum.HorizontalAlignment.Center)
+	inviteHolder = make("Frame", { Name = "Invites", BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -44, 1, -80), Size = UDim2.fromOffset(316, 300) }, root)
+	local il = UI.list(inviteHolder, 8)
+	il.VerticalAlignment = Enum.VerticalAlignment.Bottom
+
+	Net.Event("Party").OnClientEvent:Connect(function(snap)
+		party = snap
+		renderParty()
+		if screen == "Run" then
+			renderRun()
+		end
+		if inviteFrame.Visible then
+			renderInvite()
+		end
+	end)
+	Net.Event("PartyInvite").OnClientEvent:Connect(inviteToast)
+	Net.Event("Notify").OnClientEvent:Connect(function(text, kind)
+		if gui.Enabled then
+			LobbyUI.Toast(text, kind)
+		end
+	end)
+	ClientState.DataChanged:Connect(function()
+		renderProfile()
+		renderMissions()
+		renderParty()
+	end)
+	Players.PlayerAdded:Connect(function()
+		if inviteFrame.Visible then
+			renderInvite()
+		end
+	end)
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if processed or not gui.Enabled then
+			return
+		end
+		local kc = input.KeyCode
+		if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.ButtonB then
+			if inviteFrame.Visible then
+				inviteFrame.Visible = false
+				ClientState.SetBusy("Invite", false)
+			elseif screen ~= "Main" then
+				LobbyUI.Open("Main")
+			end
+		elseif screen == "Main" then
+			if kc == Enum.KeyCode.Return then
+				who = "Solo"
+				LobbyUI.Open("Run")
+			elseif kc == Enum.KeyCode.P then
+				who = "Party"
+				LobbyUI.Open("Run")
+			elseif kc == Enum.KeyCode.L then
+				LobbyUI.Open("Page", "LOCKER")
+			elseif kc == Enum.KeyCode.B then
+				LobbyUI.Open("Page", "SHOP")
+			end
+		end
+	end)
+	LobbyUI.Open("Main")
+end
+
+-- hidden while you are in the store (lobby and store are the same place)
+function LobbyUI.SetVisible(on: boolean)
+	if gui.Enabled == on then
+		return
+	end
+	gui.Enabled = on
+	if on then
+		LobbyUI.Open("Main")
+	else
+		inviteFrame.Visible = false
+		ClientState.SetBusy("Invite", false)
+		Pages.Close()
+	end
+end
+
+return LobbyUI
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+      <Item class="LocalScript" referent="87">
         <Properties>
           <string name="Name">Main</string>
           <string name="Source"><![CDATA[--[[
 	MASSIVE STORE: LOCUST — client entry point (the only LocalScript besides the loading screen).
-	Starts every controller and switches between the 3D main menu and the in-store HUD.
+	Starts every controller and switches between the LOBBY (parking lot, party, shop) and the
+	STORE (first-person HUD). Lobby and store are one place: see ServerScriptService/Main.
 ]]
 
 local Players = game:GetService("Players")
@@ -19746,6 +21674,19 @@ local MapUI = require(Client.MapUI)
 local CameraFX = require(Client.CameraFX)
 local Controls = require(Client.Controls)
 local Menu = require(Client.Menu)
+local Pages = require(Client.Pages)
+
+local Lobby = script.Parent:WaitForChild("Lobby")
+local LobbyCamera = require(Lobby.LobbyCamera)
+local LobbyUI = require(Lobby.LobbyUI)
+
+-- what this server is: "Lobby" (public), "Game" (a private store) or "Both" (Studio)
+local role = ReplicatedStorage:GetAttribute("Place")
+while not role do
+	ReplicatedStorage:GetAttributeChangedSignal("Place"):Wait()
+	role = ReplicatedStorage:GetAttribute("Place")
+end
+local hasLobby = role ~= "Game"
 
 -- our own HUD replaces these
 for _, t in { Enum.CoreGuiType.Backpack, Enum.CoreGuiType.Health } do
@@ -19773,6 +21714,21 @@ MapUI.Init()
 CameraFX.Init()
 Controls.Init()
 Menu.Init(HUD.Toast)
+LobbyCamera.Init()
+LobbyUI.Init()
+
+-- one toast at a time: the lobby's while you're in the parking lot, the HUD's in the store
+local function toast(text: string, kind: string?)
+	if hasLobby and not ClientState.InRun() then
+		LobbyUI.Toast(text, kind)
+	else
+		HUD.Toast(text, kind)
+	end
+end
+HUD.ShouldToast = function()
+	return not hasLobby or ClientState.InRun()
+end
+Pages.Toast = toast
 
 -- server cues: sounds + screen effects
 Net.Event("Cue").OnClientEvent:Connect(function(kind, position, extra)
@@ -19788,7 +21744,7 @@ Net.Event("Teleporting").OnClientEvent:Connect(function(info)
 	if info.Cancel then
 		TeleportScreen.Hide()
 		if info.Message then
-			HUD.Toast(info.Message, "Warn")
+			toast(info.Message, "Warn")
 		end
 	else
 		TeleportScreen.Show(info)
@@ -19797,6 +21753,9 @@ end)
 
 local function refresh()
 	local inRun = player:GetAttribute("InRun") == true
+	LobbyUI.SetVisible(hasLobby and not inRun)
+	LobbyCamera.SetActive(hasLobby and not inRun)
+	Atmosphere.SetLobby(hasLobby and not inRun)
 	if inRun then
 		Menu.Hide()
 		HUD.SetVisible(true)
@@ -19811,7 +21770,11 @@ local function refresh()
 		BuildUI.SetVisible(false)
 		MapUI.SetVisible(false)
 		Controls.SetVisible(false)
-		Menu.Show()
+		if hasLobby then
+			Menu.HideForLobby()
+		else
+			Menu.Show() -- a private store: "entering the store..." until the server walks you in
+		end
 	end
 end
 player:GetAttributeChangedSignal("InRun"):Connect(refresh)
@@ -19821,7 +21784,7 @@ refresh()
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="80">
+  <Item class="Workspace" referent="88">
     <Properties>
       <string name="Name">Workspace</string>
       <float name="FallenPartsDestroyHeight">-200</float>

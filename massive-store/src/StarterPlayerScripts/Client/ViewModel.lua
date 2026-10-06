@@ -301,6 +301,12 @@ local function render(dt: number)
 	if modal then
 		local busy = ClientState.Busy
 		modal.Visible = ClientState.MenuOpen or busy.Inventory == true or busy.Container == true or busy.Map == true or busy.Confirm == true or busy.Pause == true or busy.Results == true or busy.BuildMenu == true
+		-- first person: no mouse arrow in the middle of the screen (the HUD has a crosshair);
+		-- it comes back whenever a window frees the mouse or you're not in the store
+		local locked = inRunAlive and not modal.Visible and not player:GetAttribute("Hidden")
+		if UserInputService.MouseIconEnabled ~= not locked then
+			UserInputService.MouseIconEnabled = not locked
+		end
 	end
 	local char = player.Character
 	local head = char and char:FindFirstChild("Head")

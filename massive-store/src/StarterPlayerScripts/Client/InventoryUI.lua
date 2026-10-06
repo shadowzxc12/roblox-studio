@@ -158,8 +158,8 @@ local function showDetails(slot)
 	end
 	local buttons = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = 6 }, details)
 	UI.list(buttons, 6)
-	local function btn(text, style, fn)
-		local b = UI.button(buttons, { Text = text, Style = style, Size = UDim2.new(1, 0, 0, 34), TextSize = 14 })
+	local function btn(text, style, fn, icon)
+		local b = UI.button(buttons, { Text = text, Icon = icon, Style = style, Size = UDim2.new(1, 0, 0, 34), TextSize = 14 })
 		b.Activated:Connect(fn)
 	end
 	if item.Use or item.Tool or item.Category == "Battery" or item.Category == "Fuel" then
@@ -168,9 +168,9 @@ local function showDetails(slot)
 		end)
 	end
 	if ClientState.Container then
-		btn("STORE  →", "Good", function()
+		btn("STORE", "Good", function()
 			invAction({ Action = "Store", Slot = slot })
-		end)
+		end, "arrow")
 	end
 	btn("DROP", "Dark", function()
 		invAction({ Action = "Drop", Slot = slot })
@@ -206,7 +206,7 @@ local function buildPanel()
 	panel = UI.panel(root, { Name = "Inventory", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.47), Size = UDim2.fromOffset(640, 420), Visible = false }, 14)
 	UI.text(panel, "INVENTORY", 22, C.Text, UI.Title, { Position = UDim2.fromOffset(20, 14), Size = UDim2.fromOffset(300, 26) })
 	local hint = UI.text(panel, "Click an item, then click a slot to move it · [Tab] close", 11, C.Muted, UI.Bold, { Position = UDim2.fromOffset(20, 40), Size = UDim2.fromOffset(400, 14) })
-	local close = UI.button(panel, { Text = "✕", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -48, 0, 12), TextSize = 16 })
+	local close = UI.button(panel, { Text = "", Icon = "close", Name = "Close", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -48, 0, 12), TextSize = 16 })
 	close.Activated:Connect(function()
 		InventoryUI.Toggle(false)
 	end)

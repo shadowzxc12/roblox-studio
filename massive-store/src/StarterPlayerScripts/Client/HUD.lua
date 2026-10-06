@@ -228,7 +228,8 @@ local function buildOverlays()
 	for i = 0, 40 do
 		make("Frame", { BackgroundColor3 = Color3.fromHex("0b2a0b"), BackgroundTransparency = 0.85, BorderSizePixel = 0, Position = UDim2.fromScale(0, i / 40), Size = UDim2.new(1, 0, 0, 1) }, nv)
 	end
-	UI.text(nv, "NV ● REC", 14, C.Good, UI.Mono, { Position = UDim2.new(1, -140, 1, -40), Size = UDim2.fromOffset(120, 20) })
+	local rec = make("Frame", { BackgroundTransparency = 1, Position = UDim2.new(1, -150, 1, -42), Size = UDim2.fromOffset(130, 22) }, nv)
+	UI.iconLabel(rec, "dot", "NV  REC", 14, C.Good, UI.Mono)
 	refs.NV = nv
 end
 
@@ -260,6 +261,11 @@ local TOAST_COLORS = {
 	Mission = C.Purple,
 	Legendary = Color3.fromHex("ffb31a"),
 }
+
+-- set by Main: in the lobby part of the place the lobby shows notifications instead
+HUD.ShouldToast = function(): boolean
+	return true
+end
 
 function HUD.Toast(text: string, kind: string?)
 	kind = kind or "Info"
@@ -707,7 +713,7 @@ local function updateWhere()
 	refs.Objective.Where.Text = if zone and zone.Name ~= "" then zone.Name else ""
 	refs.Objective.Text.Text = ClientState.Objective ~= "" and ClientState.Objective or "Explore the store"
 	refs.Objective.Team.Text = ClientState.TeamObjective or ""
-	refs.Objective.Team.TextColor3 = if string.find(ClientState.TeamObjective or "", "✓") then C.Good else C.Purple
+	refs.Objective.Team.TextColor3 = if string.find(ClientState.TeamObjective or "", "TEAM DONE", 1, true) then C.Good else C.Purple
 end
 
 function HUD.SetVisible(on: boolean)
@@ -751,7 +757,11 @@ function HUD.Init()
 	buildBanner()
 	buildHints()
 
-	Net.Event("Notify").OnClientEvent:Connect(HUD.Toast)
+	Net.Event("Notify").OnClientEvent:Connect(function(text, kind)
+		if HUD.ShouldToast() then
+			HUD.Toast(text, kind)
+		end
+	end)
 	Net.Event("Banner").OnClientEvent:Connect(HUD.Banner)
 	Net.Event("Event").OnClientEvent:Connect(HUD.Event)
 	Net.Event("XP").OnClientEvent:Connect(HUD.XP)

@@ -25,16 +25,20 @@ local bloom = Lighting:FindFirstChild("Bloom") :: BloomEffect?
 
 local PROFILES = {
 	Day = { Ambient = Color3.new(0.36, 0.355, 0.35), Fog = Color3.new(0.38, 0.38, 0.39), FogStart = 160, FogEnd = 720, Bright = 0.02, Contrast = 0.06, Sat = -0.05, Tint = Color3.new(1, 0.99, 0.96), Bloom = 0.45 },
-	Dusk = { Ambient = Color3.new(0.17, 0.15, 0.15), Fog = Color3.new(0.12, 0.09, 0.08), FogStart = 80, FogEnd = 420, Bright = 0, Contrast = 0.1, Sat = -0.15, Tint = Color3.new(1, 0.9, 0.84), Bloom = 0.6 },
-	Night = { Ambient = Color3.new(0.034, 0.034, 0.045), Fog = Color3.new(0.008, 0.008, 0.012), FogStart = 18, FogEnd = 250, Bright = -0.02, Contrast = 0.16, Sat = -0.35, Tint = Color3.new(0.88, 0.92, 1), Bloom = 0.8 },
-	Outage = { Ambient = Color3.new(0.02, 0.02, 0.026), Fog = Color3.new(0.005, 0.005, 0.008), FogStart = 10, FogEnd = 200, Bright = -0.03, Contrast = 0.18, Sat = -0.45, Tint = Color3.new(0.85, 0.9, 1), Bloom = 0.8 },
+	Dusk = { Ambient = Color3.new(0.2, 0.18, 0.18), Fog = Color3.new(0.12, 0.09, 0.08), FogStart = 80, FogEnd = 420, Bright = 0, Contrast = 0.1, Sat = -0.15, Tint = Color3.new(1, 0.9, 0.84), Bloom = 0.6 },
+	-- night: dark and scary, but you can still make out aisles, shelves and shapes
+	Night = { Ambient = Color3.new(0.12, 0.125, 0.15), Fog = Color3.new(0.03, 0.032, 0.045), FogStart = 45, FogEnd = 340, Bright = 0.03, Contrast = 0.12, Sat = -0.25, Tint = Color3.new(0.9, 0.94, 1), Bloom = 0.75 },
+	Outage = { Ambient = Color3.new(0.085, 0.085, 0.105), Fog = Color3.new(0.02, 0.02, 0.03), FogStart = 30, FogEnd = 280, Bright = 0.02, Contrast = 0.14, Sat = -0.35, Tint = Color3.new(0.88, 0.92, 1), Bloom = 0.8 },
 	Menu = { Ambient = Color3.new(0.05, 0.05, 0.06), Fog = Color3.new(0.01, 0.01, 0.014), FogStart = 10, FogEnd = 220, Bright = 0, Contrast = 0.15, Sat = -0.25, Tint = Color3.new(0.92, 0.94, 1), Bloom = 0.9 },
 }
+-- the parking lot in front of the store (lobby part of the place)
+PROFILES.Lobby = { Ambient = Color3.new(0.17, 0.17, 0.21), Fog = Color3.new(0.04, 0.045, 0.06), FogStart = 70, FogEnd = 320, Bright = 0.03, Contrast = 0.12, Sat = -0.08, Tint = Color3.new(0.96, 0.97, 1), Bloom = 0.85 }
 PROFILES.Dawn = PROFILES.Dusk
 PROFILES.Waiting = PROFILES.Day
 PROFILES.Results = PROFILES.Night
 
 local menu = true
+local lobby = false
 local brightnessSetting = 0
 local shakeEnabled = true
 local lights: { [BasePart]: any } = {}
@@ -151,6 +155,14 @@ function Atmosphere.SetMenu(on: boolean)
 	end
 end
 
+-- in the lobby the store's lights stay as they are and the parking-lot profile is used
+function Atmosphere.SetLobby(on: boolean)
+	lobby = on
+	if on then
+		menu = true
+	end
+end
+
 function Atmosphere.SetBrightness(v: number)
 	brightnessSetting = v
 end
@@ -178,7 +190,9 @@ end
 local function lerpLighting(dt: number)
 	local phase = ReplicatedStorage:GetAttribute("Phase") or "Waiting"
 	local key = phase
-	if menu then
+	if lobby then
+		key = "Lobby"
+	elseif menu then
 		key = "Menu"
 	elseif ReplicatedStorage:GetAttribute("Outage") then
 		key = "Outage"

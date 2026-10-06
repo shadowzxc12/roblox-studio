@@ -234,7 +234,7 @@ function MapUI.Init()
 			updateMarkers()
 		end)
 	end
-	local close = UI.button(frame, { Text = "✕", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -40, 1, -60), AnchorPoint = Vector2.new(1, 0) })
+	local close = UI.button(frame, { Text = "", Icon = "close", Name = "Close", Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -40, 1, -60), AnchorPoint = Vector2.new(1, 0) })
 	close.Activated:Connect(function()
 		MapUI.Toggle(false)
 	end)

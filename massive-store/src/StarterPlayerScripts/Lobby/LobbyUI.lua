@@ -135,7 +135,8 @@ local function renderProfile()
 	UI.corner(coin)
 	UI.text(cr, Util.Commas(d and d.Credits or 0), 12, C.Accent, UI.Mono, { Position = UDim2.fromOffset(26, 0), Size = UDim2.new(1, -30, 1, 0), ZIndex = 4 })
 	if d and d.Saving == false then
-		UI.text(profileChip, "⚠ not saving", 9, C.Danger, UI.Mono, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 2), Size = UDim2.fromOffset(78, 10), TextXAlignment = Enum.TextXAlignment.Right })
+		local warn = make("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 2), Size = UDim2.fromOffset(90, 12) }, profileChip)
+		UI.iconLabel(warn, "warn", "NOT SAVING", 9, C.Danger, UI.Mono)
 	end
 end
 
@@ -161,7 +162,7 @@ local function memberRow(parent: Instance, m, y: number)
 	end
 	UI.tag(row, if m.Ready then "READY" else "WAIT", if m.Ready then C.Good else C.Muted, { Position = UDim2.new(1, -56, 0, 20), Size = UDim2.fromOffset(48, 18) })
 	if isLeader() and m.UserId ~= player.UserId then
-		local kick = UI.button(row, { Text = "✕", Size = UDim2.fromOffset(22, 18), Position = UDim2.new(1, -116, 0, 32), TextSize = 11, Style = "Danger", Name = "Kick" })
+		local kick = UI.button(row, { Text = "", Icon = "close", Size = UDim2.fromOffset(22, 18), Position = UDim2.new(1, -116, 0, 32), TextSize = 11, Style = "Danger", Name = "Kick" })
 		kick.Activated:Connect(function()
 			act("Kick", { UserId = m.UserId })
 		end)
@@ -261,7 +262,7 @@ local function renderInvite()
 	UI.stroke(inviteFrame, Color3.new(1, 1, 1), 1, 0.9)
 	UI.text(inviteFrame, "INVITE", 30, C.Text, UI.Title, { Position = UDim2.fromOffset(24, 16), Size = UDim2.fromOffset(200, 36) })
 	UI.text(inviteFrame, ("YOUR PARTY CODE  # %s"):format(party and party.Code or "------"), 11, C.Accent, UI.Mono, { Position = UDim2.fromOffset(24, 54), Size = UDim2.fromOffset(300, 14) })
-	local close = UI.button(inviteFrame, { Text = "✕", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 16), Size = UDim2.fromOffset(36, 36), TextSize = 16 })
+	local close = UI.button(inviteFrame, { Text = "", Icon = "close", Name = "Close", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 16), Size = UDim2.fromOffset(36, 36), TextSize = 16 })
 	close.Activated:Connect(function()
 		inviteFrame.Visible = false
 		ClientState.SetBusy("Invite", false)
@@ -323,8 +324,14 @@ openInvite = function()
 end
 
 --============================ START A RUN (Figma 02) ============================--
-local function dots(n: number): string
-	return string.rep("●", n) .. string.rep("○", 5 - n)
+-- a row of 5 pips (filled = how dangerous)
+local function pips(parent: Instance, n: number, color: Color3, pos: UDim2)
+	local row = make("Frame", { Name = "Pips", BackgroundTransparency = 1, Position = pos, Size = UDim2.fromOffset(100, 14) }, parent)
+	UI.list(row, 4, true).VerticalAlignment = Enum.VerticalAlignment.Center
+	for i = 1, 5 do
+		UI.icon(row, if i <= n then "dot" else "ring", 13, color, { LayoutOrder = i })
+	end
+	return row
 end
 
 local function modeStats(id: string)
@@ -332,7 +339,7 @@ local function modeStats(id: string)
 	local locust = math.clamp(math.floor((m.LocustMult - 0.55) * 6.5 + 0.5), 1, 5)
 	local loot = if m.LootMult < 0.8 then "Scarce" elseif m.LootMult > 1.1 then "Plenty" else "Normal"
 	local death = if m.ReviveNeedsMedkit then "Medkit revive" else "Revive"
-	return { { "LOCUST", dots(locust) }, { "LOOT", loot }, { "DEATH", death } }
+	return { { "LOCUST", locust }, { "LOOT", loot }, { "DEATH", death } }
 end
 
 local renderRun -- forward
@@ -361,7 +368,7 @@ renderRun = function()
 	local leader = isLeader()
 	local canPick = who == "Solo" or leader
 	-- header
-	local back = UI.button(runFrame, { Text = "←  BACK", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
+	local back = UI.button(runFrame, { Name = "Back", Text = "BACK", Icon = "back", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
 	back.Activated:Connect(function()
 		LobbyUI.Open("Main")
 	end)
@@ -409,7 +416,11 @@ renderRun = function()
 		make("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.92, BorderSizePixel = 0, Position = UDim2.fromOffset(24, 318), Size = UDim2.new(1, -48, 0, 1) }, cardB)
 		for j, st in modeStats(id) do
 			UI.text(cardB, st[1], 9, C.Muted, UI.Mono, { Position = UDim2.fromOffset(24 + (j - 1) * 116, 334), Size = UDim2.fromOffset(110, 12) })
-			UI.text(cardB, st[2], 15, if j == 1 then col else C.Text, if j == 1 then UI.Mono else UI.Heading, { Position = UDim2.fromOffset(24 + (j - 1) * 116, 350), Size = UDim2.fromOffset(110, 22) })
+			if j == 1 then
+				pips(cardB, st[2], col, UDim2.fromOffset(24, 354))
+			else
+				UI.text(cardB, st[2], 15, C.Text, UI.Heading, { Position = UDim2.fromOffset(24 + (j - 1) * 116, 350), Size = UDim2.fromOffset(110, 22) })
+			end
 		end
 		if not okMode then
 			local veil = make("Frame", { BackgroundColor3 = C.Bg, BackgroundTransparency = 0.35, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), ZIndex = 6 }, cardB)
@@ -448,7 +459,7 @@ renderRun = function()
 			UI.text(chip, string.upper(string.sub(m.Name, 1, 1)), 18, C.Text, UI.Title, { TextXAlignment = Enum.TextXAlignment.Center })
 		end
 	end
-	local goText, goSub, goStyle = "ENTER THE STORE", "teleport  →", "Primary"
+	local goText, goSub, goStyle = "ENTER THE STORE", "into the store", "Primary"
 	local me = nil
 	if party then
 		for _, m in party.Members do
@@ -458,7 +469,7 @@ renderRun = function()
 		end
 	end
 	if who == "Party" and not leader then
-		goText = if me and me.Ready then "READY ✓" else "READY UP"
+		goText = if me and me.Ready then "READY" else "READY UP"
 		goSub = if me and me.Ready then "waiting for the leader" else "tell the leader you're set"
 		goStyle = if me and me.Ready then "Good" else "Primary"
 	elseif who == "Party" then
@@ -521,7 +532,7 @@ local function buildMain()
 	logo(mainFrame)
 	local col = make("Frame", { Name = "Buttons", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 292), Size = UDim2.fromOffset(360, 340) }, mainFrame)
 	UI.list(col, 10)
-	local solo = UI.button(col, { Name = "PlaySolo", Text = "PLAY SOLO", Sub = "Your own store. Nobody hears you scream.", Key = "↵", Style = "Primary", Size = UDim2.fromOffset(360, 72), TextSize = 30, LayoutOrder = 1 })
+	local solo = UI.button(col, { Name = "PlaySolo", Text = "PLAY SOLO", Sub = "Your own store. Nobody hears you scream.", KeyIcon = "enter", Style = "Primary", Size = UDim2.fromOffset(360, 72), TextSize = 30, LayoutOrder = 1 })
 	solo.Activated:Connect(function()
 		who = "Solo"
 		LobbyUI.Open("Run")
@@ -537,9 +548,9 @@ local function buildMain()
 	for i, def in {
 		{ "LOADOUT & OUTFITS", "Cosmetics, flashlight beam, cart paint", "L", "LOCKER" },
 		{ "STORE CREDITS SHOP", "Outfits, titles, effects — cosmetic only", "B", "SHOP" },
-		{ "SETTINGS", "Audio · effects · controls", "⚙", "SETTINGS" },
+		{ "SETTINGS", "Audio · effects · controls", "gear", "SETTINGS" },
 	} do
-		local b = UI.button(col, { Name = def[4], Text = def[1], Sub = def[2], Key = def[3], Accent = true, Size = UDim2.fromOffset(360, 56), LayoutOrder = 2 + i })
+		local b = UI.button(col, { Name = def[4], Text = def[1], Sub = def[2], Key = if def[3] ~= "gear" then def[3] else nil, KeyIcon = if def[3] == "gear" then "gear" else nil, Accent = true, Size = UDim2.fromOffset(360, 56), LayoutOrder = 2 + i })
 		b.Activated:Connect(function()
 			LobbyUI.Open("Page", def[4])
 		end)
@@ -577,7 +588,7 @@ end
 
 local function buildPageHost()
 	pageFrame = make("Frame", { Name = "Page", BackgroundColor3 = C.Bg, BackgroundTransparency = 0.25, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), Visible = false }, root)
-	local back = UI.button(pageFrame, { Text = "←  BACK", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
+	local back = UI.button(pageFrame, { Name = "Back", Text = "BACK", Icon = "back", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
 	back.Activated:Connect(function()
 		LobbyUI.Open("Main")
 	end)
@@ -586,7 +597,7 @@ end
 
 function LobbyUI.Init()
 	gui, root = UI.screen("MSL_Lobby", 2)
-	Pages.Toast = LobbyUI.Toast
+	gui.Enabled = false
 	buildMain()
 	runFrame = make("Frame", { Name = "Run", BackgroundColor3 = C.Bg, BackgroundTransparency = 0.35, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), Visible = false }, root)
 	buildPageHost()
@@ -608,15 +619,9 @@ function LobbyUI.Init()
 		end
 	end)
 	Net.Event("PartyInvite").OnClientEvent:Connect(inviteToast)
-	Net.Event("Notify").OnClientEvent:Connect(LobbyUI.Toast)
-	Net.Event("Teleporting").OnClientEvent:Connect(function(info)
-		if info.Cancel then
-			TeleportScreen.Hide()
-			if info.Message then
-				LobbyUI.Toast(info.Message, "Warn")
-			end
-		else
-			TeleportScreen.Show(info)
+	Net.Event("Notify").OnClientEvent:Connect(function(text, kind)
+		if gui.Enabled then
+			LobbyUI.Toast(text, kind)
 		end
 	end)
 	ClientState.DataChanged:Connect(function()
@@ -630,7 +635,7 @@ function LobbyUI.Init()
 		end
 	end)
 	UserInputService.InputBegan:Connect(function(input, processed)
-		if processed then
+		if processed or not gui.Enabled then
 			return
 		end
 		local kc = input.KeyCode
@@ -656,6 +661,21 @@ function LobbyUI.Init()
 		end
 	end)
 	LobbyUI.Open("Main")
+end
+
+-- hidden while you are in the store (lobby and store are the same place)
+function LobbyUI.SetVisible(on: boolean)
+	if gui.Enabled == on then
+		return
+	end
+	gui.Enabled = on
+	if on then
+		LobbyUI.Open("Main")
+	else
+		inviteFrame.Visible = false
+		ClientState.SetBusy("Invite", false)
+		Pages.Close()
+	end
 end
 
 return LobbyUI

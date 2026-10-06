@@ -219,13 +219,13 @@ local function buy(c)
 end
 
 local function priceButton(parent: Instance, c, owned: boolean, size: UDim2, pos: UDim2)
-	local label, style = ("● %s"):format(Util.Commas(c.Price or 0)), "Primary"
+	local label, style, icon = Util.Commas(c.Price or 0), "Primary", "coin"
 	if owned then
-		label, style = "OWNED", "Good"
+		label, style, icon = "OWNED", "Good", "check"
 	elseif c.Level then
-		label, style = "LEVEL " .. c.Level, "Dark"
+		label, style, icon = "LEVEL " .. c.Level, "Dark", "lock"
 	end
-	local b = UI.button(parent, { Text = label, Style = style, Size = size, Position = pos, TextSize = 15 })
+	local b = UI.button(parent, { Text = label, Icon = icon, Style = style, Size = size, Position = pos, TextSize = 15 })
 	b.Activated:Connect(function()
 		if not owned and not c.Level then
 			buy(c)
@@ -388,7 +388,7 @@ local function stepRow(parent, key: string, label: string, sub: string, order: n
 	UI.text(row, sub, 11, C.Muted, UI.Body, { Position = UDim2.fromOffset(20, 36), Size = UDim2.new(1, -260, 0, 16) })
 	local valueLabel = UI.text(row, fmt:format(value), 16, C.Accent, UI.Mono, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -66, 0, 0), Size = UDim2.fromOffset(70, 64), TextXAlignment = Enum.TextXAlignment.Center })
 	for i, delta in { -step, step } do
-		local b = UI.button(row, { Text = if delta < 0 then "−" else "+", Size = UDim2.fromOffset(40, 38), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, if i == 1 then -140 else -16, 0.5, 0), TextSize = 20 })
+		local b = UI.button(row, { Text = "", Icon = if delta < 0 then "minus" else "plus", Name = if delta < 0 then "Minus" else "Plus", Size = UDim2.fromOffset(40, 38), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, if i == 1 then -140 else -16, 0.5, 0), TextSize = 20 })
 		b.Activated:Connect(function()
 			value = math.clamp(value + delta, min, max)
 			valueLabel.Text = fmt:format(value)

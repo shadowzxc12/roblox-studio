@@ -1,11 +1,8 @@
--- Scenario: a live (non-Studio) PUBLIC server of the Game place once both places are linked.
--- Stores only run in reserved servers made by the lobby, so anybody who lands on a public
--- store server is sent to the lobby place.
+-- Scenario: a live (non-Studio) PUBLIC server. Lobby and store are one place: public servers
+-- are the lobby (parking lot, party, shop), only private servers made by the lobby run a store.
 G.STUDIO = false
 local RS = game:GetService("ReplicatedStorage")
-local Config = require(RS.Shared.Config)
-Config.Places.Lobby = 555
-Config.Places.Game = 777
+local Workspace = game:GetService("Workspace")
 G.StartServer()
 G.RunUntil(4)
 local function check(cond, msg)
@@ -16,10 +13,14 @@ local function check(cond, msg)
 		print("ok: " .. msg)
 	end
 end
+check(RS:GetAttribute("Place") == "Lobby", "public server runs the lobby")
+check(Workspace:FindFirstChild("Lobby") ~= nil and Workspace:FindFirstChild("Store") == nil, "parking lot, no store")
 local a = G.AddPlayer("Ann")
 G.RunUntil(4)
-check(not a:GetAttribute("InRun"), "public store server doesn't start a run")
-check(#G.TELEPORTS == 1 and G.TELEPORTS[1].PlaceId == 555, "player is sent to the lobby place")
+check(not a:GetAttribute("InRun"), "nobody is put in a run on the lobby")
+check(a:GetAttribute("PartyId") ~= nil, "everybody gets a party")
+check(a.Character ~= nil, "lobby avatar loaded")
+check(#G.TELEPORTS == 0, "nobody is teleported away")
 G.Close()
 G.RunUntil(3)
 if #ERRORS > 0 then

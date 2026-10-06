@@ -1,81 +1,43 @@
 --[[
-	MASSIVE STORE: LOCUST — server entry point (the only server Script).
-	Generates a new store for this server, builds it, then starts every system.
+	MASSIVE STORE: LOCUST — server entry point (the only server Script). ONE place, three roles:
+
+	  Lobby  public servers: the parking lot, parties, cosmetics, shop. START A RUN reserves a
+	         private server of THIS same place and teleports you / your party there.
+	  Game   private (reserved) servers: the store. Arrivals walk straight in.
+	  Both   Roblox Studio (no teleports): lobby and store run on the same server, and
+	         START A RUN drops you straight into the store.
 ]]
 
-local PhysicsService = game:GetService("PhysicsService")
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 Players.CharacterAutoLoads = false
 
-local Shared = ReplicatedStorage:WaitForChild("Shared")
-local StoreLayout = require(Shared.StoreLayout)
-local Net = require(Shared.Net)
-
 local Services = script.Parent:WaitForChild("Services")
 local State = require(Services.State)
-local World = require(Services.World)
-local Prompts = require(Services.Prompts)
-local Data = require(Services.Data)
-local Progress = require(Services.Progress)
-local Survival = require(Services.Survival)
-local Inventory = require(Services.Inventory)
-local Loot = require(Services.Loot)
-local Building = require(Services.Building)
-local Power = require(Services.Power)
-local Carts = require(Services.Carts)
-local Tools = require(Services.Tools)
-local Locust = require(Services.Locust)
-local Defense = require(Services.Defense)
-local Events = require(Services.Events)
-local Infection = require(Services.Infection)
-local Shop = require(Services.Shop)
-local Modes = require(Services.Modes)
-local Director = require(Services.Director)
 
--- collision groups: players walk through each other (co-op in narrow aisles)
-for _, g in { "Players", "Locust" } do
-	pcall(function()
-		PhysicsService:RegisterCollisionGroup(g)
-	end)
+local function isReserved(): boolean
+	return game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0
 end
-PhysicsService:CollisionGroupSetCollidable("Players", "Players", false)
 
--- a different store on every server
-local seed = (os.time() * 7 + math.random(1, 1000000)) % 2000000000
-State.Seed = seed
-State.SetAttr("Seed", seed)
-local t0 = os.clock()
-local plan = StoreLayout.Generate(seed)
-State.Plan = plan
-print(("[MassiveStore] layout seed %d: %d cells, %d props, %d loot points (%.2fs)"):format(seed, #plan.CellList, #plan.Props, #plan.LootPoints, os.clock() - t0))
-World.Build(plan)
+local role = if isReserved() then "Game" elseif RunService:IsStudio() then "Both" else "Lobby"
+State.Role = role
+State.SetAttr("Place", role)
 
-Prompts.Init()
-Data.Init()
-Progress.Init()
-Survival.Init()
-Inventory.Init()
-Loot.Init()
-Building.Init()
-Power.Init()
-Carts.Init()
-Tools.Init()
-Locust.Init()
-Defense.Init()
-Events.Init()
-Infection.Init()
-Shop.Init()
-Modes.Init()
-Director.Init()
+local started = {}
+local function init(service)
+	if not started[service] then
+		started[service] = true
+		service.Init()
+	end
+end
 
-Net.Function("GetPlan").OnServerInvoke = function()
-	return { Seed = State.Seed, Gates = State.GatesOpen }
+if role ~= "Lobby" then
+	require(script.Parent.GameServer).Start(init)
+end
+if role ~= "Game" then
+	require(script.Parent.Lobby.LobbyServer).Start(init, role)
 end
 
 State.SetAttr("ServerReady", true)
-if RunService:IsStudio() then
-	print("[MassiveStore] server ready · mode " .. State.Mode)
-end
+print("[MassiveStore] server ready · " .. role)

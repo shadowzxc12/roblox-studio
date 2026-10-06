@@ -8,8 +8,6 @@ local RS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 local Workspace = game:GetService("Workspace")
 local Config = require(RS.Shared.Config)
-Config.Places.Lobby = 555
-Config.Places.Game = 777
 
 local function check(cond, msg)
 	if not cond then
@@ -28,6 +26,8 @@ end
 
 G.StartServer()
 G.RunUntil(3)
+check(RS:GetAttribute("Place") == "Lobby", "a public server is the lobby")
+check(Workspace:FindFirstChild("Store") == nil, "no store is built in the lobby")
 check(Workspace:FindFirstChild("Lobby") and #Workspace.Lobby.Pads:GetChildren() == Config.Party.Pads + 1, "parking lot pads built")
 local A, B, C = G.AddPlayer("Ann"), G.AddPlayer("Ben"), G.AddPlayer("Cat")
 G.StartClient(A)
@@ -40,10 +40,7 @@ local function act(p, req)
 end
 check(A:GetAttribute("PartyId") and A:GetAttribute("PartyId") ~= B:GetAttribute("PartyId"), "everybody starts in their own party")
 check((A:GetAttribute("Pad") or 0) > 0 and A:GetAttribute("Pad") ~= B:GetAttribute("Pad"), "each party has its own pad")
--- (the fake engine doesn't auto-load characters like CharacterAutoLoads does)
-task.spawn(function()
-	A:LoadCharacter()
-end)
+-- the lobby loads lobby avatars itself
 G.RunUntil(0.5)
 local hrp = A.Character and A.Character:FindFirstChild("HumanoidRootPart")
 local padO = Workspace.Lobby.Pads:FindFirstChild("Pad" .. A:GetAttribute("Pad")):GetAttribute("Origin")
@@ -101,7 +98,7 @@ act(B, { Action = "Ready", Value = true })
 click(run:FindFirstChild("Launch", true)) -- Ann presses ENTER THE STORE in the UI
 G.RunUntil(1)
 local t = G.TELEPORTS[#G.TELEPORTS]
-check(t and t.PlaceId == 777 and #t.Players == 2, "the whole party teleports to the store place together")
+check(t and t.PlaceId == game.PlaceId and #t.Players == 2, "the whole party teleports to a store server of this place, together")
 check(t and t.Options.ReservedServerAccessCode ~= nil, "into a brand-new reserved server")
 check(t and t.Data and t.Data.Mode == "Hardcore" and type(t.Data.PartyKey) == "string" and t.Data.Leader == A.UserId, "TeleportData carries mode, party key and leader")
 check(pg:FindFirstChild("MSL_Teleport") ~= nil, "teleport receipt screen shown")
@@ -131,7 +128,7 @@ for _, name in { "LOCKER", "SHOP", "SETTINGS" } do
 	local main = lobbyGui:FindFirstChild("Main", true)
 	if main and not main.Visible then
 		for _, d in lobbyGui:GetDescendants() do
-			if d.ClassName == "TextButton" and d.Text == "←  BACK" and d.Parent and d.Parent.Visible then
+			if d.ClassName == "TextButton" and d.Name == "Back" and d.Parent and d.Parent.Visible then
 				click(d)
 				break
 			end

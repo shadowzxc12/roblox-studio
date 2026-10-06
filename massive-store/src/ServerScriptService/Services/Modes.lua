@@ -9,8 +9,9 @@
 	  BACK TO LOBBY (results screen or pause menu) teleports you back; players leaving together
 	  from the results screen go in one group so the lobby rebuilds their party.
 
-	Public servers of this place (somebody joined it directly) send players to the lobby.
-	In Studio (no teleports) the client shows a STUDIO TEST panel: the first PLAY picks the mode.
+	Lobby and store are the SAME place: public servers are the lobby, private ones the store.
+	In Studio (no teleports) both run on one server: a lobby launch walks you in (the first
+	launch picks the mode) and BACK TO LOBBY puts you back in the parking lot.
 ]]
 
 local HttpService = game:GetService("HttpService")
@@ -43,8 +44,9 @@ local function isReserved(): boolean
 end
 Modes.IsReserved = isReserved
 
+-- published: the lobby is a public server of this place; Studio: it's right here
 local function lobbyReady(): boolean
-	return not studio and Config.Places.Lobby ~= 0
+	return not studio
 end
 
 function Modes.Resolve(): string
@@ -87,8 +89,8 @@ function Modes.Play(player: Player, mode: string)
 	if not Config.Modes[mode] or player:GetAttribute("InRun") then
 		return
 	end
-	if isReserved() or lobbyReady() then
-		-- real servers: you are already in the right store
+	if isReserved() then
+		-- real stores: you are already in the right one
 		enterHere(player)
 		return
 	end
@@ -101,12 +103,12 @@ function Modes.Play(player: Player, mode: string)
 	if not anyoneIn and not State.RunActive then
 		Modes.Set(mode)
 	elseif mode ~= State.Mode then
-		State.Notify(player, "Studio test: this server is running " .. State.ModeInfo.Name .. ". Stop and start again to test another mode.", "Warn")
+		State.Notify(player, "Studio: this server's store already runs " .. State.ModeInfo.Name .. " — joining it.", "Info")
 	end
 	enterHere(player)
 end
 
--- leave the store but stay on this server (Studio / no lobby configured)
+-- leave the store but stay on this server (Studio: back to the lobby part)
 function Modes.ReturnToMenu(player: Player)
 	if not player:GetAttribute("InRun") then
 		return
@@ -150,7 +152,7 @@ local function teleportToLobby(group: { Player }, keepParty: boolean)
 		Data.SaveNow(p)
 	end
 	local ok, err = pcall(function()
-		TeleportService:TeleportAsync(Config.Places.Lobby, list, options)
+		TeleportService:TeleportAsync(game.PlaceId, list, options)
 	end)
 	if not ok then
 		for _, p in list do
@@ -177,8 +179,8 @@ end
 
 function Modes.BackToLobby(player: Player)
 	if not lobbyReady() then
+		-- Studio: the lobby is on this server — back to the parking lot
 		Modes.ReturnToMenu(player)
-		State.Notify(player, "No lobby in Studio — publish both places and set Config.Places.", "Info")
 		return
 	end
 	if State.Phase == "Results" then
@@ -209,14 +211,9 @@ function Modes.Init()
 		end)
 	end
 
-	-- arrivals walk straight into the store (not in Studio: the test panel picks a mode there)
+	-- arrivals in a private store walk straight in (Studio: they start in the lobby)
 	local function arrived(player: Player)
-		if studio and not isReserved() then
-			return
-		end
-		if not isReserved() and lobbyReady() then
-			-- somebody joined the store place directly: send them to the lobby
-			task.delay(2, teleportToLobby, { player }, false)
+		if not isReserved() then
 			return
 		end
 		task.spawn(function()

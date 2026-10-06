@@ -1,6 +1,7 @@
 --[[
 	MASSIVE STORE: LOCUST — client entry point (the only LocalScript besides the loading screen).
-	Starts every controller and switches between the 3D main menu and the in-store HUD.
+	Starts every controller and switches between the LOBBY (parking lot, party, shop) and the
+	STORE (first-person HUD). Lobby and store are one place: see ServerScriptService/Main.
 ]]
 
 local Players = game:GetService("Players")
@@ -35,6 +36,19 @@ local MapUI = require(Client.MapUI)
 local CameraFX = require(Client.CameraFX)
 local Controls = require(Client.Controls)
 local Menu = require(Client.Menu)
+local Pages = require(Client.Pages)
+
+local Lobby = script.Parent:WaitForChild("Lobby")
+local LobbyCamera = require(Lobby.LobbyCamera)
+local LobbyUI = require(Lobby.LobbyUI)
+
+-- what this server is: "Lobby" (public), "Game" (a private store) or "Both" (Studio)
+local role = ReplicatedStorage:GetAttribute("Place")
+while not role do
+	ReplicatedStorage:GetAttributeChangedSignal("Place"):Wait()
+	role = ReplicatedStorage:GetAttribute("Place")
+end
+local hasLobby = role ~= "Game"
 
 -- our own HUD replaces these
 for _, t in { Enum.CoreGuiType.Backpack, Enum.CoreGuiType.Health } do
@@ -62,6 +76,21 @@ MapUI.Init()
 CameraFX.Init()
 Controls.Init()
 Menu.Init(HUD.Toast)
+LobbyCamera.Init()
+LobbyUI.Init()
+
+-- one toast at a time: the lobby's while you're in the parking lot, the HUD's in the store
+local function toast(text: string, kind: string?)
+	if hasLobby and not ClientState.InRun() then
+		LobbyUI.Toast(text, kind)
+	else
+		HUD.Toast(text, kind)
+	end
+end
+HUD.ShouldToast = function()
+	return not hasLobby or ClientState.InRun()
+end
+Pages.Toast = toast
 
 -- server cues: sounds + screen effects
 Net.Event("Cue").OnClientEvent:Connect(function(kind, position, extra)
@@ -77,7 +106,7 @@ Net.Event("Teleporting").OnClientEvent:Connect(function(info)
 	if info.Cancel then
 		TeleportScreen.Hide()
 		if info.Message then
-			HUD.Toast(info.Message, "Warn")
+			toast(info.Message, "Warn")
 		end
 	else
 		TeleportScreen.Show(info)
@@ -86,6 +115,9 @@ end)
 
 local function refresh()
 	local inRun = player:GetAttribute("InRun") == true
+	LobbyUI.SetVisible(hasLobby and not inRun)
+	LobbyCamera.SetActive(hasLobby and not inRun)
+	Atmosphere.SetLobby(hasLobby and not inRun)
 	if inRun then
 		Menu.Hide()
 		HUD.SetVisible(true)
@@ -100,7 +132,11 @@ local function refresh()
 		BuildUI.SetVisible(false)
 		MapUI.SetVisible(false)
 		Controls.SetVisible(false)
-		Menu.Show()
+		if hasLobby then
+			Menu.HideForLobby()
+		else
+			Menu.Show() -- a private store: "entering the store..." until the server walks you in
+		end
 	end
 end
 player:GetAttributeChangedSignal("InRun"):Connect(refresh)

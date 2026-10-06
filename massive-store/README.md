@@ -9,15 +9,17 @@ ktoré je každú noc rýchlejšie, lepšie počuje a ľahšie rozbíja steny.
 LOOT → BUILD → SURVIVE → UPGRADE → PREŽI ĎALŠIU NOC
 ```
 
-Hra má **dva place-y** (jeden Roblox experience):
+Celá hra je **jeden súbor a jeden place**: **`MassiveStoreLocust.rbxlx`**. Lobby aj obchod sú
+v ňom spolu a server si sám zistí, čím je:
 
-| Súbor | Place | Čo tam je |
-| --- | --- | --- |
-| **`MassiveStoreLobby.rbxlx`** | **Lobby** (štartovací place) | parkovisko pred obchodom, party, pozvánky, výber módu, outfity, shop, misie |
-| **`MassiveStoreLocust.rbxlx`** | **Game** (obchod) | samotná hra v **first-person**; každý run je súkromný (rezervovaný) server |
+| Server | Čo je |
+| --- | --- |
+| verejný (normálne pripojenie) | **LOBBY** — parkovisko pred obchodom, party, pozvánky, outfity, shop, misie |
+| súkromný (vytvorí ho lobby) | **OBCHOD** — samotná hra v first-person, hneď ťa pustí dnu |
+| Roblox Studio | **oboje naraz** — štart z lobby ťa hodí rovno do obchodu, BACK TO LOBBY späť na parkovisko |
 
-**SOLO** = teleport do vlastného súkromného servera len pre teba. **PARTY** = celá party sa
-teleportuje spolu do jedného súkromného servera. Po hre **BACK TO LOBBY** vráti party spolu.
+**SOLO** = súkromný obchod len pre teba. **PARTY** = celá party spolu v jednom súkromnom obchode.
+Po hre **BACK TO LOBBY** vráti party spolu.
 
 UI je navrhnuté vo **Figme**: [MASSIVE STORE: LOCUST — UI](https://www.figma.com/design/j2isfuKLgJTi75wSVQlhv4)
 (lobby, štart runu, teleport/loading, HUD, inventár, stavanie, shop, výsledky) a hra ho
@@ -32,31 +34,20 @@ nahraté assety. Hra je pôvodná: nepoužíva nič z 3008 (assety, mapu, mená,
 
 ## Ako to vyskúšať v Studiu
 
-**Obchod (hra):**
 1. Otvor `MassiveStoreLocust.rbxlx` → **Play** (alebo *Test → Clients and Servers → 2–4 Players*).
-2. Objaví sa **STUDIO TEST** panel → vyber mód (PLAY SURVIVAL / INFECTION / HARDCORE / SOLO).
-3. Si v obchode v first-person. Prvý deň trvá 5 minút; rýchly test noci: v
-   `ReplicatedStorage/Shared/Config` zníž `Cycle.FirstDay` a `Cycle.Day` napr. na 30.
-
-**Lobby:** otvor `MassiveStoreLobby.rbxlx` → Play. Uvidíš parkovisko, svoju postavu pred
-obchodom, menu, party panel, shop, outfity. V Studiu teleporty nefungujú, takže ENTER THE STORE
-napíše, že treba publikovať (party, pozvánky medzi hráčmi v lobby a ready sa dajú testovať cez
-*Clients and Servers*).
+2. Si v **lobby** (parkovisko). **PLAY SOLO** alebo **PLAY WITH PARTY** → vyber mód → **ENTER THE STORE**.
+3. Si v obchode v first-person. Pauza **P** → **BACK TO LOBBY** ťa vráti na parkovisko.
+4. Prvý deň trvá 5 minút; rýchly test noci: v `ReplicatedStorage/Shared/Config` zníž
+   `Cycle.FirstDay` a `Cycle.Day` napr. na 30.
 
 > **Ukladanie dát:** *File → Publish to Roblox*, potom *Game Settings → Security →
 > Enable Studio Access to API Services*. Bez toho hra funguje, len sa XP/kredity neuložia
 > (menu ukáže „progress isn't saving“).
 
-### Po publikovaní (prepojenie lobby ↔ hra)
-1. Vytvor experience a publikuj **`MassiveStoreLobby.rbxlx` ako štartovací place** (*File →
-   Publish to Roblox*).
-2. V Creator Dashboard → experience → **Places → Add Place**, otvor `MassiveStoreLocust.rbxlx`
-   a publikuj ho do tohto nového place-u (*File → Publish to Roblox As… → existujúca hra → ten place*).
-3. ID oboch place-ov zapíš do `ReplicatedStorage/Shared/Config` → `Config.Places = { Lobby = …, Game = … }`
-   **v oboch súboroch** a publikuj ich znova.
-4. Game Settings → **Security → Allow Third Party Teleports** netreba (teleporty sú v rámci
-   jedného experience). Zapni *Enable Studio Access to API Services* pre ukladanie.
-- *Game Settings → Places → Max Players*: lobby napr. **30**, hra **12**.
+### Po publikovaní
+Stačí publikovať tento jeden súbor (*File → Publish to Roblox*). Žiadne ID place-ov netreba
+nastavovať — lobby si vytvára súkromné servery toho istého place-u.
+- *Game Settings → Places → Max Players* = **12** (lobby aj obchod).
 - Kredity za Robux (voliteľné): vytvor 3 Developer Products a ich ID daj do
   `Config.CreditProducts`. Kým sú `0`, obchod píše, že balíčky nie sú nastavené.
 - Odporúčaný avatar: R15 (R6 tiež funguje).
@@ -67,8 +58,8 @@ napíše, že treba publikovať (party, pozvánky medzi hráčmi v lobby a ready
 
 | Klávesa | Akcia |
 | --- | --- |
-| myš | rozhliadanie (first-person; citlivosť v Settings) |
-| WASD / Shift | chôdza / šprint (hlučný!) |
+| myš | rozhliadanie (first-person, bez kurzora — v strede je zameriavač; citlivosť v Settings) |
+| WASD / Shift | chôdza / šprint (hlučný! pri šprinte sa rozšíri zorné pole) |
 | C (alebo držať Ctrl) | krčenie — tichý pohyb, horšie ťa vidno |
 | E | interakcia (zobrať, otvoriť, skryť sa, oživiť – podržať) |
 | 1–6, klik | držať predmet / použiť (jesť, hodiť svetlicu…) |
@@ -92,10 +83,20 @@ L3 šprint, R3 krčenie, Y stavanie, D-pad predmety.
 
 ---
 
+## Novinky 2.1
+- Lobby a obchod sú **jeden place / jeden súbor** (server je lobby, súkromný server je obchod,
+  v Studiu oboje). Zmizol testovací výber módov v obchode — do hry sa ide z lobby a pustí ťa
+  dnu automaticky.
+- **Ikony** namiesto emoji/symbolov (zavrieť, späť, šípka, enter, nastavenia, fajka, varovanie,
+  zámok, minca, plus/mínus, ukazovatele nebezpečenstva) — kreslené vektorovo v UI.
+- V first-person **nie je vidieť kurzor myši** (objaví sa len keď je otvorené okno).
+- **Šprint** (Shift) plynulo rozšíri zorné pole (FOV 70 → 84).
+- **Noc je svetlejšia** — stále strašidelná, ale vidieť uličky, regály a tvary (aj pri výpadku prúdu).
+
 ## Čo je nové vo verzii 2
 
 ### Lobby + party + teleporty
-- **Lobby place**: nočné parkovisko pred MASSIVE STORE. Každá party má vlastný „pad“ — kúsok
+- **Lobby**: nočné parkovisko pred MASSIVE STORE. Každá party má vlastný „pad“ — kúsok
   fasády obchodu (svietiaci nápis, posuvné dvere so svetlom vnútri, lampy, vozíky) a party
   stojí v rade pred ním; kamera je filmová (jemný pohyb + paralaxa myšou).
 - **Party** (max 4, `Config.Party`): pozvať hráča v lobby (JOIN / NO toast s časovačom),
@@ -104,8 +105,8 @@ L3 šprint, R3 krčenie, Y stavanie, D-pad predmety.
 - **START A RUN** (Figma 02): SOLO | PARTY, karty SURVIVAL / INFECTION / HARDCORE
   (sila Locusta, loot, smrť), líder vyberá, ostatní dajú READY, líder spustí **ENTER THE STORE**.
   SOLO + SURVIVAL = mód Solo (samo-oživenie), INFECTION potrebuje aspoň 2 hráčov.
-- Spustenie: `TeleportService:ReserveServer` + **jeden** `TeleportAsync` pre celú party
-  (pristanú spolu), TeleportData `{ Mode, Rules, PartyKey, Leader, Members }`.
+- Spustenie: `TeleportService:ReserveServer(game.PlaceId)` + **jeden** `TeleportAsync` pre celú
+  party (pristanú spolu), TeleportData `{ Mode, Rules, PartyKey, Leader, Members }`.
 - V hre: hráči z lobby rovno vojdú do obchodu. Na konci runu **BACK TO LOBBY** (hlasujúci idú
   spolu, lobby party obnoví aj s lídrom a pravidlami) alebo **NEW STORE**. Kto dá v pauze
   BACK TO LOBBY uprostred runu, nechá batoh na zemi pre tím.
@@ -254,10 +255,8 @@ Mód sa vyberá v lobby; každý obchod je súkromný server pre teba alebo tvoj
 
 ```
 massive-store/
-  default.project.json               Rojo projekt — GAME place (obchod)
-  lobby.project.json                 Rojo projekt — LOBBY place
-  MassiveStoreLocust.rbxlx           zostavený game place
-  MassiveStoreLobby.rbxlx            zostavený lobby place
+  default.project.json               Rojo projekt (jeden place: lobby + obchod)
+  MassiveStoreLocust.rbxlx           zostavená hra
   src/ReplicatedFirst/LoadingScreen  loading screen (oba place-y)
   src/ReplicatedStorage/Shared/      zdieľané (server + klient)
     Config        VŠETKY čísla (časy, prežitie, Locust, módy, loot, ekonomika)
@@ -267,7 +266,9 @@ massive-store/
     Holding       úchopy predmetov + ktorá akcia/animácia patrí ku ktorému predmetu
     PartyRules    SOLO/PARTY × pravidlá → mód, kódy party
   src/ServerScriptService/
-    Main.server   spustí všetko
+    Main.server   zistí rolu servera (Lobby / Game / Studio = oboje) a spustí ju
+    GameServer    vygeneruje a postaví obchod, spustí všetky systémy
+    Lobby/        LobbyServer, Party (party, pozvánky, teleport / v Studiu rovno dnu), LobbyWorld
     Services/     World, Director, Locust, Survival, Inventory, Loot, Building, Power,
                   Carts, Tools, Defense, Events, Infection, Modes, Shop, Progress, Data,
                   Noise, Prompts, State, RateLimiter
@@ -277,9 +278,7 @@ massive-store/
                   shop, misie, nastavenia), HUD, InventoryUI, BuildUI, MapUI, PromptUI,
                   ViewModel, CharacterAnimator, ShelfDresser, TeleportScreen, MenuScene,
                   Atmosphere, Audio, LocustAnimator, CameraFX, Controls, ClientState
-  src/Lobby/                         LOBBY place (zdieľa Shared + Data/Shop/Progress + UI moduly)
-    ServerScriptService/Main.server  Lobby/Party (party, pozvánky, teleport), Lobby/LobbyWorld
-    StarterPlayerScripts/Main.client Lobby/LobbyUI (Figma 01/02 + okno pozvánok), Lobby/LobbyCamera
+    Lobby/        LobbyUI (Figma 01/02 + okno pozvánok), LobbyCamera
   tests/          testy generátora + headless simulácie servera aj klienta
   tools/          check.sh (lint), test.sh (všetky testy), render_map.py (náhľad mapy)
 ```
@@ -317,7 +316,6 @@ Potrebné: [Rojo](https://rojo.space) a Luau CLI (`luau`, `luau-analyze`, `luau-
 ```
 LUAU_BIN=/cesta/k/luau tools/test.sh     # lint + testy + 10 simulácií (server, klient, lobby)
 rojo build default.project.json -o MassiveStoreLocust.rbxlx
-rojo build lobby.project.json -o MassiveStoreLobby.rbxlx
 python3 tools/render_map.py 2024         # náhľad mapy do docs/
 ```
 

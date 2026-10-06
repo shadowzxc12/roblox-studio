@@ -8,8 +8,6 @@ rawget(game, "_p").PrivateServerId = "psid-1"
 local RS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 local Config = require(RS.Shared.Config)
-Config.Places.Lobby = 555
-Config.Places.Game = 777
 Config.Cycle.FirstDay = 4
 Config.Cycle.Day = 4
 Config.Cycle.Dusk = 2
@@ -29,13 +27,15 @@ local p1, p2, p3 = G.AddPlayer("One"), G.AddPlayer("Two"), G.AddPlayer("Three")
 G.RunUntil(5)
 local State = require(SSS.Services.State)
 local Survival = require(SSS.Services.Survival)
+check(RS:GetAttribute("Place") == "Game", "a private server is a store")
+check(game:GetService("Workspace"):FindFirstChild("Lobby") == nil, "no lobby inside a store server")
 check(State.Mode == "Infection", "reserved server mode from TeleportData, got " .. tostring(State.Mode))
 check(p1:GetAttribute("InRun") and p2:GetAttribute("InRun") and p3:GetAttribute("InRun"), "the whole party walks straight into the store")
 
 -- one leaves mid-run from the pause menu: alone, no party key
 RS:WaitForChild("Remotes"):FindFirstChild("Lobby").OnServerEvent:Fire(p3, "Return")
 G.RunUntil(1)
-check(#G.TELEPORTS == 1 and G.TELEPORTS[1].PlaceId == 555 and #G.TELEPORTS[1].Players == 1, "leaving mid-run teleports only you to the lobby")
+check(#G.TELEPORTS == 1 and G.TELEPORTS[1].PlaceId == game.PlaceId and #G.TELEPORTS[1].Players == 1, "leaving mid-run teleports only you to the lobby")
 check(G.TELEPORTS[1].Data and G.TELEPORTS[1].Data.PartyKey == nil, "a lone leaver has no party key")
 G.RemovePlayer(p3)
 
@@ -62,7 +62,7 @@ check(#G.TELEPORTS == 1, "first vote waits for the others")
 RS.Remotes:FindFirstChild("Lobby").OnServerEvent:Fire(p2, "Return")
 G.RunUntil(0.5)
 local t = G.TELEPORTS[2]
-check(t and #t.Players == 2 and t.PlaceId == 555, "both go back to the lobby in one teleport")
+check(t and #t.Players == 2 and t.PlaceId == game.PlaceId, "both go back to the lobby in one teleport")
 check(t and t.Data and type(t.Data.PartyKey) == "string" and t.Data.Leader == 1002, "with a party key and the same leader")
 if #ERRORS > 0 then
 	error(ERRORS[1])

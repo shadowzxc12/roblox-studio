@@ -66,7 +66,10 @@ local function setMode(m: string)
 	label.Visible = m == "Spectate"
 end
 
-local function update()
+local fovBoost = 0
+local lastPos: Vector3? = nil
+local function update(dt: number)
+	dt = dt or 1 / 60
 	if ClientState.MenuOpen then
 		return
 	end
@@ -99,9 +102,21 @@ local function update()
 		return
 	end
 	setMode("Default")
-	if cam.FieldOfView ~= 70 and mode == "Default" then
-		cam.FieldOfView = 70
+	-- sprinting widens the view (feels faster), smoothly in and out
+	local char = player.Character
+	local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local speed = 0
+	if root then
+		if lastPos and dt > 0 then
+			local d = root.Position - lastPos
+			speed = Vector3.new(d.X, 0, d.Z).Magnitude / dt
+		end
+		lastPos = root.Position
 	end
+	local sprinting = (player:GetAttribute("Sprinting") == true or UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)) and speed > 6 and speed < 80
+	local target = if sprinting then 14 else 0
+	fovBoost += (target - fovBoost) * math.clamp(dt * 7, 0, 1)
+	cam.FieldOfView = 70 + fovBoost
 end
 
 local function updateHighlights()

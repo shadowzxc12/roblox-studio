@@ -76,7 +76,7 @@ local function teamText(): string
 	end
 	local body = string.format(team.Def.Text, team.Goal)
 	if team.Done then
-		return "TEAM ✓ " .. body
+		return "TEAM DONE · " .. body
 	end
 	return ("TEAM · %s (%d/%d)"):format(body, math.min(team.Progress, team.Goal), team.Goal)
 end

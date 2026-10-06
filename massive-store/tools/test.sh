@@ -33,6 +33,6 @@ run_sim tests/sim/run_modes.lua MODE=Hardcore
 run_sim tests/sim/run_client.lua
 run_sim tests/sim/run_live.lua
 run_sim tests/sim/run_reserved.lua
-run_sim tests/sim/run_lobby.lua PROJECT=lobby.project.json
+run_sim tests/sim/run_lobby.lua
 rm -rf "$TMP"
 echo "ALL TESTS PASSED"

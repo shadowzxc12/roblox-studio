@@ -16,6 +16,7 @@ local LobbyCamera = {}
 
 local player = Players.LocalPlayer
 local focus = "Main"
+local active = false
 local blur: BlurEffect? = nil
 local current: CFrame? = nil
 
@@ -34,13 +35,34 @@ end
 
 function LobbyCamera.SetFocus(name: string)
 	focus = name
-	if blur then
+	if blur and active then
 		local want = if name == "Page" then 14 elseif name == "Run" then 4 else 0
 		game:GetService("TweenService"):Create(blur, TweenInfo.new(0.35), { Size = want }):Play()
 	end
 end
 
+function LobbyCamera.SetActive(on: boolean)
+	if active == on then
+		return
+	end
+	active = on
+	current = nil
+	if not on then
+		if blur then
+			blur.Size = 0
+		end
+		local cam = Workspace.CurrentCamera
+		if cam then
+			cam.CameraType = Enum.CameraType.Custom
+			cam.FieldOfView = 70
+		end
+	end
+end
+
 local function step(dt: number)
+	if not active then
+		return
+	end
 	local cam = Workspace.CurrentCamera
 	if not cam then
 		return

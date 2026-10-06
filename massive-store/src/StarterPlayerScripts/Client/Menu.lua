@@ -34,8 +34,6 @@ local gui, root -- arrival
 local pauseGui, pauseRoot, pausePanel, pageFrame, pageContent, confirmBox, menuButton
 local toastFn = function(_t, _k) end
 
-local studio = RunService:IsStudio()
-local lobbyReady = Config.Places.Lobby ~= 0 and not studio
 
 --============================ LOGO ============================--
 local function logo(parent: Instance, pos: UDim2)
@@ -51,32 +49,21 @@ local function logo(parent: Instance, pos: UDim2)
 end
 Menu.Logo = logo
 
---============================ ARRIVAL / STUDIO TEST ============================--
+--============================ ARRIVAL ============================--
+-- only on a private store server, for the moment before the server walks you in
 local function buildArrival()
 	gui, root = UI.screen("MSL_Menu", 10)
 	local shade = make("Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Size = UDim2.new(0, 760, 1, 0) }, root)
 	make("UIGradient", { Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(0.6, 0.4), NumberSequenceKeypoint.new(1, 1) }) }, shade)
 	logo(root, UDim2.fromOffset(64, 52))
-	local col = make("Frame", { Name = "Modes", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 250), Size = UDim2.fromOffset(380, 420) }, root)
+	local col = make("Frame", { Name = "Arrival", BackgroundTransparency = 1, Position = UDim2.fromOffset(64, 250), Size = UDim2.fromOffset(380, 420) }, root)
 	UI.list(col, 10)
-	if studio or not lobbyReady then
-		UI.text(col, "STUDIO TEST  ·  PICK A MODE", 11, C.Accent, UI.Mono, { Size = UDim2.new(1, 0, 0, 16), LayoutOrder = 0 })
-		for i, id in Config.ModeOrder do
-			local m = Config.Modes[id]
-			local b = UI.button(col, { Name = "Play" .. id, Text = "PLAY " .. m.Name, Sub = m.Desc, Style = if i == 1 then "Primary" else "Dark", Accent = i ~= 1, Size = UDim2.fromOffset(380, if i == 1 then 72 else 60), TextSize = if i == 1 then 28 else 22, LayoutOrder = i })
-			b.Activated:Connect(function()
-				Net.Event("Play"):FireServer(id)
-			end)
-		end
-		UI.text(col, "Published games start in the LOBBY place (party, shop, outfits) and teleport here. Set Config.Places to link them.", 11, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 44), TextWrapped = true, LayoutOrder = 20 })
-	else
-		UI.text(col, "ENTERING THE STORE...", 30, C.Text, UI.Title, { Size = UDim2.new(1, 0, 0, 40), LayoutOrder = 1 })
-		UI.text(col, "Your store is being stocked. Stay close to your party.", 13, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 20), LayoutOrder = 2 })
-		local back = UI.button(col, { Text = "BACK TO LOBBY", Accent = true, Size = UDim2.fromOffset(380, 56), LayoutOrder = 3 })
-		back.Activated:Connect(function()
-			Net.Event("Lobby"):FireServer("Return")
-		end)
-	end
+	UI.text(col, "ENTERING THE STORE...", 30, C.Text, UI.Title, { Size = UDim2.new(1, 0, 0, 40), LayoutOrder = 1 })
+	UI.text(col, "Your store is being stocked. Stay close to your party.", 13, C.Muted, UI.Body, { Size = UDim2.new(1, 0, 0, 20), LayoutOrder = 2 })
+	local back = UI.button(col, { Text = "BACK TO LOBBY", Accent = true, Size = UDim2.fromOffset(380, 56), LayoutOrder = 3 })
+	back.Activated:Connect(function()
+		Net.Event("Lobby"):FireServer("Return")
+	end)
 end
 
 --============================ PAUSE MENU ============================--
@@ -96,7 +83,7 @@ function Menu.TogglePause(on: boolean?)
 	if on == nil then
 		on = not pauseGui.Enabled
 	end
-	if on and not ClientState.InRun() then
+	if (on and not ClientState.InRun()) or on == pauseGui.Enabled then
 		return
 	end
 	pauseGui.Enabled = on
@@ -126,14 +113,14 @@ local function buildPause()
 			openPage(def[3])
 		end)
 	end
-	local leave = UI.button(col, { Text = if lobbyReady then "BACK TO LOBBY" else "LEAVE THE STORE", Sub = "Your supplies drop in a bag where you stand", Style = "Danger", Size = UDim2.fromOffset(380, 56), LayoutOrder = 9 })
+	local leave = UI.button(col, { Text = "BACK TO LOBBY", Sub = "Your supplies drop in a bag where you stand", Style = "Danger", Size = UDim2.fromOffset(380, 56), LayoutOrder = 9 })
 	leave.Activated:Connect(function()
 		confirmBox.Visible = true
 	end)
 
 	-- page host
 	pageFrame = make("Frame", { Name = "Page", BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), Visible = false }, pauseRoot)
-	local back = UI.button(pageFrame, { Text = "←  BACK", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
+	local back = UI.button(pageFrame, { Name = "Back", Text = "BACK", Icon = "back", Font = UI.Mono, Position = UDim2.fromOffset(48, 36), Size = UDim2.fromOffset(100, 36), TextSize = 13 })
 	back.Activated:Connect(function()
 		closePage()
 		pausePanel.Visible = true
@@ -145,7 +132,7 @@ local function buildPause()
 	UI.stroke(confirmBox, C.Danger, 1, 0.4)
 	UI.text(confirmBox, "LEAVE THE STORE?", 30, C.Text, UI.Title, { Position = UDim2.fromOffset(0, 18), Size = UDim2.new(1, 0, 0, 36), TextXAlignment = Enum.TextXAlignment.Center })
 	UI.text(confirmBox, "You'll drop your supplies in a bag where you stand.\nXP, credits and missions are kept.", 12, C.Muted, UI.Body, { Position = UDim2.fromOffset(20, 60), Size = UDim2.new(1, -40, 0, 40), TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true })
-	local yes = UI.button(confirmBox, { Text = if lobbyReady then "LOBBY" else "LEAVE", Style = "Danger", Size = UDim2.fromOffset(190, 52), Position = UDim2.new(0.5, -200, 1, -72), TextSize = 22 })
+	local yes = UI.button(confirmBox, { Text = "LOBBY", Style = "Danger", Size = UDim2.fromOffset(190, 52), Position = UDim2.new(0.5, -200, 1, -72), TextSize = 22 })
 	local no = UI.button(confirmBox, { Text = "STAY", Style = "Primary", Size = UDim2.fromOffset(190, 52), Position = UDim2.new(0.5, 10, 1, -72), TextSize = 22 })
 	no.Activated:Connect(function()
 		confirmBox.Visible = false
@@ -210,6 +197,16 @@ function Menu.Hide()
 	MenuScene.Stop()
 	Atmosphere.SetMenu(false)
 	Audio.SetMenu(false)
+end
+
+-- in the lobby part of the place (Studio, or after leaving the store): no store UI at all
+function Menu.HideForLobby()
+	ClientState.MenuOpen = true -- blocks store controls
+	gui.Enabled = false
+	menuButton.Visible = false
+	Menu.TogglePause(false)
+	MenuScene.Stop()
+	Audio.SetMenu(true)
 end
 
 function Menu.Init(toast)

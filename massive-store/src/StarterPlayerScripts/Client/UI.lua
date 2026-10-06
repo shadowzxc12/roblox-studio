@@ -148,8 +148,131 @@ function UI.panel(parent: Instance, props, radius: number?): Frame
 	return f
 end
 
+--============================ ICONS ============================--
 --[[
-	button(parent, { Text, Sub, Key, Size, Position, AnchorPoint, Style = "Primary"|"Dark"|"Ghost"|"Danger"|"Good",
+	Vector icons drawn from frames (crisp at any UI scale, no font glyphs / emoji):
+	close, check, back, arrow, enter, gear, warn, lock, bolt, coin, dot, ring, plus, minus
+	UI.icon(parent, name, size, color, props?) -> Frame
+]]
+function UI.icon(parent: Instance, name: string, size: number, color: Color3, props): Frame
+	local holder = make("Frame", { Name = "Icon_" .. name, BackgroundTransparency = 1, Size = UDim2.fromOffset(size, size), ZIndex = 4 }, parent)
+	local z = holder.ZIndex + 1
+	local function bar(x, y, w, h, rot, c): Frame
+		local f = make("Frame", {
+			BackgroundColor3 = c or color,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(x, y),
+			Size = UDim2.fromScale(w, h),
+			Rotation = rot or 0,
+			ZIndex = z,
+		}, holder)
+		UI.corner(f, math.max(1, math.floor(size * h * 0.5)))
+		return f
+	end
+	local function circle(x, y, d, filled, thick): Frame
+		local f = make("Frame", {
+			BackgroundColor3 = color,
+			BackgroundTransparency = if filled then 0 else 1,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(x, y),
+			Size = UDim2.fromScale(d, d),
+			ZIndex = z,
+		}, holder)
+		UI.corner(f)
+		if not filled then
+			UI.stroke(f, color, thick or math.max(1.5, size * 0.12), 0)
+		end
+		return f
+	end
+	local t = 0.14 -- stroke thickness (fraction of the icon)
+	if name == "close" then
+		bar(0.5, 0.5, 0.95, t, 45)
+		bar(0.5, 0.5, 0.95, t, -45)
+	elseif name == "check" then
+		bar(0.34, 0.62, 0.42, t, 45)
+		bar(0.6, 0.47, 0.72, t, -50)
+	elseif name == "back" or name == "arrow" then
+		local s = if name == "back" then 1 else -1
+		bar(0.52, 0.5, 0.78, t, 0)
+		bar(0.5 - s * 0.22, 0.35, 0.44, t, s * -42)
+		bar(0.5 - s * 0.22, 0.65, 0.44, t, s * 42)
+	elseif name == "enter" then
+		bar(0.78, 0.36, t, 0.5, 0)
+		bar(0.5, 0.6, 0.6, t, 0)
+		bar(0.27, 0.48, 0.32, t, -42)
+		bar(0.27, 0.72, 0.32, t, 42)
+	elseif name == "gear" then
+		for i = 0, 3 do
+			bar(0.5, 0.5, 0.92, 0.2, i * 45)
+		end
+		circle(0.5, 0.5, 0.66, true)
+		local hole = circle(0.5, 0.5, 0.3, true)
+		hole.BackgroundColor3 = C.Ink
+		hole.BackgroundTransparency = 0
+		hole.Name = "Hole"
+	elseif name == "warn" then
+		circle(0.5, 0.5, 0.9, false)
+		bar(0.5, 0.42, t, 0.36, 0)
+		circle(0.5, 0.72, 0.14, true)
+	elseif name == "lock" then
+		local body = bar(0.5, 0.66, 0.74, 0.5, 0)
+		UI.corner(body, math.max(2, math.floor(size * 0.1)))
+		local shackle = circle(0.5, 0.38, 0.5, false, math.max(1.5, size * 0.11))
+		shackle.ZIndex = z - 1
+		bar(0.5, 0.66, 0.12, 0.2, 0, C.Ink)
+	elseif name == "bolt" then
+		bar(0.56, 0.3, 0.2, 0.5, 25)
+		bar(0.44, 0.7, 0.2, 0.5, 25)
+		bar(0.5, 0.5, 0.5, 0.14, 0)
+	elseif name == "coin" then
+		circle(0.5, 0.5, 0.9, true)
+		local inner = circle(0.5, 0.5, 0.56, false, math.max(1, size * 0.08))
+		local st = inner:FindFirstChildOfClass("UIStroke")
+		if st then
+			st.Color = color:Lerp(Color3.new(0, 0, 0), 0.35)
+		end
+	elseif name == "dot" then
+		circle(0.5, 0.5, 0.7, true)
+	elseif name == "ring" then
+		circle(0.5, 0.5, 0.62, false, math.max(1, size * 0.1))
+	elseif name == "plus" then
+		bar(0.5, 0.5, 0.8, t, 0)
+		bar(0.5, 0.5, t, 0.8, 0)
+	elseif name == "minus" then
+		bar(0.5, 0.5, 0.8, t, 0)
+	end
+	if props then
+		for k, v in props do
+			(holder :: any)[k] = v
+		end
+	end
+	return holder
+end
+
+-- a horizontal row: icon + label, centred in `parent` (for buttons / tags)
+function UI.iconLabel(parent: Instance, iconName: string, text: string, textSize: number, color: Color3, font: Font?, z: number?): Frame
+	local row = make("Frame", { Name = "Content", BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromScale(1, 1), ZIndex = z or 3 }, parent)
+	local l = UI.list(row, math.floor(textSize * 0.45), true, Enum.HorizontalAlignment.Center)
+	l.VerticalAlignment = Enum.VerticalAlignment.Center
+	local ic = UI.icon(row, iconName, math.floor(textSize * 0.85), color)
+	ic.LayoutOrder = 1
+	ic.ZIndex = (z or 3) + 1
+	if text ~= "" then
+		UI.text(row, text, textSize, color, font or UI.Title, {
+			Name = "Label",
+			Size = UDim2.fromOffset(0, textSize + 4),
+			AutomaticSize = Enum.AutomaticSize.X,
+			LayoutOrder = 2,
+			ZIndex = (z or 3) + 1,
+		})
+	end
+	return row
+end
+
+--[[
+	button(parent, { Text, Sub, Key, KeyIcon, Icon, Size, Position, AnchorPoint, Style = "Primary"|"Dark"|"Ghost"|"Danger"|"Good",
 	                 Accent (yellow left bar), TextSize, LayoutOrder, Font, Radius })
 	Figma: primary = sign yellow with black Oswald caps; dark = glass panel with a thin outline,
 	optional yellow accent bar, sub line and a keycap on the right.
@@ -177,7 +300,7 @@ function UI.button(parent: Instance, opts): TextButton
 		Position = opts.Position or UDim2.new(),
 		AnchorPoint = opts.AnchorPoint or Vector2.zero,
 		FontFace = opts.Font or UI.Title,
-		Text = if hasSub or opts.Accent then "" else (opts.Text or ""),
+		Text = if hasSub or opts.Accent or opts.Icon then "" else (opts.Text or ""),
 		TextSize = opts.TextSize or 18,
 		TextColor3 = fg,
 		LayoutOrder = opts.LayoutOrder or 0,
@@ -200,7 +323,7 @@ function UI.button(parent: Instance, opts): TextButton
 		UI.text(b, opts.Text or "", opts.TextSize or 22, fg, opts.Font or UI.Title, {
 			Name = "Label",
 			Position = UDim2.new(0, pad, 0, if hasSub then 4 else 0),
-			Size = UDim2.new(1, -pad - (if opts.Key then 56 else 12), if hasSub then 0.6 else 1, if hasSub then -4 else 0),
+			Size = UDim2.new(1, -pad - (if opts.Key or opts.KeyIcon then 56 else 12), if hasSub then 0.6 else 1, if hasSub then -4 else 0),
 			ZIndex = z,
 			TextYAlignment = if hasSub then Enum.TextYAlignment.Bottom else Enum.TextYAlignment.Center,
 		})
@@ -208,13 +331,17 @@ function UI.button(parent: Instance, opts): TextButton
 			UI.text(b, opts.Sub, 11, if style == "Primary" then Color3.fromHex("3d3000") else C.Muted, UI.Semi, {
 				Name = "Sub",
 				Position = UDim2.new(0, pad, 0.6, 0),
-				Size = UDim2.new(1, -pad - (if opts.Key then 56 else 12), 0.4, -6),
+				Size = UDim2.new(1, -pad - (if opts.Key or opts.KeyIcon then 56 else 12), 0.4, -6),
 				TextYAlignment = Enum.TextYAlignment.Top,
 				ZIndex = z,
 			})
 		end
 	end
-	if opts.Key then
+	if opts.Icon and not hasSub and not opts.Accent then
+		-- icon (+ optional text) centred on the button
+		UI.iconLabel(b, opts.Icon, opts.Text or "", opts.TextSize or 18, fg, opts.Font or UI.Title, z)
+	end
+	if opts.Key or opts.KeyIcon then
 		local kc = make("Frame", {
 			Name = "Keycap",
 			AnchorPoint = Vector2.new(1, 0.5),
@@ -226,7 +353,18 @@ function UI.button(parent: Instance, opts): TextButton
 			ZIndex = z,
 		}, b)
 		UI.corner(kc, 4)
-		UI.text(kc, opts.Key, 12, if style == "Primary" then C.Accent else C.Text, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+		local kcColor = if style == "Primary" then C.Accent else C.Text
+		if opts.KeyIcon then
+			local ic = UI.icon(kc, opts.KeyIcon, 16, kcColor, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5) })
+			ic.ZIndex = z + 1
+			for _, d in ic:GetDescendants() do
+				if d:IsA("GuiObject") then
+					d.ZIndex = z + 2
+				end
+			end
+		else
+			UI.text(kc, opts.Key, 12, kcColor, UI.Mono, { TextXAlignment = Enum.TextXAlignment.Center, ZIndex = z + 1 })
+		end
 	end
 	local scale = make("UIScale", {}, b)
 	b.MouseEnter:Connect(function()

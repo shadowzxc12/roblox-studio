@@ -16,6 +16,8 @@ local Models = require(Shared.Models)
 local LobbyWorld = {}
 
 local SPACING = 160
+-- far away from the store (in Studio both live on the same server)
+local ORIGIN = Vector3.new(6000, 0, 6000)
 local SLOTS = {
 	CFrame.new(0, 0, 0),
 	CFrame.new(-4.6, 0, 1.4) * CFrame.Angles(0, math.rad(-12), 0),
@@ -77,6 +79,10 @@ local function buildPad(index: number, O: CFrame)
 	local camCF = CFrame.lookAt(L(0, 4.6, 19).Position, L(0, 4.2, 0).Position)
 	model:SetAttribute("Cam", camCF)
 	model:SetAttribute("Origin", O)
+	pcall(function()
+		-- the whole pad is always on every client (StreamingEnabled)
+		(model :: any).ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+	end)
 
 	-- asphalt with parking lines
 	part(model, Vector3.new(SPACING, 1, SPACING), L(0, -0.5, 10), "1b1c1f", Enum.Material.Asphalt)
@@ -203,7 +209,7 @@ function LobbyWorld.Build()
 	for i = 0, n do
 		local cx = (i % cols) * SPACING
 		local cz = math.floor(i / cols) * SPACING
-		buildPad(i, CFrame.new(cx, 0, cz))
+		buildPad(i, CFrame.new(ORIGIN + Vector3.new(cx, 0, cz)))
 	end
 end
 
@@ -224,7 +230,8 @@ function LobbyWorld.Place(party)
 		end
 	end
 	for i, p in order do
-		local char = p and p.Character
+		-- players in the store (Studio) aren't in the lineup
+		local char = p and not p:GetAttribute("InRun") and p.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		if hrp and hum then
@@ -239,20 +246,45 @@ function LobbyWorld.Place(party)
 	end
 end
 
+-- lobby avatars: loaded by the lobby (the store controls characters itself, so
+-- Players.CharacterAutoLoads is off) — on join and whenever someone comes back from the store
+local function ensureCharacter(player: Player)
+	if not player.Parent or player:GetAttribute("InRun") or player:GetAttribute("Teleporting") then
+		return
+	end
+	if not player.Character or not player.Character.Parent then
+		pcall(function()
+			player:LoadCharacter()
+		end)
+	end
+end
+
 function LobbyWorld.Init(Party, Shop)
 	Party.Changed:Connect(function(party)
 		LobbyWorld.Place(party)
 	end)
 	local function hook(player: Player)
 		player.CharacterAdded:Connect(function(char)
+			if player:GetAttribute("InRun") then
+				return
+			end
 			char:WaitForChild("HumanoidRootPart", 10)
 			char:WaitForChild("Humanoid", 10)
 			task.wait()
+			if player:GetAttribute("InRun") then
+				return
+			end
 			LobbyWorld.Place(Party.Of(player))
 			if Shop then
 				Shop.Apply(player)
 			end
 		end)
+		player:GetAttributeChangedSignal("InRun"):Connect(function()
+			if not player:GetAttribute("InRun") then
+				task.delay(0.3, ensureCharacter, player)
+			end
+		end)
+		task.spawn(ensureCharacter, player)
 	end
 	Players.PlayerAdded:Connect(hook)
 	for _, p in Players:GetPlayers() do
