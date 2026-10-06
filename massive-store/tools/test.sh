@@ -30,6 +30,7 @@ run_sim tests/sim/run_systems.lua
 run_sim tests/sim/run_modes.lua MODE=Infection
 run_sim tests/sim/run_modes.lua MODE=Solo
 run_sim tests/sim/run_modes.lua MODE=Hardcore
+run_sim tests/sim/run_day.lua
 run_sim tests/sim/run_client.lua
 run_sim tests/sim/run_live.lua
 run_sim tests/sim/run_reserved.lua

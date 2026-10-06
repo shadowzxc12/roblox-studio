@@ -41,6 +41,9 @@ end
 
 local function step()
 	local L = Locust.Get()
+	if L and L.Passive then
+		L = nil -- by day it isn't a threat: traps and turrets leave it alone
+	end
 	local nymphs = Locust.Nymphs()
 	if not L and #nymphs == 0 then
 		return

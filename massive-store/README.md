@@ -83,6 +83,14 @@ L3 šprint, R3 krčenie, Y stavanie, D-pad predmety.
 
 ---
 
+## Novinky 2.2
+- **Locust aj cez deň**: túla sa po obchode (pomalšie), občas sa zastaví a pozerá na teba,
+  ale **neútočí, nenaháňa a nič nerozbíja**. Pasce a veže si ho cez deň nevšímajú. Keď príde noc,
+  ten istý Locust sa na mieste „prebudí“ a začne loviť. (`Config.Locust.DayRoam`,
+  `DayPatrolSpeed`, `DaySpawnDelay`)
+- **Inventár**: Tab funguje spoľahlivo (v obchode je vypnutý zoznam hráčov, ktorý Tab zaberal),
+  navyše funguje aj kláves **I**.
+
 ## Novinky 2.1
 - Lobby a obchod sú **jeden place / jeden súbor** (server je lobby, súkromný server je obchod,
   v Studiu oboje). Zmizol testovací výber módov v obchode — do hry sa ide z lobby a pustí ťa

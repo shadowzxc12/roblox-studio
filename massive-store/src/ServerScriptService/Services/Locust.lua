@@ -455,7 +455,7 @@ local function attack(player: Player)
 end
 
 function Locust.Stun(seconds: number, by: Player?)
-	if not L or L.State == "Retreat" or L.State == "Leaving" or L.State == "Spawning" then
+	if not L or L.Passive or L.State == "Retreat" or L.State == "Leaving" or L.State == "Spawning" then
 		return
 	end
 	L.StunUntil = math.max(L.StunUntil, os.clock() + seconds)
@@ -467,7 +467,7 @@ function Locust.Stun(seconds: number, by: Player?)
 end
 
 function Locust.Hurt(amount: number, by: Player?)
-	if not L or L.State == "Retreat" or L.State == "Leaving" then
+	if not L or L.Passive or L.State == "Retreat" or L.State == "Leaving" then
 		return
 	end
 	L.Resolve -= amount
@@ -927,12 +927,75 @@ local function tickStuck()
 	end
 end
 
+-- DAY: it roams the aisles but never hunts, breaks or attacks. Now and then it stops and
+-- stares at a shopper it can see, then wanders off again.
+local function tickDay(dt: number)
+	local now = os.clock()
+	setSpeed(LC.DayPatrolSpeed or 6.5)
+	if L.StareAt then
+		if now < (L.StareUntil or 0) and L.StareAt.Parent and Survival.IsActive(L.StareAt) then
+			L.Hum:MoveTo(L.Root.Position)
+			return
+		end
+		L.StareAt = nil
+		L.Model:SetAttribute("Watching", 0)
+	end
+	if now > (L.NextStare or 0) then
+		L.NextStare = now + 1.5
+		for _, p in Survival.ActivePlayers() do
+			local seen, d = sees(p)
+			if seen and d < 70 then
+				L.StareAt = p
+				L.StareUntil = now + rng:Range(2.5, 4.5)
+				L.NextStare = now + rng:Range(14, 24)
+				L.Model:SetAttribute("Watching", p.UserId)
+				L.Model:SetAttribute("Sniff", now)
+				cue("LocustClick")
+				clearPath()
+				L.Hum:MoveTo(L.Root.Position)
+				return
+			end
+		end
+	end
+	if not L.Path or L.Goal == nil then
+		if now < (L.PauseUntil or 0) then
+			L.Hum:MoveTo(L.Root.Position)
+			return
+		end
+		goTo(pickPatrolTarget())
+	end
+	if follow() then
+		L.PauseUntil = now + rng:Range(1.5, 4)
+		clearPath()
+		return
+	end
+	-- stuck? never break anything by day: just go somewhere else
+	if not L.DayStuckPos or now - (L.DayStuckTime or 0) > 2 then
+		if L.DayStuckPos and (flat(L.Root.Position) - flat(L.DayStuckPos)).Magnitude < 1 then
+			clearPath()
+		end
+		L.DayStuckPos = L.Root.Position
+		L.DayStuckTime = now
+	end
+end
+
 local function tick(dt: number)
 	if not L or not L.Model.Parent then
 		return
 	end
 	local now = os.clock()
 	L.Model:SetAttribute("Speed", L.Hum.WalkSpeed)
+	if L.Passive and L.State ~= "Spawning" and L.State ~= "Leaving" then
+		tickDay(dt)
+		for _, p in Players:GetPlayers() do
+			local pos = Survival.Position(p)
+			if pos then
+				p:SetAttribute("LocustDistance", math.floor((pos - L.Root.Position).Magnitude))
+				p:SetAttribute("LocustHunting", false)
+			end
+		end
+		return
+	end
 	if L.State == "Spawning" then
 		L.Hum:MoveTo(L.Root.Position)
 		if now - L.StateSince > 3 then
@@ -1082,7 +1145,29 @@ local function tickNymphs()
 end
 
 --============================ LIFECYCLE ============================--
-function Locust.Spawn(night: number)
+-- passive = the harmless daytime roamer. Spawning the night Locust while the day one is
+-- around wakes it up where it stands (no pop-in).
+function Locust.Spawn(night: number, passive: boolean?)
+	if L and L.Passive and not passive and L.Model.Parent then
+		local stats = Config.LocustStats(night, State.ModeInfo.LocustMult or 1)
+		stats.Resolve *= L.Variant.ResolveMult or 1
+		setupPaths(stats)
+		L.Stats = stats
+		L.Passive = false
+		L.Resolve = stats.Resolve
+		L.MaxResolve = stats.Resolve
+		L.StareAt = nil
+		L.NextShriek = os.clock() + 40
+		L.NextNymphs = os.clock() + 30
+		clearPath()
+		setState("Patrol")
+		L.Model:SetAttribute("Passive", false)
+		L.Model:SetAttribute("Watching", 0)
+		L.Model:SetAttribute("Night", night)
+		L.Model:SetAttribute("Resolve", 1)
+		cue("LocustScreech")
+		return L
+	end
 	Locust.Despawn(true)
 	local mult = State.ModeInfo.LocustMult or 1
 	local stats = Config.LocustStats(night, mult)
@@ -1120,13 +1205,17 @@ function Locust.Spawn(night: number)
 		LastSeen = 0,
 		NextShriek = os.clock() + 40,
 		NextNymphs = os.clock() + 30,
+		Passive = passive == true,
 	}
+	model:SetAttribute("Passive", passive == true)
 	model:SetAttribute("State", "Spawning")
 	model:SetAttribute("Emerge", State.Now())
 	model:SetAttribute("Night", night)
 	model:SetAttribute("Resolve", 1)
 	State.SetAttr("LocustVariant", variant.Name)
-	State.Cue("LocustSpawn", pos, variant.Name)
+	if not passive then
+		State.Cue("LocustSpawn", pos, variant.Name)
+	end
 	-- memory fades a little each night
 	for id, h in memory.Heat do
 		memory.Heat[id] = h * LC.MemoryDecayPerNight
@@ -1218,7 +1307,7 @@ function Locust.Init()
 					end
 				end
 				-- nymph swarm
-				if L and L.Stats.Abilities.Nymphs and now > L.NextNymphs and #nymphs < 2 + (L.Variant.NymphBonus or 0) then
+				if L and not L.Passive and L.Stats.Abilities.Nymphs and now > L.NextNymphs and #nymphs < 2 + (L.Variant.NymphBonus or 0) then
 					L.NextNymphs = now + 80
 					spawnNymph(L.Root.Position)
 					spawnNymph(L.Root.Position)

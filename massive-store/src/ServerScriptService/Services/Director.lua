@@ -185,7 +185,16 @@ local function runDay(first: boolean)
 	local length = if first then C.FirstDay else C.Day
 	setPhase("Day", length)
 	if not first then
-		State.Banner(nil, "DAY " .. (State.Night + 1), "The Locust sleeps. Loot, build, prepare.", "ffc61a", 3.5)
+		State.Banner(nil, "DAY " .. (State.Night + 1), "It wanders the aisles... but won't attack. Yet.", "ffc61a", 3.5)
+	end
+	-- by day the Locust roams the store too, harmless until night falls
+	if Config.Locust.DayRoam then
+		local runId = State.RunId
+		task.delay((Config.Locust.DaySpawnDelay or 25) * (if first then 2 else 1), function()
+			if State.Phase == "Day" and State.RunActive and State.RunId == runId and not Locust.Get() then
+				Locust.Spawn(State.Night + 1, true)
+			end
+		end)
 	end
 	newTeamObjective()
 	objective(if first then "Explore the store and grab food & materials" else "Restock: food, fuel, materials. Upgrade your base.")

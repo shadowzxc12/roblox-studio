@@ -8,7 +8,7 @@ local Config = {}
 
 Config.GameName = "MASSIVE STORE"
 Config.Subtitle = "LOCUST"
-Config.Version = "2.1.0"
+Config.Version = "2.2.0"
 Config.DataStoreName = "MassiveStoreLocust_v1"
 Config.ServerRegistryName = "MSL_Servers_v1"
 Config.MaxPlayers = 12
@@ -133,6 +133,10 @@ Config.Locust = {
 	RetreatTime = 40,
 	MemoryDecayPerNight = 0.8,
 	SpawnMinDistance = 450,
+	-- by DAY it roams the store too, but never attacks: slow, stops to stare at you, wanders on
+	DayRoam = true,
+	DayPatrolSpeed = 6.5,
+	DaySpawnDelay = 25, -- seconds into the day before it shows up (first day: x2)
 }
 
 -- The Locust's stats for a night. modeMult scales difficulty (Hardcore > 1, Solo < 1).
