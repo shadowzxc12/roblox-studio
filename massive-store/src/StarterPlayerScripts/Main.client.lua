@@ -118,6 +118,10 @@ local function refresh()
 	LobbyUI.SetVisible(hasLobby and not inRun)
 	LobbyCamera.SetActive(hasLobby and not inRun)
 	Atmosphere.SetLobby(hasLobby and not inRun)
+	-- the player list also opens on Tab: off in the store so Tab is only the inventory
+	pcall(function()
+		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, not inRun)
+	end)
 	if inRun then
 		Menu.Hide()
 		HUD.SetVisible(true)

@@ -234,10 +234,10 @@ local function buildOverlays()
 end
 
 local function buildHints()
-	local hints = make("Frame", { Name = "Hints", BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -20, 1, -20), Size = UDim2.fromOffset(420, 22) }, root)
+	local hints = make("Frame", { Name = "Hints", BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -20, 1, -20), Size = UDim2.fromOffset(520, 22) }, root)
 	local l = UI.list(hints, 10, true, Enum.HorizontalAlignment.Right)
 	l.VerticalAlignment = Enum.VerticalAlignment.Center
-	for i, pair in { { "B", "Build" }, { "Tab", "Inventory" }, { "M", "Map" }, { "F", "Light" }, { "C", "Crouch" } } do
+	for i, pair in { { "B", "Build" }, { "Tab", "Inventory" }, { "P", "Menu" }, { "M", "Map" }, { "F", "Light" }, { "C", "Crouch" } } do
 		local h = make("Frame", { BackgroundTransparency = 1, Size = UDim2.fromOffset(10, 22), AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = i }, hints)
 		UI.list(h, 4, true).VerticalAlignment = Enum.VerticalAlignment.Center
 		local cap = UI.keycap(h, pair[1], 18)

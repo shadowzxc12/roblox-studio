@@ -2,7 +2,7 @@
 	Controls: keyboard, mouse, gamepad and touch.
 
 	  Shift sprint (loud)   C crouch (quiet)   F flashlight   R reload batteries   N night vision
-	  1-6 hold item   Click use   Q drop   Tab inventory   B build   M map
+	  1-6 hold item   Click use   Q drop   Tab / I inventory   B build   M map
 	  G let go of cart   X cart basket   H emote   Space leave hiding spot
 	Touch gets on-screen buttons; gamepad: L3 sprint, R3 crouch, DPad items, Y build, X use.
 	The client only sends intentions; speeds, stamina and every action are decided on the server.
@@ -96,8 +96,30 @@ local function toggleEmotes()
 	end
 end
 
+-- Tab / I: inventory. Tab is also grabbed by Roblox's player list, so it is caught three ways
+-- (ContextActionService, raw input even when "processed", and I as a spare key); a short
+-- debounce makes sure one press toggles only once.
+local lastInvToggle = 0
+local function toggleInventory()
+	if not inRun() or BuildUI.IsActive() then
+		return
+	end
+	local now = os.clock()
+	if now - lastInvToggle < 0.25 then
+		return
+	end
+	lastInvToggle = now
+	InventoryUI.Toggle()
+end
+Controls.ToggleInventory = toggleInventory
+
 local function onInput(input: InputObject, processed: boolean)
 	if not inRun() then
+		return
+	end
+	local kc0 = input.KeyCode
+	if kc0 == Enum.KeyCode.Tab or (kc0 == Enum.KeyCode.I and not processed) then
+		toggleInventory()
 		return
 	end
 	if BuildUI.HandleInput(input, processed) then
@@ -261,8 +283,8 @@ function Controls.Init()
 		if not inRun() then
 			return Enum.ContextActionResult.Pass
 		end
-		if state == Enum.UserInputState.Begin and not BuildUI.IsActive() then
-			InventoryUI.Toggle()
+		if state == Enum.UserInputState.Begin then
+			toggleInventory()
 		end
 		return Enum.ContextActionResult.Sink
 	end, false, 3000, Enum.KeyCode.Tab)

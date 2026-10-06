@@ -64,7 +64,7 @@ nastavovať — lobby si vytvára súkromné servery toho istého place-u.
 | E | interakcia (zobrať, otvoriť, skryť sa, oživiť – podržať) |
 | 1–6, klik | držať predmet / použiť (jesť, hodiť svetlicu…) |
 | Q | zahodiť držaný predmet |
-| Tab | inventár (klik = vybrať, klik na iný slot = presunúť) |
+| Tab alebo I | inventár (klik = vybrať, klik na iný slot = presunúť) |
 | B | stavanie · R otočiť · klik postaviť · pravý klik zrušiť |
 | U / P / X | (v režime stavania, mierenie na stavbu) vylepšiť / opraviť / odstrániť |
 | F / R | baterka / vymeniť batérie |

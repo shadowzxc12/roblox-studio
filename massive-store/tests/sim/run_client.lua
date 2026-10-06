@@ -114,6 +114,18 @@ click(findButton(invPanel, "DROP ONE"))
 G.CAS.MSL_Inventory("MSL_Inventory", Enum.UserInputState.Begin)
 G.RunUntil(0.3)
 check(not invPanel.Visible, "inventory closes")
+-- the raw Tab key (when the player list grabs it from ContextActionService) and I
+key(Enum.KeyCode.Tab)
+check(invPanel.Visible, "Tab key opens the inventory")
+G.RunUntil(0.3)
+key(Enum.KeyCode.Tab)
+check(not invPanel.Visible, "Tab key closes it")
+G.RunUntil(0.3)
+key(Enum.KeyCode.I)
+check(invPanel.Visible, "I opens the inventory")
+G.RunUntil(0.3)
+key(Enum.KeyCode.I)
+check(not invPanel.Visible, "I closes it")
 
 -- hotbar + use + flashlight + sprint/crouch
 key(Enum.KeyCode.Three)
