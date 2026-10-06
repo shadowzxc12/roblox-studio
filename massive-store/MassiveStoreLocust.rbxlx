@@ -468,7 +468,7 @@ local Config = {}
 
 Config.GameName = "MASSIVE STORE"
 Config.Subtitle = "LOCUST"
-Config.Version = "2.2.0"
+Config.Version = "2.2.1"
 Config.DataStoreName = "MassiveStoreLocust_v1"
 Config.ServerRegistryName = "MSL_Servers_v1"
 Config.MaxPlayers = 12
@@ -8844,6 +8844,36 @@ local function lineOfSight(from: Vector3, to: Vector3): boolean
 	return hit == nil
 end
 
+-- can it WALK straight there? (its eyes see over shelves, its body doesn't fit through them)
+-- three rays at knee / hip height, across its width
+local function groundClear(to: Vector3): boolean
+	local root = L.Root
+	local from = root.Position - Vector3.new(0, 3, 0)
+	local target = Vector3.new(to.X, from.Y, to.Z)
+	local dir = target - from
+	if dir.Magnitude < 1 then
+		return true
+	end
+	local side = Vector3.new(-dir.Z, 0, dir.X).Unit * 1.6
+	local params = rayParams()
+	for _, off in { Vector3.zero, side, -side } do
+		for _, h in { 0, 2.5 } do
+			if Workspace:Raycast(from + off + Vector3.new(0, h, 0), dir, params) then
+				return false
+			end
+		end
+	end
+	return true
+end
+
+-- distance that matters for a bite: along the floor, same level
+local function reach(pos: Vector3): number
+	if math.abs(pos.Y - L.Root.Position.Y) > 9 then
+		return math.huge
+	end
+	return flat(pos - L.Root.Position).Magnitude
+end
+
 local function inRepellent(pos: Vector3): boolean
 	local now = os.clock()
 	for i = #repellents, 1, -1 do
@@ -9187,11 +9217,25 @@ local function attack(player: Player)
 			return
 		end
 		local pos = Survival.Position(player)
-		if pos and (pos - L.Root.Position).Magnitude <= LC.AttackRange + 2.5 and Survival.IsTargetable(player) then
+		if pos and reach(pos) <= LC.AttackRange + 2.5 and Survival.IsTargetable(player) then
 			Survival.Damage(player, L.Stats.Damage, "Locust")
 			L.LastHitTime = os.clock()
 			local st = Survival.Get(player)
-			if st and st.Downed then
+			-- nobody left standing who could come and revive you: it finishes you off
+			local helper = false
+			for _, other in Survival.RunPlayers() do
+				local os_ = Survival.Get(other)
+				if other ~= player and os_ and not os_.Downed and not os_.Dead then
+					helper = true
+				end
+			end
+			local canSelfRevive = State.ModeInfo.SelfRevive and lazy("Inventory").Count(player, "Medkit") > 0
+			if st and st.Downed and not helper and not canSelfRevive then
+				cue("LocustScreech")
+				Survival.Kill(player, "Locust")
+				heatAt(pos, 6)
+				startSearch(pos + Vector3.new(rng:Range(-30, 30), 0, rng:Range(-30, 30)), L.Stats.SearchTime * 0.5)
+			elseif st and st.Downed then
 				-- it doesn't camp the downed: shriek and move on, teammates get a chance
 				cue("LocustScreech")
 				heatAt(pos, 6)
@@ -9521,7 +9565,8 @@ local function tickChase(dt: number)
 			end
 		end
 	end
-	if d <= LC.AttackRange and seen then
+	local hd = reach(pos)
+	if hd <= LC.AttackRange and (seen or hd < LC.CloseSenseRadius) then
 		L.Hum:MoveTo(pos)
 		attack(target)
 		return
@@ -9529,8 +9574,8 @@ local function tickChase(dt: number)
 	-- re-plan towards where we think they are
 	local goalPos = if seen then pos else L.LastKnown
 	if not L.Path or not L.Goal or (L.Goal - goalPos).Magnitude > 6 or now - (L.PathTime or 0) > 1.2 then
-		if seen and d < 30 then
-			-- close and visible: run straight at them
+		if seen and d < 30 and now > (L.ForcePathUntil or 0) and groundClear(goalPos) then
+			-- close, visible and nothing in the way: run straight at them
 			L.Path = { goalPos }
 			L.PathIndex = 1
 			L.Goal = goalPos
@@ -9648,6 +9693,12 @@ local function tickStuck()
 	if moved < 1.2 and L.Hum.WalkSpeed > 1 then
 		L.StuckCount = (L.StuckCount or 0) + 1
 		if handleObstacle() then
+			return
+		end
+		-- a wall / shelf: stop running straight at things for a bit, path around them
+		L.ForcePathUntil = now + 4
+		if L.State == "Chase" and L.Goal then
+			goTo(L.Goal)
 			return
 		end
 		local wp = L.Path and L.Path[L.PathIndex]

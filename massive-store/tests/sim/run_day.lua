@@ -53,6 +53,22 @@ for _ = 1, 200 do
 end
 G.RunUntil(1)
 check(Locust.Get() == L and L.Passive == false, "at night the roamer wakes up as the hunter")
+-- night, alone, right next to it: it bites, downs you and (nobody can save you) kills you
+G.RunUntil(Config.Survival.SpawnProtection + 1)
+local died = false
+for _ = 1, 80 do
+	local L2 = Locust.Get()
+	if L2 and L2.Root and not p:GetAttribute("Downed") and not p:GetAttribute("Dead") then
+		Survival.Teleport(p, CFrame.new(L2.Root.Position + L2.Root.CFrame.LookVector * 4 - Vector3.new(0, 3, 0)))
+	end
+	G.RunUntil(0.5)
+	if p:GetAttribute("Dead") then
+		died = true
+		break
+	end
+end
+check((p:GetAttribute("Health") or 100) < 100 or died, "at night it bites when you're next to it")
+check(died, "alone and downed, it finishes you off")
 if #ERRORS > 0 then
 	error(ERRORS[1])
 end

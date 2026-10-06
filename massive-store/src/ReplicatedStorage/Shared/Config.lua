@@ -8,7 +8,7 @@ local Config = {}
 
 Config.GameName = "MASSIVE STORE"
 Config.Subtitle = "LOCUST"
-Config.Version = "2.2.0"
+Config.Version = "2.2.1"
 Config.DataStoreName = "MassiveStoreLocust_v1"
 Config.ServerRegistryName = "MSL_Servers_v1"
 Config.MaxPlayers = 12

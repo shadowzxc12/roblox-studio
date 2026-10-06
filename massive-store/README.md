@@ -83,6 +83,13 @@ L3 šprint, R3 krčenie, Y stavanie, D-pad predmety.
 
 ---
 
+## Novinky 2.2.1
+- **Locust ťa zabije**: útok počíta vzdialenosť po zemi (predtým od jeho očí vysoko hore, takže
+  aj tesne pri tebe „nedosiahol“). Keď ťa zrazí a nie je nikto, kto by ťa oživil (sólo bez
+  lekárničky, alebo všetci ostatní ležia), dorazí ťa.
+- **Nezasekáva sa o steny**: rovno k tebe beží len keď je cesta voľná aj pri zemi (oči vidia ponad
+  regále, telo cez ne neprejde); keď narazí, na pár sekúnd prepne na hľadanie cesty okolo.
+
 ## Novinky 2.2
 - **Locust aj cez deň**: túla sa po obchode (pomalšie), občas sa zastaví a pozerá na teba,
   ale **neútočí, nenaháňa a nič nerozbíja**. Pasce a veže si ho cez deň nevšímajú. Keď príde noc,
