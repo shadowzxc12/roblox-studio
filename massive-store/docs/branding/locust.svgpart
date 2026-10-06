@@ -1,0 +1,30 @@
+<!-- THE LOCUST: tall hunched insect, drawn around (0,0) = feet centre, ~100 units tall -->
+<g class="locust" stroke-linecap="round" stroke-linejoin="round">
+  <!-- wings -->
+  <path d="M-6,-78 C-30,-70 -38,-40 -26,-18 C-18,-34 -10,-52 -6,-70Z" fill="#140f0d"/>
+  <path d="M6,-78 C30,-70 38,-40 26,-18 C18,-34 10,-52 6,-70Z" fill="#140f0d"/>
+  <!-- legs (digitigrade) -->
+  <path d="M-6,-42 L-14,-24 L-6,-10 L-16,0" fill="none" stroke="#050505" stroke-width="4.5"/>
+  <path d="M6,-42 L14,-24 L6,-10 L16,0" fill="none" stroke="#050505" stroke-width="4.5"/>
+  <path d="M-16,0 l-7,1 M-16,0 l2,3 M16,0 l7,1 M16,0 l-2,3" stroke="#050505" stroke-width="2"/>
+  <!-- abdomen -->
+  <ellipse cx="0" cy="-46" rx="9" ry="12" fill="#070606"/>
+  <!-- thorax, hunched forward -->
+  <path d="M-10,-50 C-12,-66 -8,-80 2,-86 C10,-82 12,-66 10,-50 Z" fill="#070606"/>
+  <path d="M-3,-84 l-2,-6 M1,-86 l0,-7 M5,-84 l2,-6" stroke="#070606" stroke-width="2.4"/>
+  <!-- long arms with claws -->
+  <path d="M-8,-78 L-22,-62 L-20,-34" fill="none" stroke="#050505" stroke-width="3.6"/>
+  <path d="M-20,-34 l-4,9 M-20,-34 l0,10 M-20,-34 l4,9" stroke="#050505" stroke-width="1.8"/>
+  <path d="M8,-78 L22,-62 L20,-34" fill="none" stroke="#050505" stroke-width="3.6"/>
+  <path d="M20,-34 l-4,9 M20,-34 l0,10 M20,-34 l4,9" stroke="#050505" stroke-width="1.8"/>
+  <!-- small praying arms -->
+  <path d="M-5,-72 L-9,-64 L-4,-60 M5,-72 L9,-64 L4,-60" fill="none" stroke="#050505" stroke-width="2"/>
+  <!-- head -->
+  <path d="M-7,-88 C-8,-98 -3,-104 0,-104 C3,-104 8,-98 7,-88 C4,-84 -4,-84 -7,-88Z" fill="#070606"/>
+  <path d="M-3,-86 l-4,7 M3,-86 l4,7" stroke="#070606" stroke-width="2"/>
+  <!-- antennae -->
+  <path d="M-2,-103 C-10,-118 -20,-124 -30,-122 M2,-103 C10,-118 20,-124 30,-122" fill="none" stroke="#070606" stroke-width="1.4"/>
+  <!-- eyes -->
+  <ellipse class="eye" cx="-3.2" cy="-96" rx="2.1" ry="1.4" fill="#ff3b22"/>
+  <ellipse class="eye" cx="3.2" cy="-96" rx="2.1" ry="1.4" fill="#ff3b22"/>
+</g>
